@@ -6,6 +6,11 @@
       <legend>
         {{ wgULS('填写申请人给予的资料', '填寫申請人給予的資料') }}
       </legend>
+      <div>
+        <button @click.prevent="resetForm">
+          {{ wgULS('重置表单', '重設表單') }}
+        </button>
+      </div>
       要求操作：
       <label class="uzh-inline-options">
         <input v-model="inputCreateAccount" type="checkbox" />
@@ -58,30 +63,30 @@
       <legend>{{ wgULS('选择您要进行的操作', '選擇您要進行的操作') }}</legend>
       狀態：
       <ul>
-        <li v-if="username && username != normalizedUsername" class="uzh-status-info">
+        <li v-if="normalizedUsername && username != normalizedUsername" class="uzh-status-info">
           {{ wgULS('用户名被正规化为“', '使用者名稱被正規化為「') }}{{ this.normalizedUsername }}{{ wgULS('”', '」') }}
         </li>
-        <li v-if="username && accountStatus == ACCST_NOT_EXISTS" class="uzh-status-succress">
+        <li v-if="normalizedUsername && accountStatus == ACCST_NOT_EXISTS" class="uzh-status-succress">
           {{ wgULS('账户可以创建', '帳號可以建立') }}
         </li>
-        <li v-if="username && accountStatus == ACCST_NEEDS_LOCAL" class="uzh-status-success">
+        <li v-if="normalizedUsername && accountStatus == ACCST_NEEDS_LOCAL" class="uzh-status-success">
           {{ wgULS('需要强制创建本地账户', '需要強制建立本地帳號') }}
         </li>
-        <li v-if="username && accountStatus == ACCST_EXISTS" class="uzh-status-error">
+        <li v-if="normalizedUsername && accountStatus == ACCST_EXISTS" class="uzh-status-error">
           {{ wgULS('账户已被注册', '帳號已被註冊') }}（<a
             :href="getUrl('Special:CentralAuth', { target: normalizedUsername })"
             target="_blank"
             >{{ wgULS('检查全域账户', '檢查全域帳號') }}</a
           >）
         </li>
-        <li v-if="ip && blocked" class="uzh-status-success">
+        <li v-if="ipChecked && ip && blocked" class="uzh-status-success">
           {{ 'IP已被' }}{{ blockBy }}{{ wgULS('封禁，原因为：', '封鎖，原因為：') }}{{ blockReason }}（<a
             :href="getUrl('Special:BlockList', { wpTarget: ip })"
             target="_blank"
             >{{ wgULS('检查', '檢查') }}</a
           >）
         </li>
-        <li v-if="ip && !blocked" class="uzh-status-error">
+        <li v-if="ipChecked && ip && !blocked" class="uzh-status-error">
           {{ wgULS('申请人给定的IP未被封禁', '申請人給定的IP未被封鎖') }}（<a
             :href="getUrl('Special:BlockList', { wpTarget: ip })"
             target="_blank"
@@ -124,7 +129,7 @@
           <span :class="'uzh-status-' + statusCreateLocalType">{{ statusCreateLocal }}</span></span
         >
       </div>
-      <div v-if="username">
+      <div v-if="normalizedUsername">
         <label>
           <input v-model="actionOptions" :value="ACTOP_GRANTIPBE" type="checkbox" @change="autoMailOptionsIpbe" />
           {{ wgULS('授予“', '授予「') }}{{ normalizedUsername }}{{ wgULS('”IP封禁豁免权', '」IP封鎖例外權') }}</label
@@ -134,7 +139,7 @@
           <span :class="'uzh-status-' + statusGrantIpbeType">{{ statusGrantIpbe }}</span></span
         >
       </div>
-      <div v-if="username" style="padding-left: 18px">
+      <div v-if="normalizedUsername" style="padding-left: 18px">
         <label>
           <input v-model="actionOptions" :value="ACTOP_NOTICEIPBE" type="checkbox" />
           {{ wgULS('发送授权通知', '發送授權通知') }}</label
@@ -144,7 +149,7 @@
           <span :class="'uzh-status-' + statusNoticeIpbeType">{{ statusNoticeIpbe }}</span></span
         >
       </div>
-      <div v-if="username" style="padding-left: 18px">
+      <div v-if="normalizedUsername" style="padding-left: 18px">
         <label>
           <input v-model="actionOptions" :value="ACTOP_RFIPBE" type="checkbox" />
           {{ wgULS('在WP:RFIPBE备案', '在WP:RFIPBE備案') }}</label
@@ -154,7 +159,7 @@
           <span :class="'uzh-status-' + statusRfIpbeType">{{ statusRfIpbe }}</span></span
         >
       </div>
-      <div v-if="username">
+      <div v-if="normalizedUsername">
         <label>
           <input
             v-model="actionOptions"
@@ -254,6 +259,7 @@ export default {
       archiveUrl: '',
       accountStatus: '',
       normalizedUsername: '',
+      ipChecked: false,
       blocked: false,
       blockBy: '',
       blockReason: '',
@@ -512,6 +518,7 @@ export default {
         return Promise.resolve();
       }
       api.get(query).then(function (res) {
+        self.ipChecked = true;
         if (res.query.blocks.length > 0) {
           self.blocked = true;
           self.blockBy = res.query.blocks[0].by;
@@ -985,7 +992,23 @@ export default {
         mw.notify(wgULS('复制失败', '複製失敗'), { type: 'error' });
       }
     },
-    resetUserData() {},
+    resetForm() {
+      this.inputCreateAccount = true;
+      this.inputGrantIpbe = true;
+      this.inputResetPassword = false;
+      this.username = '';
+      this.email = '';
+      this.ip = '';
+      this.archiveUrl = '';
+      this.summary = '';
+      this.normalizedUsername = '';
+      this.ipChecked = false;
+      this.accountStatus = '';
+      this.actionOptions = [];
+      this.mailOptionsUsername = '';
+      this.mailOptionsIpbe = '';
+      this.mailOptionsResetPassword = false;
+    },
     wgULS: window.wgULS,
     getUrl: mw.util.getUrl,
   },
