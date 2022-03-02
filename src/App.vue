@@ -22,12 +22,12 @@
       <br />
       <label>
         {{ wgULS('用户名：', '使用者名稱：') }}
-        <input
-          v-model="username"
-          type="text"
-          name="uzh-username"
-          style="width: 400px"
-        />
+        <input v-model="username" type="text" name="uzh-username" style="width: 400px" />
+      </label>
+      <br />
+      <label>
+        {{ wgULS('电子邮件地址：', '電子郵件地址：') }}
+        <input v-model="email" type="email" autocomplete="off" name="uzh-email" style="width: 400px" />
       </label>
       <br />
       <label>
@@ -42,7 +42,7 @@
         <span class="uzh-fullwidth-input">
           <input
             v-model="archiveUrl"
-            type="text"
+            type="url"
             name="uzh-archive-url"
             style="width: 100%"
             placeholder="https://lists.wikimedia.org/hyperkitty/list/unblock-zh@lists.wikimedia.org/message/..."
@@ -56,85 +56,80 @@
       <legend>{{ wgULS('选择您要进行的操作', '選擇您要進行的操作') }}</legend>
       狀態：
       <ul>
-        <li
-          v-if="username && username != normalizedUsername"
-          class="uzh-status-info"
-        >
-          {{ wgULS('用户名被正规化为“', '使用者名稱被正規化為「')
-          }}{{ this.normalizedUsername }}{{ wgULS('”', '」') }}
+        <li v-if="username && username != normalizedUsername" class="uzh-status-info">
+          {{ wgULS('用户名被正规化为“', '使用者名稱被正規化為「') }}{{ this.normalizedUsername }}{{ wgULS('”', '」') }}
         </li>
-        <li v-if="username && cancreate" class="uzh-status-succress">
+        <li v-if="username && accountStatus == ACCST_NOT_EXISTS" class="uzh-status-succress">
           {{ wgULS('账户可以创建', '帳號可以建立') }}
         </li>
-        <li
-          v-if="username && !cancreate && needsCreateLocal"
-          class="uzh-status-success"
-        >
+        <li v-if="username && accountStatus == ACCST_NEEDS_LOCAL" class="uzh-status-success">
           {{ wgULS('需要强制创建本地账户', '需要強制建立本地帳號') }}
         </li>
-        <li
-          v-if="username && !cancreate && !needsCreateLocal"
-          class="uzh-status-error"
-        >
+        <li v-if="username && accountStatus == ACCST_EXISTS" class="uzh-status-error">
           {{ wgULS('账户已被注册', '帳號已被註冊') }}（<a
-            :href="'/wiki/Special:CentralAuth/' + normalizedUsername"
+            :href="getUrl('Special:CentralAuth', { target: normalizedUsername })"
             target="_blank"
             >{{ wgULS('检查全域账户', '檢查全域帳號') }}</a
           >）
         </li>
         <li v-if="ip && blocked" class="uzh-status-success">
-          {{ 'IP已被' }}{{ blockBy
-          }}{{ wgULS('封禁，原因为：', '封鎖，原因為：') }}{{ blockReason }}（<a
-            :href="'/wiki/Special:BlockList?wpTarget=' + encodeURIComponent(ip)"
+          {{ 'IP已被' }}{{ blockBy }}{{ wgULS('封禁，原因为：', '封鎖，原因為：') }}{{ blockReason }}（<a
+            :href="getUrl('Special:BlockList', { wpTarget: ip })"
             target="_blank"
             >{{ wgULS('检查', '檢查') }}</a
           >）
         </li>
         <li v-if="ip && !blocked" class="uzh-status-error">
           {{ wgULS('申请人给定的IP未被封禁', '申請人給定的IP未被封鎖') }}（<a
-            :href="'/wiki/Special:BlockList?wpTarget=' + encodeURIComponent(ip)"
+            :href="getUrl('Special:BlockList', { wpTarget: ip })"
             target="_blank"
             >{{ wgULS('检查', '檢查') }}</a
           >）
         </li>
       </ul>
-      <div v-if="inputCreateAccount && cancreate">
+      <div>
         <label>
-          <input
-            v-model="actionOptions"
-            :value="ACTOP_CREATEACCOUNT"
-            type="checkbox"
-          />
+          <span class="uzh-fullwidth-label">
+            {{ wgULS('日志摘要：', '日誌摘要：') }}
+          </span>
+          <span class="uzh-fullwidth-input">
+            <input v-model="summary" type="text" style="width: 100%" />
+          </span>
+        </label>
+      </div>
+      <div v-if="inputCreateAccount && accountStatus == ACCST_NOT_EXISTS">
+        <label>
+          <input v-model="actionOptions" :value="ACTOP_CREATEACCOUNT" type="checkbox" />
           {{ wgULS('创建新账户“', '建立新帳號「') }}{{ normalizedUsername
-          }}{{ wgULS('”', '」') }}</label
+          }}{{ wgULS('”，临时密码寄至“', '」，臨時密碼寄至「') }}{{ email }}{{ wgULS('”', '」') }}</label
+        >
+        <span v-if="statusCreateAcccount">
+          -
+          <span :class="'uzh-status-' + statusCreateAcccountType">{{ statusCreateAcccount }}</span></span
         >
       </div>
-      <div v-if="needsCreateLocal">
+      <div v-if="accountStatus == ACCST_NEEDS_LOCAL">
         <label>
-          <input
-            v-model="actionOptions"
-            :value="ACTOP_CREATELOCAL"
-            type="checkbox"
-            @change="autoMailOptionsAccount"
-          />
-          {{ wgULS('强制创建本地账户“', '強制建立本地帳號「')
-          }}{{ normalizedUsername }}{{ wgULS('”', '」') }}（<a
-            :href="'/wiki/Special:CentralAuth/' + normalizedUsername"
+          <input v-model="actionOptions" :value="ACTOP_CREATELOCAL" type="checkbox" @change="autoMailOptionsAccount" />
+          {{ wgULS('强制创建本地账户“', '強制建立本地帳號「') }}{{ normalizedUsername }}{{ wgULS('”', '」') }}（<a
+            :href="getUrl('Special:CentralAuth', { target: normalizedUsername })"
             target="_blank"
             >{{ wgULS('检查全域账户', '檢查全域帳號') }}</a
           >）</label
         >
+        <span v-if="statusCreateLocal">
+          -
+          <span :class="'uzh-status-' + statusCreateLocalType">{{ statusCreateLocal }}</span></span
+        >
       </div>
       <div v-if="username">
         <label>
-          <input
-            v-model="actionOptions"
-            :value="ACTOP_GRANTIPBE"
-            type="checkbox"
-            @change="autoMailOptionsIpbe"
-          />
-          {{ wgULS('授予“', '授予「') }}{{ normalizedUsername
-          }}{{ wgULS('”IP封禁豁免权', '」IP封鎖例外權') }}</label
+          <input v-model="actionOptions" :value="ACTOP_GRANTIPBE" type="checkbox" @change="autoMailOptionsIpbe" />
+          {{ wgULS('授予“', '授予「') }}{{ normalizedUsername }}{{ wgULS('”IP封禁豁免权', '」IP封鎖例外權') }}</label
+        >
+        <span v-if="statusGrantIpbe">
+          -
+          <span :class="'uzh-status-' + statusGrantIpbeType">{{ statusGrantIpbe }}</span></span
         >
       </div>
       <div v-if="username">
@@ -145,46 +140,35 @@
             type="checkbox"
             @change="autoMailOptionsResetPassword"
           />
-          {{ wgULS('重置“', '重設「') }}{{ normalizedUsername
-          }}{{ wgULS('”的密码', '」的密碼') }}</label
+          {{ wgULS('重置“', '重設「') }}{{ normalizedUsername }}{{ wgULS('”的密码', '」的密碼') }}</label
+        >
+        <span v-if="statusResetPassword">
+          -
+          <span :class="'uzh-status-' + statusResetPasswordType">{{ statusResetPassword }}</span></span
         >
       </div>
-      <button>{{ wgULS('执行选定的操作', '執行選定的操作') }}</button>
+      <button @click.prevent="runActions">
+        {{ wgULS('执行选定的操作', '執行選定的操作') }}
+      </button>
     </fieldset>
 
     <fieldset>
       <legend>{{ wgULS('回复邮件', '回覆郵件') }}</legend>
       <div>
         <label class="uzh-inline-options">
-          <input
-            v-model="mailOptionsUsername"
-            :value="MAILOP_NOUSERNAME"
-            type="radio"
-          />
+          <input v-model="mailOptionsUsername" :value="MAILOP_NOUSERNAME" type="radio" />
           {{ wgULS('未给用户名', '未給使用者名稱') }}</label
         >
         <label class="uzh-inline-options">
-          <input
-            v-model="mailOptionsUsername"
-            :value="MAILOP_USERNAMEUSED"
-            type="radio"
-          />
+          <input v-model="mailOptionsUsername" :value="MAILOP_USERNAMEUSED" type="radio" />
           {{ wgULS('用户名已被占用', '使用者名稱已被占用') }}</label
         >
         <label class="uzh-inline-options">
-          <input
-            v-model="mailOptionsUsername"
-            :value="MAILOP_ACCOUNTCREATED"
-            type="radio"
-          />
+          <input v-model="mailOptionsUsername" :value="MAILOP_ACCOUNTCREATED" type="radio" />
           {{ wgULS('已创建账户', '已建立帳號') }}</label
         >
         <label class="uzh-inline-options">
-          <input
-            v-model="mailOptionsUsername"
-            :value="MAILOP_ACCOUNTLOCAL"
-            type="radio"
-          />
+          <input v-model="mailOptionsUsername" :value="MAILOP_ACCOUNTLOCAL" type="radio" />
           {{ wgULS('已强制创建本地账户', '已強制建立本地帳號') }}</label
         >
         <label class="uzh-inline-options">
@@ -226,12 +210,7 @@
           {{ wgULS('繁体', '繁體') }}</label
         >
       </div>
-      <textarea
-        v-model="mailContent"
-        readonly
-        rows="8"
-        @click="$event.target.select()"
-      ></textarea>
+      <textarea v-model="mailContent" readonly rows="8" @click="$event.target.select()"></textarea>
     </fieldset>
   </div>
 </template>
@@ -246,15 +225,24 @@ export default {
       inputGrantIpbe: true,
       inputResetPassword: false,
       username: '',
+      email: '',
       ip: '',
       archiveUrl: '',
-      cancreate: false,
-      needsCreateLocal: false,
+      accountStatus: '',
       normalizedUsername: '',
       blocked: false,
       blockBy: '',
       blockReason: '',
       actionOptions: [],
+      summary: '',
+      statusCreateAcccountType: 'info',
+      statusCreateAcccount: '',
+      statusCreateLocalType: 'info',
+      statusCreateLocal: '',
+      statusGrantIpbeType: 'info',
+      statusGrantIpbe: '',
+      statusResetPasswordType: 'info',
+      statusResetPassword: '',
       mailOptionsUsername: '',
       mailOptionsIpbe: '',
       mailOptionsResetPassword: false,
@@ -266,34 +254,22 @@ export default {
       const useUsernameChecker =
         this.resULS('请务必使用', '請務必使用') +
         ' https://zhwiki-username-check.toolforge.org ' +
-        this.resULS(
-          '来确认您想要注册的用户名是否可用。',
-          '來確認您想要註冊的使用者名稱是否可用。'
-        );
+        this.resULS('来确认您想要注册的用户名是否可用。', '來確認您想要註冊的使用者名稱是否可用。');
 
       let links = [];
       let text = '您好：\n\n';
       if (this.mailOptionsUsername === this.MAILOP_NOUSERNAME) {
         if (this.inputCreateAccount) {
           text +=
-            this.resULS(
-              '请告知您想要的用户名，“不要提供密码”。',
-              '請告知您想要的使用者名稱，「不要提供密碼」。'
-            ) +
+            this.resULS('请告知您想要的用户名，“不要提供密码”。', '請告知您想要的使用者名稱，「不要提供密碼」。') +
             useUsernameChecker +
             '。\n';
         } else {
           links.push('https://w.wiki/4oNy');
           text +=
-            this.resULS(
-              '请告知您的用户名（登录后从参数设置查看[',
-              '請告知您的使用者名稱（登入後從偏好設定檢視['
-            ) +
+            this.resULS('请告知您的用户名（登录后从参数设置查看[', '請告知您的使用者名稱（登入後從偏好設定檢視[') +
             links.length +
-            this.resULS(
-              ']，这不是电子邮件地址）\n',
-              ']，這不是電子郵件位址）\n'
-            );
+            this.resULS(']，这不是电子邮件地址）\n', ']，這不是電子郵件位址）\n');
           if (!this.inputResetPassword) {
             text +=
               this.resULS(
@@ -393,6 +369,10 @@ export default {
     },
   },
   created() {
+    this.ACCST_NOT_EXISTS = 'NotExists';
+    this.ACCST_BANNED = 'Banned';
+    this.ACCST_NEEDS_LOCAL = 'NeedsLocal';
+    this.ACCST_EXISTS = 'Exists';
     this.ACTOP_CREATEACCOUNT = 'CreateAccount';
     this.ACTOP_CREATELOCAL = 'CreateLocal';
     this.ACTOP_GRANTIPBE = 'GrantIpbe';
@@ -404,32 +384,41 @@ export default {
     this.MAILOP_NOIP = 'NoIp';
     this.MAILOP_IPNOTBLOCKED = 'IpNotBlocked';
     this.MAILOP_IPBEGRANTED = 'IpbeGranted';
+    this.SUMMARY_SUFFIX = '（使用[[User:Xiplus/js/unblock-zh-helper|unblock-zh-helper]]）';
   },
   methods: {
     checkInput() {
+      this.clearStatus();
       this.username = this.username.trim();
+      this.email = this.email.trim();
       this.ip = this.ip.trim();
       this.archiveUrl = this.archiveUrl.trim();
 
-      if (
-        this.ip &&
-        !mw.util.isIPAddress(this.ip, true) &&
-        !/^#\d+$/.test(this.ip)
-      ) {
+      if (this.ip && !mw.util.isIPAddress(this.ip, true) && !/^#\d+$/.test(this.ip)) {
         alert(wgULS('IP地址或封禁ID格式错误', 'IP地址或封鎖ID格式錯誤'));
         return;
       }
 
+      if (this.archiveUrl) {
+        let m = this.archiveUrl.match(
+          /https?:\/\/lists\.wikimedia\.org\/hyperkitty\/(list\/unblock-zh@lists\.wikimedia\.org\/(?:message|thread)\/[^/]+\/?)/
+        );
+        if (m) {
+          this.summary = '[[listarchive:' + m[1] + '|unblock-zh' + this.wgULS('申请', '申請') + ']]';
+        } else {
+          alert(wgULS('邮件存档URL格式错误', '郵件存檔URL格式錯誤'));
+          return;
+        }
+      }
       let tm = new Morebits.taskManager();
-      tm.add(this.checkUserCancreate, []);
+      tm.add(this.checkAccountStatus, []);
       tm.add(this.checkIpBlocks, []);
       tm.execute().then(this.showCheckResult);
     },
-    checkUserCancreate() {
+    checkAccountStatus() {
       let self = this;
 
-      self.cancreate = false;
-      self.needsCreateLocal = false;
+      self.accountStatus = '';
       self.normalizedUsername = '';
       if (!self.username) {
         return Promise.resolve();
@@ -444,8 +433,20 @@ export default {
         })
         .then(function (res) {
           let user = res.query.users[0];
-          self.cancreate = 'cancreate' in user;
-          self.needsCreateLocal = !self.cancreate && 'missing' in user;
+          if ('userid' in user) {
+            self.accountStatus = self.ACCST_EXISTS;
+          } else if ('invalid' in user) {
+            self.accountStatus = self.ACCST_BANNED;
+          } else if ('cancreateerror' in user) {
+            self.accountStatus = self.ACCST_NOT_EXISTS;
+            if (user['cancreateerror']['code'] === 'userexists') {
+              self.accountStatus = self.ACCST_NEEDS_LOCAL;
+            } else {
+              self.accountStatus = self.ACCST_BANNED;
+            }
+          } else {
+            self.accountStatus = self.ACCST_NOT_EXISTS;
+          }
           self.normalizedUsername = user.name;
         });
     },
@@ -492,16 +493,16 @@ export default {
     },
     showCheckResult() {
       this.actionOptions = [];
-      let canGrantIpbe = false;
+      let userToBeCreated = false;
       if (this.inputCreateAccount) {
         if (this.normalizedUsername) {
-          if (this.cancreate) {
+          if (this.accountStatus == this.ACCST_NOT_EXISTS) {
             this.actionOptions.push(this.ACTOP_CREATEACCOUNT);
             this.mailOptionsUsername = this.MAILOP_ACCOUNTCREATED;
-            canGrantIpbe = true;
-          } else if (this.needsCreateLocal) {
+            userToBeCreated = true;
+          } else if (this.accountStatus == this.ACCST_NEEDS_LOCAL) {
             this.actionOptions.push(this.ACTOP_CREATELOCAL);
-            canGrantIpbe = true;
+            userToBeCreated = true;
           } else {
             this.mailOptionsUsername = this.MAILOP_USERNAMEUSED;
           }
@@ -509,11 +510,16 @@ export default {
           this.mailOptionsUsername = this.MAILOP_NOUSERNAME;
         }
       }
-      if (this.inputGrantIpbe && this.ip && this.blocked && canGrantIpbe) {
+      if (
+        this.inputGrantIpbe &&
+        (this.accountStatus === this.ACCST_EXISTS || userToBeCreated) &&
+        this.ip &&
+        this.blocked
+      ) {
         this.actionOptions.push(this.ACTOP_GRANTIPBE);
       }
       if (this.inputResetPassword && this.username) {
-        if (!this.inputCreateAccount && this.needsCreateLocal) {
+        if (!this.inputCreateAccount && this.accountStatus == this.ACCST_NEEDS_LOCAL) {
           this.actionOptions.push(this.ACTOP_CREATELOCAL);
         }
         this.actionOptions.push(this.ACTOP_RESETPASSWORD);
@@ -530,7 +536,7 @@ export default {
         this.mailOptionsUsername = this.MAILOP_ACCOUNTLOCAL;
       } else if (this.inputCreateAccount) {
         if (this.normalizedUsername) {
-          if (!this.cancreate) {
+          if (this.accountStatus == this.ACCST_EXISTS) {
             this.mailOptionsUsername = this.MAILOP_USERNAMEUSED;
           }
         } else {
@@ -555,9 +561,163 @@ export default {
       }
     },
     autoMailOptionsResetPassword() {
-      this.mailOptionsResetPassword = this.actionOptions.includes(
-        this.ACTOP_RESETPASSWORD
-      );
+      this.mailOptionsResetPassword = this.actionOptions.includes(this.ACTOP_RESETPASSWORD);
+    },
+    runActions() {
+      this.clearStatus();
+
+      if (this.actionOptions.includes(this.ACTOP_CREATEACCOUNT)) {
+        console.log('create account');
+        if (!this.email) {
+          alert(wgULS('没有提供电子邮件地址', '沒有提供電子郵件地址'));
+          return;
+        }
+        this.createAccount();
+      }
+      if (this.actionOptions.includes(this.ACTOP_CREATELOCAL)) {
+        console.log('create local');
+        this.createLocal();
+      }
+      if (this.actionOptions.includes(this.ACTOP_GRANTIPBE)) {
+        console.log('grant ipbe');
+        this.grantIpbe();
+      }
+      if (this.actionOptions.includes(this.ACTOP_RESETPASSWORD)) {
+        console.log('reset password');
+        this.resetPassword();
+      }
+    },
+    createAccount() {
+      let self = this;
+
+      if (!self.normalizedUsername) {
+        return Promise.resolve();
+      }
+      return api.getToken('createaccount').then(function (token) {
+        api
+          .post({
+            action: 'createaccount',
+            username: self.normalizedUsername,
+            email: self.email,
+            realname: '',
+            mailpassword: '1',
+            reason: this.summary,
+            createreturnurl: 'https:' + mw.config.get('wgServer'),
+            createtoken: token,
+          })
+          .done(function (data) {
+            console.log(data);
+            if (data.createaccount.status === 'FAIL') {
+              self.statusCreateAcccountType = 'error';
+              self.statusCreateAcccount = data.createaccount.message;
+            } else if (data.createaccount.status === 'PASS') {
+              self.statusCreateAcccountType = 'success';
+              self.statusCreateAcccount = wgULS('成功创建', '成功建立');
+            } else {
+              self.statusCreateAcccountType = 'error';
+              self.statusCreateAcccount = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+              // console.error(data);
+            }
+            return Promise.resolve();
+          })
+          .fail(function (code, error) {
+            console.error(error);
+            self.statusCreateAcccountType = 'error';
+            if (error.error && error.error.info) {
+              self.statusCreateAcccount = error.error.info;
+            } else {
+              self.statusCreateAcccount = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+            }
+            return Promise.resolve();
+          });
+      });
+    },
+    createLocal() {
+      let self = this;
+
+      if (!self.normalizedUsername) {
+        return Promise.resolve();
+      }
+      return api
+        .postWithToken({
+          action: 'createlocalaccount',
+          username: self.normalizedUsername,
+          reason: self.summary,
+        })
+        .done(function (data) {
+          console.log(data);
+          self.statusCreateLocalType = 'success';
+          self.statusCreateLocal = wgULS('成功创建本地账户', '成功建立本地帳號');
+          return Promise.resolve();
+        })
+        .fail(function (code, error) {
+          console.error(error);
+          self.statusCreateLocalType = 'error';
+          if (error.error && error.error.info) {
+            self.statusCreateLocal = error.error.info;
+          } else {
+            self.statusCreateLocal = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+          }
+          return Promise.resolve();
+        });
+    },
+    grantIpbe() {
+      let self = this;
+
+      return api
+        .postWithToken('userrights', {
+          action: 'userrights',
+          user: self.normalizedUsername,
+          add: 'ipblock-exempt',
+          expiry: 'infinite',
+          reason: '+' + wgULS('IP封禁豁免', 'IP封鎖例外') + '，' + self.summary + self.SUMMARY_SUFFIX,
+        })
+        .done(function (data) {
+          console.log(data);
+          self.statusGrantIpbeType = 'success';
+          self.statusGrantIpbe = '成功授予';
+          return Promise.resolve();
+        })
+        .fail(function (code, error) {
+          console.error(error);
+          self.statusGrantIpbeType = 'error';
+          if (error.error && error.error.info) {
+            self.statusGrantIpbe = error.error.info;
+          } else {
+            self.statusGrantIpbe = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+          }
+          return Promise.resolve();
+        });
+    },
+    resetPassword() {
+      let self = this;
+
+      return api
+        .postWithEditToken({
+          action: 'resetpassword',
+          user: self.normalizedUsername,
+        })
+        .done(function (data) {
+          console.log(data);
+          if (data.resetpassword.status === 'success') {
+            self.statusResetPasswordType = 'success';
+            self.statusResetPassword = wgULS('成功重置密码', '成功重設密碼');
+          } else {
+            self.statusResetPasswordType = 'error';
+            self.statusResetPassword = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+          }
+          return Promise.resolve();
+        })
+        .fail(function (code, error) {
+          console.error(error);
+          self.statusResetPasswordType = 'error';
+          if (error.error && error.error.info) {
+            self.statusResetPassword = error.error.info;
+          } else {
+            self.statusResetPassword = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+          }
+          return Promise.resolve();
+        });
     },
     resULS(hans, hant) {
       if (this.mailOptionsVariant === 'hans') {
@@ -565,8 +725,17 @@ export default {
       }
       return hant;
     },
+    clearStatus() {
+      this.statusCreateAcccountType =
+        this.statusCreateLocalType =
+        this.statusGrantIpbeType =
+        this.statusResetPasswordType =
+          'info';
+      this.statusCreateAcccount = this.statusCreateLocal = this.statusGrantIpbe = this.statusResetPassword = '';
+    },
     resetUserData() {},
     wgULS: window.wgULS,
+    getUrl: mw.util.getUrl,
   },
 };
 </script>
