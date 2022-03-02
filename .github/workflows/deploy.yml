@@ -35,3 +35,4 @@ jobs:
           chmod 600 user-password.py
           python3 deploy.py --file dist/unblock-zh-helper.iife.js --target User:Xiplus/js/unblock-zh-helper/unblock-zh-helper.iife.js --summary "Deploying revision ${GITHUB_SHA}"
           python3 deploy.py --file dist/style.css --target User:Xiplus/js/unblock-zh-helper/style.css --summary "Deploying revision ${GITHUB_SHA}"
+          python3 deploy.py --file dist/load.js --target User:Xiplus/js/unblock-zh-helper/load.js --summary "Deploying revision ${GITHUB_SHA}"
