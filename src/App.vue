@@ -27,17 +27,16 @@
       <br />
       <label>
         {{ wgULS('用户名：', '使用者名稱：') }}
-        <input v-model="username" type="text" name="uzh-username" style="width: 400px" />
+        <input v-model="username" type="text" name="uzh-username" style="width: 200px" />
       </label>
-      <br />
-      <label>
+      <label style="margin-left: 10px">
         {{ wgULS('电子邮件地址：', '電子郵件地址：') }}
-        <input v-model="email" type="email" name="uzh-email" style="width: 400px" />
+        <input v-model="email" type="email" name="uzh-email" style="width: 300px" />
       </label>
       <br />
       <label>
         {{ wgULS('IP地址或封禁ID：', 'IP地址或封鎖ID：') }}
-        <input v-model="ip" type="text" name="uzh-ip" style="width: 400px" />
+        <input v-model="ip" type="text" name="uzh-ip" style="width: 300px" />
       </label>
       <br />
       <label>
