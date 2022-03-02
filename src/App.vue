@@ -65,7 +65,7 @@
         <li v-if="normalizedUsername && username != normalizedUsername" class="uzh-status-info">
           {{ wgULS('用户名被正规化为“', '使用者名稱被正規化為「') }}{{ this.normalizedUsername }}{{ wgULS('”', '」') }}
         </li>
-        <li v-if="normalizedUsername && accountStatus == ACCST_NOT_EXISTS" class="uzh-status-succress">
+        <li v-if="normalizedUsername && accountStatus == ACCST_NOT_EXISTS" class="uzh-status-success">
           {{ wgULS('账户可以创建', '帳號可以建立') }}
         </li>
         <li v-if="normalizedUsername && accountStatus == ACCST_NEEDS_LOCAL" class="uzh-status-success">
@@ -80,6 +80,9 @@
             target="_blank"
             >{{ wgULS('检查全域账户', '檢查全域帳號') }}</a
           >）
+        </li>
+        <li v-if="normalizedUsername && accountStatus == ACCST_BANNED" class="uzh-status-error">
+          {{ wgULS('此用户名被系统禁止', '此使用者名稱被系統禁止') }}
         </li>
         <li v-if="accountBlocked" class="uzh-status-error">
           <b
@@ -200,6 +203,10 @@
         <label class="uzh-inline-options">
           <input v-model="mailOptionsUsername" :value="MAILOP_USERNAMEUSED" type="radio" />
           {{ wgULS('用户名已被占用', '使用者名稱已被占用') }}</label
+        >
+        <label class="uzh-inline-options">
+          <input v-model="mailOptionsUsername" :value="MAILOP_USERNAMEBANNED" type="radio" />
+          {{ wgULS('用户名被系统禁止', '使用者名稱被系統禁止') }}</label
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsUsername" :value="MAILOP_ACCOUNTCREATED" type="radio" />
@@ -345,6 +352,14 @@ export default {
           ) +
           useUsernameChecker +
           '。\n';
+      } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEBANNED) {
+        text +=
+          this.resULS(
+            '您所指定的用户名被系统禁止。请提供另一个用户名，',
+            '您所指定的使用者名稱被系統禁止。請提供另一個使用者名稱，'
+          ) +
+          useUsernameChecker +
+          '。\n';
       } else if (this.mailOptionsUsername === this.MAILOP_ACCOUNTCREATED) {
         text += this.resULS(
           '已代为注册账户，账户的随机密码用另一封邮件寄出，随机密码的有效期限仅有7天，请尽速登录修改密码。\n',
@@ -438,6 +453,7 @@ export default {
     this.ACTOP_RESETPASSWORD = 'ResetPassword';
     this.MAILOP_NOUSERNAME = 'NoUsername';
     this.MAILOP_USERNAMEUSED = 'UsernameUsed';
+    this.MAILOP_USERNAMEBANNED = 'UsernameBanned';
     this.MAILOP_ACCOUNTCREATED = 'AccountCreated';
     this.MAILOP_ACCOUNTLOCAL = 'AccountLocal';
     this.MAILOP_NOIP = 'NoIp';
@@ -574,7 +590,9 @@ export default {
           } else if (this.accountStatus == this.ACCST_NEEDS_LOCAL) {
             this.actionOptions.push(this.ACTOP_CREATELOCAL);
             userToBeCreated = true;
-          } else {
+          } else if (this.accountStatus == this.ACCST_BANNED) {
+            this.mailOptionsUsername = this.MAILOP_USERNAMEBANNED;
+          } else if (this.accountStatus == this.ACCST_EXISTS) {
             this.mailOptionsUsername = this.MAILOP_USERNAMEUSED;
           }
         } else {
@@ -610,6 +628,8 @@ export default {
         if (this.normalizedUsername) {
           if (this.accountStatus == this.ACCST_EXISTS) {
             this.mailOptionsUsername = this.MAILOP_USERNAMEUSED;
+          } else if (this.accountStatus == this.ACCST_BANNED) {
+            this.mailOptionsUsername = this.MAILOP_USERNAMEBANNED;
           }
         } else {
           this.mailOptionsUsername = this.MAILOP_NOUSERNAME;
