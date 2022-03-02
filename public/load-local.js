@@ -8,7 +8,15 @@ if (
 	$('#mw-content-text').html('<div id="app"></div>');
 
 	mw.loader.using(['ext.gadget.site-lib', 'ext.gadget.morebits', 'mediawiki.api'], function () {
-		mw.loader.load('https://zh.wikipedia.org/w/index.php?title=User:Xiplus/js/unblock-zh-helper/style.css&action=raw&ctype=text/css', 'text/css');
-		mw.loader.load('https://zh.wikipedia.org/w/index.php?title=User:Xiplus/js/unblock-zh-helper/unblock-zh-helper.iife.js&action=raw&ctype=text/javascript');
+		mw.loader.load('http://localhost:3000/dist/style.css', 'text/css');
+		mw.loader.load('http://localhost:3000/dist/unblock-zh-helper.iife.js');
 	});
 }
+
+/*
+
+Usage:
+
+mw.loader.load('http://localhost:3000/dist/load-local.js');
+
+*/

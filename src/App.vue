@@ -27,7 +27,7 @@
       <br />
       <label>
         {{ wgULS('电子邮件地址：', '電子郵件地址：') }}
-        <input v-model="email" type="email" autocomplete="off" name="uzh-email" style="width: 400px" />
+        <input v-model="email" type="email" name="uzh-email" style="width: 400px" />
       </label>
       <br />
       <label>
@@ -49,7 +49,9 @@
           />
         </span>
       </label>
-      <button @click.prevent="checkInput">{{ wgULS('检查', '檢查') }}</button>
+      <button @click.prevent="checkInput">
+        {{ wgULS('检查信息', '檢查資訊') }}
+      </button>
     </fieldset>
 
     <fieldset>
@@ -132,6 +134,26 @@
           <span :class="'uzh-status-' + statusGrantIpbeType">{{ statusGrantIpbe }}</span></span
         >
       </div>
+      <div v-if="username" style="padding-left: 10px">
+        <label>
+          <input v-model="actionOptions" :value="ACTOP_NOTICEIPBE" type="checkbox" />
+          {{ wgULS('发送授权通知', '發送授權通知') }}</label
+        >
+        <span v-if="statusNoticeIpbe">
+          -
+          <span :class="'uzh-status-' + statusNoticeIpbeType">{{ statusNoticeIpbe }}</span></span
+        >
+      </div>
+      <div v-if="username" style="padding-left: 10px">
+        <label>
+          <input v-model="actionOptions" :value="ACTOP_RFIPBE" type="checkbox" />
+          {{ wgULS('在WP:RFIPBE备案', '在WP:RFIPBE備案') }}</label
+        >
+        <span v-if="statusRfIpbe">
+          -
+          <span :class="'uzh-status-' + statusRfIpbeType">{{ statusRfIpbe }}</span></span
+        >
+      </div>
       <div v-if="username">
         <label>
           <input
@@ -209,8 +231,10 @@
           <input v-model="mailOptionsVariant" value="hant" type="radio" />
           {{ wgULS('繁体', '繁體') }}</label
         >
+        <button @click.prevent="copyMailContent">{{ wgULS('复制以下内容', '複製以下內容') }}</button>
+        <span v-if="copyTimeoutId"> - {{ wgULS('已复制！', '已複製！') }}</span>
       </div>
-      <textarea v-model="mailContent" readonly rows="8" @click="$event.target.select()"></textarea>
+      <textarea v-model="mailContent" id="uzh-mail-content" readonly rows="8"></textarea>
     </fieldset>
   </div>
 </template>
@@ -241,12 +265,17 @@ export default {
       statusCreateLocal: '',
       statusGrantIpbeType: 'info',
       statusGrantIpbe: '',
+      statusNoticeIpbeType: 'info',
+      statusNoticeIpbe: '',
+      statusRfIpbeType: 'info',
+      statusRfIpbe: '',
       statusResetPasswordType: 'info',
       statusResetPassword: '',
       mailOptionsUsername: '',
       mailOptionsIpbe: '',
       mailOptionsResetPassword: false,
       mailOptionsVariant: 'hans',
+      copyTimeoutId: null,
     };
   },
   computed: {
@@ -376,6 +405,8 @@ export default {
     this.ACTOP_CREATEACCOUNT = 'CreateAccount';
     this.ACTOP_CREATELOCAL = 'CreateLocal';
     this.ACTOP_GRANTIPBE = 'GrantIpbe';
+    this.ACTOP_NOTICEIPBE = 'NoticeIpbe';
+    this.ACTOP_RFIPBE = 'RfIpbe';
     this.ACTOP_RESETPASSWORD = 'ResetPassword';
     this.MAILOP_NOUSERNAME = 'NoUsername';
     this.MAILOP_USERNAMEUSED = 'UsernameUsed';
@@ -416,14 +447,15 @@ export default {
       tm.execute().then(this.showCheckResult);
     },
     checkAccountStatus() {
+      let def = $.Deferred();
       let self = this;
 
       self.accountStatus = '';
       self.normalizedUsername = '';
       if (!self.username) {
-        return Promise.resolve();
+        return def.resolve();
       }
-      return api
+      api
         .get({
           action: 'query',
           format: 'json',
@@ -448,16 +480,19 @@ export default {
             self.accountStatus = self.ACCST_NOT_EXISTS;
           }
           self.normalizedUsername = user.name;
+          def.resolve();
         });
+      return def;
     },
     checkIpBlocks() {
+      let def = $.Deferred();
       let self = this;
 
       self.blocked = false;
       self.blockBy = '';
       self.blockReason;
       if (!self.ip) {
-        return Promise.resolve();
+        return def.resolve();
       }
       let query = {
         action: 'query',
@@ -476,20 +511,22 @@ export default {
       } else {
         return Promise.resolve();
       }
-      return api.get(query).then(function (res) {
+      api.get(query).then(function (res) {
         if (res.query.blocks.length > 0) {
           self.blocked = true;
           self.blockBy = res.query.blocks[0].by;
           self.blockReason = res.query.blocks[0].reason;
-          return;
+          return def.resolve();
         }
         if (res.query.globalblocks.length > 0) {
           self.blocked = true;
           self.blockBy = res.query.globalblocks[0].by;
           self.blockReason = res.query.globalblocks[0].reason;
-          return;
+          return def.resolve();
         }
+        return def.resolve();
       });
+      return def;
     },
     showCheckResult() {
       this.actionOptions = [];
@@ -548,7 +585,17 @@ export default {
       this.mailOptionsIpbe = '';
       if (this.actionOptions.includes(this.ACTOP_GRANTIPBE)) {
         this.mailOptionsIpbe = this.MAILOP_IPBEGRANTED;
+        if (!this.actionOptions.includes(this.ACTOP_NOTICEIPBE)) {
+          this.actionOptions.push(this.ACTOP_NOTICEIPBE);
+        }
+        if (!this.actionOptions.includes(this.ACTOP_RFIPBE)) {
+          this.actionOptions.push(this.ACTOP_RFIPBE);
+        }
       } else {
+        console.log(this.actionOptions);
+        this.actionOptions = this.actionOptions.filter((key) => key !== this.ACTOP_NOTICEIPBE);
+        this.actionOptions = this.actionOptions.filter((key) => key !== this.ACTOP_RFIPBE);
+        console.log(this.actionOptions);
         if (this.inputGrantIpbe) {
           if (this.ip) {
             if (!this.blocked) {
@@ -566,34 +613,47 @@ export default {
     runActions() {
       this.clearStatus();
 
-      if (this.actionOptions.includes(this.ACTOP_CREATEACCOUNT)) {
-        console.log('create account');
-        if (!this.email) {
-          alert(wgULS('没有提供电子邮件地址', '沒有提供電子郵件地址'));
-          return;
+      if (this.actionOptions.length === 0) {
+        alert(wgULS('没什么好做的', '沒什麼好做的'));
+        return;
+      }
+      if (!this.summary) {
+        alert(wgULS('请输入日志摘要', '請輸入日誌摘要'));
+        return;
+      }
+      if (this.actionOptions.includes(this.ACTOP_CREATEACCOUNT) && !this.email) {
+        alert(wgULS('没有提供电子邮件地址', '沒有提供電子郵件地址'));
+        return;
+      }
+
+      let tm = new Morebits.taskManager();
+      tm.add(this.createAccount, []);
+      tm.add(this.createLocal, []);
+      tm.add(this.grantIpbe, [this.createAccount, this.createLocal]);
+      tm.add(this.NoticeIpbe, [this.grantIpbe], () => {
+        if (this.actionOptions.includes(this.ACTOP_NOTICEIPBE)) {
+          this.statusNoticeIpbeType = 'error';
+          this.statusNoticeIpbe = wgULS('由于授权失败，此操作已自动取消', '由於授權失敗，此操作已自動取消');
         }
-        this.createAccount();
-      }
-      if (this.actionOptions.includes(this.ACTOP_CREATELOCAL)) {
-        console.log('create local');
-        this.createLocal();
-      }
-      if (this.actionOptions.includes(this.ACTOP_GRANTIPBE)) {
-        console.log('grant ipbe');
-        this.grantIpbe();
-      }
-      if (this.actionOptions.includes(this.ACTOP_RESETPASSWORD)) {
-        console.log('reset password');
-        this.resetPassword();
-      }
+      });
+      tm.add(this.RfIpbe, [this.grantIpbe], () => {
+        if (this.actionOptions.includes(this.ACTOP_RFIPBE)) {
+          this.statusRfIpbeType = 'error';
+          this.statusRfIpbe = wgULS('由于授权失败，此操作已自动取消', '由於授權失敗，此操作已自動取消');
+        }
+      });
+      tm.add(this.resetPassword, [this.createAccount, this.createLocal]);
+      tm.execute();
     },
     createAccount() {
+      let def = $.Deferred();
       let self = this;
 
-      if (!self.normalizedUsername) {
-        return Promise.resolve();
+      console.log('Run createAccount');
+      if (!self.actionOptions.includes(this.ACTOP_CREATEACCOUNT) || !self.normalizedUsername) {
+        return def.resolve();
       }
-      return api.getToken('createaccount').then(function (token) {
+      api.getToken('createaccount').then(function (token) {
         api
           .post({
             action: 'createaccount',
@@ -601,7 +661,7 @@ export default {
             email: self.email,
             realname: '',
             mailpassword: '1',
-            reason: this.summary,
+            reason: self.summary,
             createreturnurl: 'https:' + mw.config.get('wgServer'),
             createtoken: token,
           })
@@ -618,7 +678,7 @@ export default {
               self.statusCreateAcccount = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
               // console.error(data);
             }
-            return Promise.resolve();
+            def.resolve();
           })
           .fail(function (code, error) {
             console.error(error);
@@ -628,17 +688,20 @@ export default {
             } else {
               self.statusCreateAcccount = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
             }
-            return Promise.resolve();
+            def.reject();
           });
       });
+      return def;
     },
     createLocal() {
+      let def = $.Deferred();
       let self = this;
 
-      if (!self.normalizedUsername) {
-        return Promise.resolve();
+      console.log('Run createLocal');
+      if (!this.actionOptions.includes(this.ACTOP_CREATELOCAL) || !self.normalizedUsername) {
+        return def.resolve();
       }
-      return api
+      api
         .postWithToken({
           action: 'createlocalaccount',
           username: self.normalizedUsername,
@@ -648,7 +711,7 @@ export default {
           console.log(data);
           self.statusCreateLocalType = 'success';
           self.statusCreateLocal = wgULS('成功创建本地账户', '成功建立本地帳號');
-          return Promise.resolve();
+          def.resolve();
         })
         .fail(function (code, error) {
           console.error(error);
@@ -658,13 +721,19 @@ export default {
           } else {
             self.statusCreateLocal = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
           }
-          return Promise.resolve();
+          def.reject();
         });
+      return def;
     },
     grantIpbe() {
+      let def = $.Deferred();
       let self = this;
 
-      return api
+      console.log('Run grantIpbe');
+      if (!this.actionOptions.includes(this.ACTOP_GRANTIPBE)) {
+        return def.resolve();
+      }
+      api
         .postWithToken('userrights', {
           action: 'userrights',
           user: self.normalizedUsername,
@@ -676,7 +745,7 @@ export default {
           console.log(data);
           self.statusGrantIpbeType = 'success';
           self.statusGrantIpbe = '成功授予';
-          return Promise.resolve();
+          def.resolve();
         })
         .fail(function (code, error) {
           console.error(error);
@@ -686,13 +755,165 @@ export default {
           } else {
             self.statusGrantIpbe = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
           }
-          return Promise.resolve();
+          def.reject();
         });
+      return def;
     },
-    resetPassword() {
+    NoticeIpbe() {
+      let def = $.Deferred();
       let self = this;
 
-      return api
+      console.log('Run NoticeIpbe');
+      if (!this.actionOptions.includes(this.ACTOP_NOTICEIPBE)) {
+        return def.resolve();
+      }
+      let message = '{{subst:Ipexempt granted}}';
+      let usertalk = 'User talk:' + self.normalizedUsername;
+      api
+        .get({
+          action: 'query',
+          prop: 'info',
+          titles: usertalk,
+          formatversion: 2,
+        })
+        .done(function (data) {
+          var page = data.query.pages[0];
+          if (page.missing !== undefined) {
+            api
+              .create(
+                usertalk,
+                { summary: wgULS('授予IP封禁豁免权通知', '授予IP封鎖例外權通知') + self.SUMMARY_SUFFIX },
+                message
+              )
+              .done(function (data) {
+                console.log(data);
+                self.statusNoticeIpbeType = 'success';
+                self.statusNoticeIpbe = '成功通知';
+                def.resolve();
+              })
+              .fail(function (code, error) {
+                console.error(error);
+                self.statusNoticeIpbeType = 'error';
+                if (error.error && error.error.info) {
+                  self.statusNoticeIpbe = error.error.info;
+                } else {
+                  self.statusNoticeIpbe = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+                }
+                def.reject();
+              });
+          } else if (page.contentmodel == 'flow-board') {
+            api
+              .postWithEditToken({
+                action: 'flow',
+                page: usertalk,
+                submodule: 'new-topic',
+                nttopic: wgULS('授予IP封禁豁免权通知', '授予IP封鎖例外權通知'),
+                ntcontent: message,
+                ntformat: 'wikitext',
+              })
+              .done(function (data) {
+                console.log(data);
+                self.statusNoticeIpbeType = 'success';
+                self.statusNoticeIpbe = '成功通知';
+                def.resolve();
+              })
+              .fail(function (code, error) {
+                console.error(error);
+                self.statusNoticeIpbeType = 'error';
+                if (error.error && error.error.info) {
+                  self.statusNoticeIpbe = error.error.info;
+                } else {
+                  self.statusNoticeIpbe = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+                }
+                def.reject();
+              });
+          } else {
+            api
+              .edit(usertalk, function (revision) {
+                return {
+                  text: (revision.content + '\n\n' + message).trim(),
+                  summary: wgULS('授予IP封禁豁免权通知', '授予IP封鎖例外權通知') + self.SUMMARY_SUFFIX,
+                };
+              })
+              .done(function (data) {
+                console.log(data);
+                self.statusNoticeIpbeType = 'success';
+                self.statusNoticeIpbe = '成功通知';
+                def.resolve();
+              })
+              .fail(function (code, error) {
+                console.error(error);
+                self.statusNoticeIpbeType = 'error';
+                if (error.error && error.error.info) {
+                  self.statusNoticeIpbe = error.error.info;
+                } else {
+                  self.statusNoticeIpbe = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+                }
+                def.reject();
+              });
+          }
+        });
+      return def;
+    },
+    RfIpbe() {
+      let def = $.Deferred();
+      let self = this;
+
+      console.log('Run RfIpbe');
+      if (!this.actionOptions.includes(this.ACTOP_RFIPBE)) {
+        return def.resolve();
+      }
+      api
+        .edit('Wikipedia:權限申請/申請IP封禁例外權', function (revision) {
+          let content =
+            '{{subst:rfp|' +
+            self.normalizedUsername +
+            '|2=' +
+            wgULS('经由', '經由') +
+            self.summary +
+            wgULS('的授权备案', '的授權備案') +
+            '。|status=+}}--~~~~';
+          let summary =
+            '[[Special:UserRights/' +
+            self.normalizedUsername +
+            '|' +
+            '授予' +
+            self.normalizedUsername +
+            wgULS('IP封禁豁免权', 'IP封鎖例外權') +
+            ']]' +
+            wgULS('备案', '備案');
+          return {
+            text: revision.content + '\n\n' + content,
+            summary: summary + self.SUMMARY_SUFFIX,
+          };
+        })
+        .done(function (data) {
+          console.log(data);
+          self.statusRfIpbeType = 'success';
+          self.statusRfIpbe = wgULS('成功备案', '成功備案');
+          def.resolve();
+        })
+        .fail(function (code, error) {
+          console.error(error);
+          self.statusRfIpbeType = 'error';
+          if (error.error && error.error.info) {
+            self.statusRfIpbe = error.error.info;
+          } else {
+            self.statusRfIpbe = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+          }
+          def.reject();
+        });
+      return def;
+    },
+    resetPassword() {
+      let def = $.Deferred();
+      let self = this;
+
+      console.log('Run resetPassword');
+      if (!this.actionOptions.includes(this.ACTOP_RESETPASSWORD)) {
+        return def.resolve();
+      }
+      api
         .postWithEditToken({
           action: 'resetpassword',
           user: self.normalizedUsername,
@@ -706,7 +927,7 @@ export default {
             self.statusResetPasswordType = 'error';
             self.statusResetPassword = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
           }
-          return Promise.resolve();
+          def.resolve();
         })
         .fail(function (code, error) {
           console.error(error);
@@ -716,8 +937,9 @@ export default {
           } else {
             self.statusResetPassword = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
           }
-          return Promise.resolve();
+          def.resolve();
         });
+      return def;
     },
     resULS(hans, hant) {
       if (this.mailOptionsVariant === 'hans') {
@@ -729,9 +951,39 @@ export default {
       this.statusCreateAcccountType =
         this.statusCreateLocalType =
         this.statusGrantIpbeType =
+        this.statusNoticeIpbeType =
+        this.statusRfIpbeType =
         this.statusResetPasswordType =
           'info';
-      this.statusCreateAcccount = this.statusCreateLocal = this.statusGrantIpbe = this.statusResetPassword = '';
+      this.statusCreateAcccount =
+        this.statusCreateLocal =
+        this.statusGrantIpbe =
+        this.statusNoticeIpbe =
+        this.statusRfIpbe =
+        this.statusResetPassword =
+          '';
+    },
+    copyMailContent() {
+      let self = this;
+
+      $('#uzh-mail-content').select();
+      let copied;
+      try {
+        copied = document.execCommand('copy');
+      } catch (e) {
+        copied = false;
+      }
+      document.getSelection().removeAllRanges();
+      if (copied) {
+        if (self.copyTimeoutId) {
+          clearTimeout(self.copyTimeoutId);
+        }
+        self.copyTimeoutId = setTimeout(() => {
+          self.copyTimeoutId = null;
+        }, 3000);
+      } else {
+        mw.notify(wgULS('复制失败', '複製失敗'), { type: 'error' });
+      }
     },
     resetUserData() {},
     wgULS: window.wgULS,
