@@ -134,7 +134,7 @@
           <span :class="'uzh-status-' + statusGrantIpbeType">{{ statusGrantIpbe }}</span></span
         >
       </div>
-      <div v-if="username" style="padding-left: 10px">
+      <div v-if="username" style="padding-left: 18px">
         <label>
           <input v-model="actionOptions" :value="ACTOP_NOTICEIPBE" type="checkbox" />
           {{ wgULS('发送授权通知', '發送授權通知') }}</label
@@ -144,7 +144,7 @@
           <span :class="'uzh-status-' + statusNoticeIpbeType">{{ statusNoticeIpbe }}</span></span
         >
       </div>
-      <div v-if="username" style="padding-left: 10px">
+      <div v-if="username" style="padding-left: 18px">
         <label>
           <input v-model="actionOptions" :value="ACTOP_RFIPBE" type="checkbox" />
           {{ wgULS('在WP:RFIPBE备案', '在WP:RFIPBE備案') }}</label
