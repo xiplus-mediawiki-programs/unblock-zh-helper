@@ -71,11 +71,23 @@
         <li v-if="normalizedUsername && accountStatus == ACCST_NEEDS_LOCAL" class="uzh-status-success">
           {{ wgULS('需要强制创建本地账户', '需要強制建立本地帳號') }}
         </li>
-        <li v-if="normalizedUsername && accountStatus == ACCST_EXISTS" class="uzh-status-error">
+        <li
+          v-if="normalizedUsername && accountStatus == ACCST_EXISTS"
+          :class="{ 'uzh-status-error': inputCreateAccount, 'uzh-status-success': !inputCreateAccount }"
+        >
           {{ wgULS('账户已被注册', '帳號已被註冊') }}（<a
             :href="getUrl('Special:CentralAuth', { target: normalizedUsername })"
             target="_blank"
             >{{ wgULS('检查全域账户', '檢查全域帳號') }}</a
+          >）
+        </li>
+        <li v-if="accountBlocked" class="uzh-status-error">
+          <b
+            >{{ wgULS('警告：账户被', '警告：帳號被') }}{{ accountBlockBy
+            }}{{ wgULS('封禁，原因为：', '封鎖，原因為：') }}{{ accountBlockReason }}</b
+          >（<a :href="getUrl('Special:Log/block', { page: 'User:' + normalizedUsername })" target="_blank">{{
+            wgULS('封禁日志', '封鎖日誌')
+          }}</a
           >）
         </li>
         <li v-if="ipChecked && ip && blocked" class="uzh-status-success">
@@ -263,6 +275,9 @@ export default {
       archiveUrl: '',
       accountStatus: '',
       normalizedUsername: '',
+      accountBlocked: false,
+      accountBlockBy: '',
+      accountBlockReason: '',
       ipChecked: false,
       blocked: false,
       blockBy: '',
@@ -473,7 +488,7 @@ export default {
           action: 'query',
           format: 'json',
           list: 'users',
-          usprop: 'cancreate',
+          usprop: 'cancreate|blockinfo',
           ususers: self.username,
         })
         .then(function (res) {
@@ -493,6 +508,11 @@ export default {
             self.accountStatus = self.ACCST_NOT_EXISTS;
           }
           self.normalizedUsername = user.name;
+          if ('blockid' in user) {
+            self.accountBlocked = true;
+            self.accountBlockBy = user.blockedby;
+            self.accountBlockReason = user.blockreason;
+          }
           def.resolve();
         });
       return def;
@@ -565,7 +585,8 @@ export default {
         this.inputGrantIpbe &&
         (this.accountStatus === this.ACCST_EXISTS || userToBeCreated) &&
         this.ip &&
-        this.blocked
+        this.blocked &&
+        !this.accountBlocked
       ) {
         this.actionOptions.push(this.ACTOP_GRANTIPBE);
       }
@@ -1009,6 +1030,9 @@ export default {
       this.archiveUrl = '';
       this.summary = '';
       this.normalizedUsername = '';
+      this.accountBlocked = false;
+      this.accountBlocked = '';
+      this.accountBlockReason = '';
       this.ipChecked = false;
       this.accountStatus = '';
       this.actionOptions = [];
