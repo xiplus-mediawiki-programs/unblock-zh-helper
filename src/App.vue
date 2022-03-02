@@ -240,6 +240,11 @@
       </div>
       <textarea v-model="mailContent" id="uzh-mail-content" readonly rows="8"></textarea>
     </fieldset>
+
+    <fieldset>
+      <legend>{{ wgULS('调试', '除錯') }}</legend>
+      {{ allData }}
+    </fieldset>
   </div>
 </template>
 
@@ -284,6 +289,9 @@ export default {
     };
   },
   computed: {
+    allData() {
+      return this.$data;
+    },
     mailContent() {
       const useUsernameChecker =
         this.resULS('请务必使用', '請務必使用') +
