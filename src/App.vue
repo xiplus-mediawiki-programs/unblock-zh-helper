@@ -515,7 +515,7 @@ export default {
             self.accountStatus = self.ACCST_BANNED;
           } else if ('cancreateerror' in user) {
             self.accountStatus = self.ACCST_NOT_EXISTS;
-            if (user['cancreateerror']['code'] === 'userexists') {
+            if (user['cancreateerror'][0]['code'] === 'userexists') {
               self.accountStatus = self.ACCST_NEEDS_LOCAL;
             } else {
               self.accountStatus = self.ACCST_BANNED;
