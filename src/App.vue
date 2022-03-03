@@ -332,17 +332,23 @@ export default {
         ' https://zhwiki-username-check.toolforge.org ' +
         this.resULS('来确认您想要注册的用户名是否可用。', '來確認您想要註冊的使用者名稱是否可用。');
 
+      let text = '您好：\n';
+      let othertext = '';
       let links = [];
       let pleaseProvide = [];
       let pleaseProvideHeader = '';
       let pleaseProvideAppend = '';
-      let text = '您好：\n';
+
       if (this.mailOptionsUsername === this.MAILOP_NOUSERNAME) {
         if (this.inputCreateAccount) {
           pleaseProvide.push(
             this.resULS('您想要的用户名，“不要提供密码”。', '您想要的使用者名稱，「不要提供密碼」。') +
               useUsernameChecker +
               '\n'
+          );
+        } else if (this.inputResetPassword) {
+          pleaseProvide.push(
+            this.resULS('您的用户名，我们能协助您重置密码。\n', '您的使用者名稱，我們能協助您重設密碼。\n')
           );
         } else {
           links.push('https://w.wiki/4oNy');
@@ -351,18 +357,16 @@ export default {
               links.length +
               this.resULS(']，这不是电子邮件地址）\n', ']，這不是電子郵件位址）\n')
           );
-          if (!this.inputResetPassword) {
-            pleaseProvideAppend =
-              this.resULS(
-                '如果您没有账户且无法自行注册，请告知您想要的用户名，“不要提供密码”。',
-                '如果您沒有帳號且無法自行註冊，請告知您想要的使用者名稱，「不要提供密碼」。'
-              ) +
-              useUsernameChecker +
-              '\n';
-          }
+          pleaseProvideAppend =
+            this.resULS(
+              '如果您没有账户且无法自行注册，请告知您想要的用户名，“不要提供密码”。',
+              '如果您沒有帳號且無法自行註冊，請告知您想要的使用者名稱，「不要提供密碼」。'
+            ) +
+            useUsernameChecker +
+            '\n';
         }
       } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEUSED) {
-        text +=
+        othertext +=
           this.resULS(
             '您所指定的用户名已经被注册。请提供另一个用户名，',
             '您所指定的使用者名稱已經被註冊。請提供另一個使用者名稱，'
@@ -370,7 +374,7 @@ export default {
           useUsernameChecker +
           '\n';
       } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEBANNED) {
-        text +=
+        othertext +=
           this.resULS(
             '您所指定的用户名被系统禁止。请提供另一个用户名，',
             '您所指定的使用者名稱被系統禁止。請提供另一個使用者名稱，'
@@ -378,12 +382,12 @@ export default {
           useUsernameChecker +
           '\n';
       } else if (this.mailOptionsUsername === this.MAILOP_ACCOUNTCREATED) {
-        text += this.resULS(
+        othertext += this.resULS(
           '已代为注册账户，账户的随机密码用另一封邮件寄出，随机密码的有效期限仅有7天，请尽速登录修改密码。\n',
           '已代為註冊帳戶，帳戶的隨機密碼用另一封郵件寄出，隨機密碼的有效期限僅有7天，請盡速登入修改密碼。\n'
         );
       } else if (this.mailOptionsUsername === this.MAILOP_ACCOUNTLOCAL) {
-        text += this.resULS(
+        othertext += this.resULS(
           '由于您先前于中文维基百科以外的站点注册，已为您的账户强制创建在中文维基百科的本地账户，您可以使用相同的账户密码登录。\n',
           '由於您先前於中文維基百科以外的站點註冊，已為您的帳號強制建立在中文維基百科的本地帳號，您可以使用相同的帳號密碼登入。\n'
         );
@@ -404,24 +408,24 @@ export default {
           )
         );
       } else if (this.mailOptionsIpbe === this.MAILOP_IPNOTBLOCKED) {
-        text += this.resULS(
+        othertext += this.resULS(
           '您所给的IP地址未被封禁，请确认正确的IP地址后再回信，您可在告知被封禁页面看到“您当前的IP地址是xxxx”，若您已经可以编辑，则不用回信。\n',
           '您所給的IP位址未被封鎖，請確認正確的IP位址後再回信，您可在告知被封鎖頁面看到「您目前的IP位址是xxxx」，若您已經可以編輯，則不用回信。\n'
         );
       } else if (this.mailOptionsIpbe === this.MAILOP_IPBEGRANTED) {
-        text += this.resULS(
+        othertext += this.resULS(
           '已授予您IP封禁豁免权限，登录后即可编辑页面。祝您编辑愉快。\n',
           '已授予您IP封鎖例外權限，登入後即可編輯頁面。祝您編輯愉快。\n'
         );
       }
 
       if (this.mailOptionsResetPassword) {
-        text += this.resULS(
+        othertext += this.resULS(
           '已协助重置密码，将会寄出重置密码的信件给您，随机密码的有效期限仅有7天，请尽速登录修改密码。\n如果没有收到邮件，请检查垃圾邮件匣，并确定您之前有在维基百科上登记您的电子邮件地址。\n',
           '已協助重設密碼，將會寄出重設密碼的信件給您，隨機密碼的有效期限僅有7天，請盡速登入修改密碼。\n如果沒有收到郵件，請檢查垃圾郵件匣，並確定您之前有在維基百科上登記您的電子郵件位址。\n'
         );
         if (this.inputGrantIpbe && this.mailOptionsIpbe === '') {
-          text += this.resULS(
+          othertext += this.resULS(
             '在确定您能够登录您的账户后才会授予您IP封禁豁免权，请成功登录后再回信告知。\n',
             '在確定您能夠登入您的帳號後才會授予您IP封鎖例外權，請成功登入後再回信告知。\n'
           );
@@ -445,6 +449,7 @@ export default {
         );
       }
       text += pleaseProvideAppend;
+      text += othertext;
 
       if (links.length > 0) {
         text += '\n';
@@ -673,7 +678,13 @@ export default {
           this.mailOptionsUsername = this.MAILOP_NOUSERNAME;
         }
       } else if (this.inputBlockAppeal) {
-        this.mailOptionsUsername = this.MAILOP_NOUSERNAME;
+        if (!this.normalizedUsername) {
+          this.mailOptionsUsername = this.MAILOP_NOUSERNAME;
+        }
+      } else if (this.inputResetPassword) {
+        if (!this.normalizedUsername) {
+          this.mailOptionsUsername = this.MAILOP_NOUSERNAME;
+        }
       }
     },
     autoMailOptionsIpbe() {
