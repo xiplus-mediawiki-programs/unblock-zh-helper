@@ -70,7 +70,11 @@
           {{ wgULS('用户名被正规化为“', '使用者名稱被正規化為「') }}{{ this.normalizedUsername }}{{ wgULS('”', '」') }}
         </li>
         <li v-if="normalizedUsername && accountStatus == ACCST_NOT_EXISTS" class="uzh-status-success">
-          {{ wgULS('账户可以创建', '帳號可以建立') }}
+          {{ wgULS('账户可以创建', '帳號可以建立') }}（<a
+            :href="'https://www.google.com/search?q=' + encodeURIComponent(normalizedUsername)"
+            target="_blank"
+            >{{ wgULS('', 'Google搜尋') }}</a
+          >）
         </li>
         <li v-if="normalizedUsername && accountStatus == ACCST_NEEDS_LOCAL" class="uzh-status-success">
           {{ wgULS('需要强制创建本地账户', '需要強制建立本地帳號') }}
@@ -422,8 +426,8 @@ export default {
         );
       } else if (this.mailOptionsIpbe === this.MAILOP_IPNOTBLOCKED) {
         othertext += this.resULS(
-          '您所给的IP地址未被封禁，请确认正确的IP地址后再回信，您可在告知被封禁页面看到“您当前的IP地址是xxxx”，若您已经可以编辑，则不用回信。\n',
-          '您所給的IP位址未被封鎖，請確認正確的IP位址後再回信，您可在告知被封鎖頁面看到「您目前的IP位址是xxxx」，若您已經可以編輯，則不用回信。\n'
+          '您所给的IP地址未被封禁，请确认正确的IP地址或封禁ID后再回信，您可在告知被封禁页面看到“您当前的IP地址是xxxx，而该封禁ID是#xxxx。”，若您已经可以编辑，则不用回信。\n',
+          '您所給的IP位址未被封鎖，請確認正確的IP位址或封鎖ID後再回信，您可在告知被封鎖頁面看到「您目前的IP位址是xxxx，而該封鎖ID是#xxxx。」，若您已經可以編輯，則不用回信。\n'
         );
       } else if (this.mailOptionsIpbe === this.MAILOP_IPBEGRANTED) {
         othertext += this.resULS(
