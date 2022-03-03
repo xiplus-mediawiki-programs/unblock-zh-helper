@@ -243,7 +243,7 @@
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsIpbe" :value="MAILOP_MAYNEEDIPBE" type="radio" />
-          {{ wgULS('未给IP地址', '申請人可能需要IP封鎖例外權') }}</label
+          {{ wgULS('申请人可能需要IP封禁豁免权', '申請人可能需要IP封鎖例外權') }}</label
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsIpbe" value="" type="radio" />
@@ -254,6 +254,18 @@
         <label class="uzh-inline-options">
           <input v-model="mailOptionsResetPassword" type="checkbox" />
           {{ wgULS('已重置密码', '已重設密碼') }}</label
+        >
+        <label class="uzh-inline-options">
+          <input v-model="mailOptionsOther" :value="MAILOP_RANGEBLOCK" type="checkbox" />
+          {{ wgULS('段封禁', '段封鎖') }}</label
+        >
+        <label class="uzh-inline-options">
+          <input v-model="mailOptionsOther" :value="MAILOP_ENWIKIBLOCK" type="checkbox" />
+          {{ wgULS('英文维基封禁', '英文維基封鎖') }}</label
+        >
+        <label class="uzh-inline-options">
+          <input v-model="mailOptionsOther" :value="MAILOP_GIPBE" type="checkbox" />
+          {{ wgULS('全域封禁', '全域封鎖') }}</label
         >
         <br />
 
@@ -318,6 +330,7 @@ export default {
       mailOptionsUsername: '',
       mailOptionsIpbe: '',
       mailOptionsResetPassword: false,
+      mailOptionsOther: [],
       mailOptionsVariant: 'hans',
       copyTimeoutId: null,
     };
@@ -432,6 +445,32 @@ export default {
         }
       }
 
+      if (this.mailOptionsOther.includes(this.MAILOP_RANGEBLOCK)) {
+        othertext +=
+          this.resULS(
+            '由于有其他人使用此段IP地址对维基百科进行破坏，所以您使用这一个范围的IP地址已经被暂时封禁。\n如果您与破坏行为无关，请注册一个账户并登录后即可编辑。若您无法自行注册账户，请回信告知您想要的用户名及接收随机密码的邮件地址，“不要提供密码”。',
+            '由於有其他人使用此段IP位址對維基百科進行破壞，所以您使用這一個範圍的IP位址已經被暫時封鎖。\n如果您與破壞行為無關，請註冊一個帳戶並登入後即可編輯。若您無法自行註冊帳號，請回信告知您想要的使用者名稱及接收隨機密碼的郵件位址，「不要提供密碼」。'
+          ) +
+          useUsernameChecker +
+          '\n';
+      }
+      if (this.mailOptionsOther.includes(this.MAILOP_ENWIKIBLOCK)) {
+        othertext +=
+          this.resULS(
+            '由于各个语言的维基百科是各自独立管理的，这里仅能处理中文维基百科（zh.wikipedia.org）的问题，很抱歉帮不上忙。\n英文维基百科上的申诉请自行向英文维基百科申请，您可以参考',
+            '由於各個語言的維基百科是各自獨立管理的，這裡僅能處理中文維基百科（zh.wikipedia.org）的問題，很抱歉幫不上忙。\n英文維基百科上的申訴請自行向英文維基百科申請，您可以參考'
+          ) + ' https://w.wiki/4LnN 。\n';
+      }
+      if (this.mailOptionsOther.includes(this.MAILOP_ENWIKIBLOCK)) {
+        othertext +=
+          this.resULS(
+            '由于各个语言的维基百科是各自独立管理的，这里仅能处理中文维基百科（zh.wikipedia.org）的问题，很抱歉帮不上忙。\n若有需要全域IP封禁豁免权，请参考',
+            '由於各個語言的維基百科是各自獨立管理的，這裡僅能處理中文維基百科（zh.wikipedia.org）的問題，很抱歉幫不上忙。\n若有需要全域IP封鎖例外權，請參考'
+          ) +
+          ' https://w.wiki/4oNv ' +
+          this.resULS('申请。\n', '申請。\n');
+      }
+
       if (pleaseProvide.length === 1) {
         text += this.resULS('请告知', '請告知') + pleaseProvide[0];
       } else if (pleaseProvide.length > 1) {
@@ -502,6 +541,9 @@ export default {
     this.MAILOP_IPNOTBLOCKED = 'IpNotBlocked';
     this.MAILOP_IPBEGRANTED = 'IpbeGranted';
     this.MAILOP_MAYNEEDIPBE = 'MayNeedIpbe';
+    this.MAILOP_RANGEBLOCK = 'RangeBlock';
+    this.MAILOP_ENWIKIBLOCK = 'EnwikiBlock';
+    this.MAILOP_GIPBE = 'Gipbe';
     this.SUMMARY_SUFFIX = '（使用[[User:Xiplus/js/unblock-zh-helper|unblock-zh-helper]]）';
   },
   methods: {
@@ -1110,6 +1152,7 @@ export default {
       this.mailOptionsUsername = '';
       this.mailOptionsIpbe = '';
       this.mailOptionsResetPassword = false;
+      this.mailOptionsOther = [];
     },
     wgULS: window.wgULS,
     getUrl: mw.util.getUrl,
