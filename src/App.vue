@@ -195,6 +195,9 @@
       <button @click.prevent="runActions">
         {{ wgULS('执行选定的操作', '執行選定的操作') }}
       </button>
+      <a :href="getUrl('Special:RecentChanges', { hidebyothers: 1 })" target="_blank" style="margin-left: 10px">{{
+        wgULS('检查您的操作', '檢查您的操作')
+      }}</a>
     </fieldset>
 
     <fieldset>
