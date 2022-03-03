@@ -230,16 +230,20 @@
         <br />
 
         <label class="uzh-inline-options">
-          <input v-model="mailOptionsIpbe" value="NoIp" type="radio" />
+          <input v-model="mailOptionsIpbe" :value="MAILOP_NOIP" type="radio" />
           {{ wgULS('未给IP地址', '未給IP地址') }}</label
         >
         <label class="uzh-inline-options">
-          <input v-model="mailOptionsIpbe" value="IpNotBlocked" type="radio" />
+          <input v-model="mailOptionsIpbe" :value="MAILOP_IPNOTBLOCKED" type="radio" />
           {{ wgULS('所给IP未被封禁', '所給IP未被封鎖') }}</label
         >
         <label class="uzh-inline-options">
-          <input v-model="mailOptionsIpbe" value="IpbeGranted" type="radio" />
+          <input v-model="mailOptionsIpbe" :value="MAILOP_IPBEGRANTED" type="radio" />
           {{ wgULS('已授予IP封禁豁免权', '已授予IP封鎖例外權') }}</label
+        >
+        <label class="uzh-inline-options">
+          <input v-model="mailOptionsIpbe" :value="MAILOP_MAYNEEDIPBE" type="radio" />
+          {{ wgULS('未给IP地址', '申請人可能需要IP封鎖例外權') }}</label
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsIpbe" value="" type="radio" />
@@ -330,6 +334,7 @@ export default {
 
       let links = [];
       let pleaseProvide = [];
+      let pleaseProvideHeader = '';
       let pleaseProvideAppend = '';
       let text = '您好：\n';
       if (this.mailOptionsUsername === this.MAILOP_NOUSERNAME) {
@@ -384,7 +389,13 @@ export default {
         );
       }
 
-      if (this.mailOptionsIpbe === this.MAILOP_NOIP) {
+      if (this.mailOptionsIpbe === this.MAILOP_NOIP || this.mailOptionsIpbe === this.MAILOP_MAYNEEDIPBE) {
+        if (this.mailOptionsIpbe === this.MAILOP_MAYNEEDIPBE) {
+          pleaseProvideHeader = this.resULS(
+            '若登录后仍然无法编辑，请回信告知以下信息：\n',
+            '若登入後仍然無法編輯，請回信告知以下資訊：\n'
+          );
+        }
         pleaseProvide.push(this.resULS('被封禁的IP地址\n', '被封鎖的IP位址\n'));
         pleaseProvide.push(
           this.resULS(
@@ -420,7 +431,11 @@ export default {
       if (pleaseProvide.length === 1) {
         text += this.resULS('请告知', '請告知') + pleaseProvide[0];
       } else if (pleaseProvide.length > 1) {
-        text += this.resULS('请告知以下信息：\n', '請告知以下資訊：\n');
+        if (pleaseProvideHeader) {
+          text += pleaseProvideHeader;
+        } else {
+          text += this.resULS('请告知以下信息：\n', '請告知以下資訊：\n');
+        }
         for (let i = 0; i < pleaseProvide.length; i++) {
           text += '　' + (i + 1) + '. ' + pleaseProvide[i];
         }
@@ -481,6 +496,7 @@ export default {
     this.MAILOP_NOIP = 'NoIp';
     this.MAILOP_IPNOTBLOCKED = 'IpNotBlocked';
     this.MAILOP_IPBEGRANTED = 'IpbeGranted';
+    this.MAILOP_MAYNEEDIPBE = 'MayNeedIpbe';
     this.SUMMARY_SUFFIX = '（使用[[User:Xiplus/js/unblock-zh-helper|unblock-zh-helper]]）';
   },
   methods: {
