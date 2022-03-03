@@ -756,7 +756,7 @@ export default {
             email: self.email,
             realname: '',
             mailpassword: '1',
-            reason: self.summary,
+            reason: self.summary + self.SUMMARY_SUFFIX,
             createreturnurl: 'https:' + mw.config.get('wgServer'),
             createtoken: token,
           })
