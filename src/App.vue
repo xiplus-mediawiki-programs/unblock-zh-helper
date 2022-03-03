@@ -21,6 +21,10 @@
         {{ wgULS('授予IP封禁豁免权', '授予IP封鎖例外權') }}
       </label>
       <label class="uzh-inline-options">
+        <input v-model="inputBlockAppeal" type="checkbox" />
+        {{ wgULS('封禁申诉', '封鎖申訴') }}
+      </label>
+      <label class="uzh-inline-options">
         <input v-model="inputResetPassword" type="checkbox" />
         {{ wgULS('重置密码', '重設密碼') }}
       </label>
@@ -257,7 +261,7 @@
         <button @click.prevent="copyMailContent">{{ wgULS('复制以下内容', '複製以下內容') }}</button>
         <span v-if="copyTimeoutId"> - {{ wgULS('已复制！', '已複製！') }}</span>
       </div>
-      <textarea v-model="mailContent" id="uzh-mail-content" readonly rows="8"></textarea>
+      <textarea v-model="mailContent" id="uzh-mail-content" readonly rows="14"></textarea>
     </fieldset>
 
     <fieldset>
@@ -275,6 +279,7 @@ export default {
     return {
       inputCreateAccount: true,
       inputGrantIpbe: true,
+      inputBlockAppeal: false,
       inputResetPassword: false,
       username: '',
       email: '',
@@ -321,27 +326,31 @@ export default {
         this.resULS('来确认您想要注册的用户名是否可用。', '來確認您想要註冊的使用者名稱是否可用。');
 
       let links = [];
-      let text = '您好：\n\n';
+      let pleaseProvide = [];
+      let pleaseProvideAppend = '';
+      let text = '您好：\n';
       if (this.mailOptionsUsername === this.MAILOP_NOUSERNAME) {
         if (this.inputCreateAccount) {
-          text +=
-            this.resULS('请告知您想要的用户名，“不要提供密码”。', '請告知您想要的使用者名稱，「不要提供密碼」。') +
-            useUsernameChecker +
-            '。\n';
+          pleaseProvide.push(
+            this.resULS('您想要的用户名，“不要提供密码”。', '您想要的使用者名稱，「不要提供密碼」。') +
+              useUsernameChecker +
+              '\n'
+          );
         } else {
           links.push('https://w.wiki/4oNy');
-          text +=
-            this.resULS('请告知您的用户名（登录后从参数设置查看[', '請告知您的使用者名稱（登入後從偏好設定檢視[') +
-            links.length +
-            this.resULS(']，这不是电子邮件地址）\n', ']，這不是電子郵件位址）\n');
+          pleaseProvide.push(
+            this.resULS('您的用户名（如果有，登录后从参数设置查看[', '您的使用者名稱（如果有，登入後從偏好設定檢視[') +
+              links.length +
+              this.resULS(']，这不是电子邮件地址）\n', ']，這不是電子郵件位址）\n')
+          );
           if (!this.inputResetPassword) {
-            text +=
+            pleaseProvideAppend =
               this.resULS(
                 '如果您没有账户且无法自行注册，请告知您想要的用户名，“不要提供密码”。',
                 '如果您沒有帳號且無法自行註冊，請告知您想要的使用者名稱，「不要提供密碼」。'
               ) +
               useUsernameChecker +
-              '。\n';
+              '\n';
           }
         }
       } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEUSED) {
@@ -351,7 +360,7 @@ export default {
             '您所指定的使用者名稱已經被註冊。請提供另一個使用者名稱，'
           ) +
           useUsernameChecker +
-          '。\n';
+          '\n';
       } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEBANNED) {
         text +=
           this.resULS(
@@ -359,7 +368,7 @@ export default {
             '您所指定的使用者名稱被系統禁止。請提供另一個使用者名稱，'
           ) +
           useUsernameChecker +
-          '。\n';
+          '\n';
       } else if (this.mailOptionsUsername === this.MAILOP_ACCOUNTCREATED) {
         text += this.resULS(
           '已代为注册账户，账户的随机密码用另一封邮件寄出，随机密码的有效期限仅有7天，请尽速登录修改密码。\n',
@@ -373,17 +382,13 @@ export default {
       }
 
       if (this.mailOptionsIpbe === this.MAILOP_NOIP) {
-        text +=
-          this.resULS('请告知以下信息：\n', '請告知以下資訊：\n') +
-          this.resULS('　1. 被封禁的IP地址\n', '　1. 被封鎖的IP位址\n') +
+        pleaseProvide.push(this.resULS('被封禁的IP地址\n', '被封鎖的IP位址\n'));
+        pleaseProvide.push(
           this.resULS(
-            '　2. 封禁ID（如果有，可在告知被封禁页面看到“您当前的IP地址是xxxx，而该封禁ID是#xxxx。”，这不是用户名）\n',
-            '　2. 封鎖ID（如果有，可在告知被封鎖頁面看到「您目前的IP位址是xxxx，而該封鎖ID是#xxxx。」，這不是使用者名稱）\n'
-          ) +
-          this.resULS(
-            '以让我们做下一步处理（复制您看到的文字对我们处理较为方便，请避免使用截图）。\n',
-            '以讓我們做下一步處理（複製您看到的文字對我們處理較為方便，請避免使用截圖）。\n'
-          );
+            '封禁ID（如果有，可在告知被封禁页面看到“您当前的IP地址是xxxx，而该封禁ID是#xxxx。”，这不是用户名）\n',
+            '封鎖ID（如果有，可在告知被封鎖頁面看到「您目前的IP位址是xxxx，而該封鎖ID是#xxxx。」，這不是使用者名稱）\n'
+          )
+        );
       } else if (this.mailOptionsIpbe === this.MAILOP_IPNOTBLOCKED) {
         text += this.resULS(
           '您所给的IP地址未被封禁，请确认正确的IP地址后再回信，您可在告知被封禁页面看到“您当前的IP地址是xxxx”，若您已经可以编辑，则不用回信。\n',
@@ -408,6 +413,20 @@ export default {
           );
         }
       }
+
+      if (pleaseProvide.length === 1) {
+        text += this.resULS('请告知', '請告知') + pleaseProvide[0];
+      } else if (pleaseProvide.length > 1) {
+        text += this.resULS('请告知以下信息：\n', '請告知以下資訊：\n');
+        for (let i = 0; i < pleaseProvide.length; i++) {
+          text += '　' + (i + 1) + '. ' + pleaseProvide[i];
+        }
+        text += this.resULS(
+          '以让我们做下一步处理（复制您看到的文字对我们处理较为方便，请避免使用截图）。\n',
+          '以讓我們做下一步處理（複製您看到的文字對我們處理較為方便，請避免使用截圖）。\n'
+        );
+      }
+      text += pleaseProvideAppend;
 
       if (links.length > 0) {
         text += '\n';
@@ -634,6 +653,8 @@ export default {
         } else {
           this.mailOptionsUsername = this.MAILOP_NOUSERNAME;
         }
+      } else if (this.inputBlockAppeal) {
+        this.mailOptionsUsername = this.MAILOP_NOUSERNAME;
       }
     },
     autoMailOptionsIpbe() {
@@ -647,10 +668,8 @@ export default {
           this.actionOptions.push(this.ACTOP_RFIPBE);
         }
       } else {
-        console.log(this.actionOptions);
         this.actionOptions = this.actionOptions.filter((key) => key !== this.ACTOP_NOTICEIPBE);
         this.actionOptions = this.actionOptions.filter((key) => key !== this.ACTOP_RFIPBE);
-        console.log(this.actionOptions);
         if (this.inputGrantIpbe) {
           if (this.ip) {
             if (!this.blocked) {
@@ -659,6 +678,8 @@ export default {
           } else {
             this.mailOptionsIpbe = this.MAILOP_NOIP;
           }
+        } else if (this.inputBlockAppeal) {
+          this.mailOptionsIpbe = this.MAILOP_NOIP;
         }
       }
     },
