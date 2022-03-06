@@ -73,7 +73,7 @@
           {{ wgULS('账户可以创建', '帳號可以建立') }}（<a
             :href="'https://www.google.com/search?q=' + encodeURIComponent(normalizedUsername)"
             target="_blank"
-            >{{ wgULS('', 'Google搜尋') }}</a
+            >{{ wgULS('Google搜索', 'Google搜尋') }}</a
           >）
         </li>
         <li v-if="normalizedUsername && accountStatus == ACCST_NEEDS_LOCAL" class="uzh-status-success">
@@ -113,6 +113,13 @@
             :href="getUrl('Special:BlockList', { wpTarget: ip })"
             target="_blank"
             >{{ wgULS('检查', '檢查') }}</a
+          >）
+        </li>
+        <li v-if="accountHasIpbe" class="uzh-status-error">
+          {{ wgULS('用户已拥有IP封禁豁免权', '使用者已擁有IP封鎖例外權') }}（<a
+            :href="getUrl('Special:Log', { type: 'rights', page: 'User:' + normalizedUsername })"
+            target="_blank"
+            >{{ wgULS('检查权限日志', '檢查權限日誌') }}</a
           >）
         </li>
       </ul>
@@ -317,6 +324,7 @@ export default {
       blocked: false,
       blockBy: '',
       blockReason: '',
+      accountHasIpbe: false,
       actionOptions: [],
       summary: '',
       statusCreateAcccountType: 'info',
@@ -585,6 +593,10 @@ export default {
 
       self.accountStatus = '';
       self.normalizedUsername = '';
+      self.accountBlocked = false;
+      self.accountBlockBy = '';
+      self.accountBlockReason = '';
+      self.accountHasIpbe = false;
       if (!self.username) {
         return def.resolve();
       }
@@ -593,7 +605,7 @@ export default {
           action: 'query',
           format: 'json',
           list: 'users',
-          usprop: 'cancreate|blockinfo',
+          usprop: 'cancreate|blockinfo|groupmemberships',
           ususers: self.username,
         })
         .then(function (res) {
@@ -617,6 +629,14 @@ export default {
             self.accountBlocked = true;
             self.accountBlockBy = user.blockedby;
             self.accountBlockReason = user.blockreason;
+          }
+          if ('groupmemberships' in user) {
+            for (const row of user.groupmemberships) {
+              if (row.group === 'ipblock-exempt') {
+                self.accountHasIpbe = true;
+                break;
+              }
+            }
           }
           def.resolve();
         });
@@ -693,7 +713,8 @@ export default {
         (this.accountStatus === this.ACCST_EXISTS || userToBeCreated) &&
         this.ip &&
         this.blocked &&
-        !this.accountBlocked
+        !this.accountBlocked &&
+        !this.accountHasIpbe
       ) {
         this.actionOptions.push(this.ACTOP_GRANTIPBE);
       }
@@ -1150,6 +1171,7 @@ export default {
       this.accountBlocked = false;
       this.accountBlocked = '';
       this.accountBlockReason = '';
+      this.accountHasIpbe = false;
       this.ipChecked = false;
       this.accountStatus = '';
       this.actionOptions = [];
