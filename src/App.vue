@@ -267,6 +267,10 @@
           {{ wgULS('已重置密码', '已重設密碼') }}</label
         >
         <label class="uzh-inline-options">
+          <input v-model="mailOptionsOther" :value="MAILOP_OPENPROXY" type="checkbox" />
+          {{ wgULS('开放代理', '開放代理') }}</label
+        >
+        <label class="uzh-inline-options">
           <input v-model="mailOptionsOther" :value="MAILOP_RANGEBLOCK" type="checkbox" />
           {{ wgULS('段封禁', '段封鎖') }}</label
         >
@@ -457,6 +461,25 @@ export default {
         }
       }
 
+      if (this.mailOptionsOther.includes(this.MAILOP_OPENPROXY)) {
+        links.push('https://w.wiki/Jyg');
+        text +=
+          this.resULS(
+            '维基媒体基金会禁止使用某些开放代理来编辑维基百科 [',
+            '維基媒體基金會禁止使用某些開放代理來編輯維基百科 ['
+          ) +
+          links.length +
+          this.resULS(
+            ']，所以我们不会解除封禁这个IP。我们可以为您注册一个账户以绕过这个限制。\n',
+            ']，所以我們不會解除封鎖這個IP。我們可以為您註冊一個帳戶以繞過這個限制。\n'
+          );
+
+        pleaseProvide.push(
+          this.resULS('您想要的用户名，“不要提供密码”。', '您想要的使用者名稱，「不要提供密碼」。') +
+            useUsernameChecker +
+            '\n'
+        );
+      }
       if (this.mailOptionsOther.includes(this.MAILOP_RANGEBLOCK)) {
         othertext +=
           this.resULS(
@@ -553,6 +576,7 @@ export default {
     this.MAILOP_IPNOTBLOCKED = 'IpNotBlocked';
     this.MAILOP_IPBEGRANTED = 'IpbeGranted';
     this.MAILOP_MAYNEEDIPBE = 'MayNeedIpbe';
+    this.MAILOP_OPENPROXY = 'OpenProxy';
     this.MAILOP_RANGEBLOCK = 'RangeBlock';
     this.MAILOP_ENWIKIBLOCK = 'EnwikiBlock';
     this.MAILOP_GIPBE = 'Gipbe';
@@ -775,7 +799,7 @@ export default {
           } else {
             this.mailOptionsIpbe = this.MAILOP_NOIP;
           }
-        } else if (this.inputBlockAppeal) {
+        } else if (this.inputBlockAppeal && !this.ip) {
           this.mailOptionsIpbe = this.MAILOP_NOIP;
         }
       }
