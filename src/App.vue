@@ -899,7 +899,7 @@ export default {
         return def.resolve();
       }
       api
-        .postWithToken({
+        .postWithEditToken({
           action: 'createlocalaccount',
           username: self.normalizedUsername,
           reason: self.summary,
