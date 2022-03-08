@@ -1161,6 +1161,7 @@ export default {
     resetForm() {
       this.inputCreateAccount = true;
       this.inputGrantIpbe = true;
+      this.inputBlockAppeal = false;
       this.inputResetPassword = false;
       this.username = '';
       this.email = '';
