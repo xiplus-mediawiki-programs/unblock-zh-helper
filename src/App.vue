@@ -545,17 +545,6 @@ export default {
       return text;
     },
   },
-  watch: {
-    actionOptions(newVal) {
-      console.log('actionOptions', newVal);
-    },
-    mailOptionsUsername(newVal) {
-      console.log('mailOptionsUsername', newVal);
-    },
-    mailOptionsIpbe(newVal) {
-      console.log('mailOptionsIpbe', newVal);
-    },
-  },
   created() {
     this.ACCST_NOT_EXISTS = 'NotExists';
     this.ACCST_BANNED = 'Banned';
@@ -846,7 +835,6 @@ export default {
       let def = $.Deferred();
       let self = this;
 
-      console.log('Run createAccount');
       if (!self.actionOptions.includes(this.ACTOP_CREATEACCOUNT) || !self.normalizedUsername) {
         return def.resolve();
       }
@@ -863,7 +851,6 @@ export default {
             createtoken: token,
           })
           .done(function (data) {
-            console.log(data);
             if (data.createaccount.status === 'FAIL') {
               self.statusCreateAcccountType = 'error';
               self.statusCreateAcccount = data.createaccount.message;
@@ -873,7 +860,6 @@ export default {
             } else {
               self.statusCreateAcccountType = 'error';
               self.statusCreateAcccount = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
-              // console.error(data);
             }
             def.resolve();
           })
@@ -894,7 +880,6 @@ export default {
       let def = $.Deferred();
       let self = this;
 
-      console.log('Run createLocal');
       if (!this.actionOptions.includes(this.ACTOP_CREATELOCAL) || !self.normalizedUsername) {
         return def.resolve();
       }
@@ -904,8 +889,7 @@ export default {
           username: self.normalizedUsername,
           reason: self.summary,
         })
-        .done(function (data) {
-          console.log(data);
+        .done(function () {
           self.statusCreateLocalType = 'success';
           self.statusCreateLocal = wgULS('成功创建本地账户', '成功建立本地帳號');
           def.resolve();
@@ -926,7 +910,6 @@ export default {
       let def = $.Deferred();
       let self = this;
 
-      console.log('Run grantIpbe');
       if (!this.actionOptions.includes(this.ACTOP_GRANTIPBE)) {
         return def.resolve();
       }
@@ -938,8 +921,7 @@ export default {
           expiry: 'infinite',
           reason: '+' + wgULS('IP封禁豁免', 'IP封鎖例外') + '，' + self.summary + self.SUMMARY_SUFFIX,
         })
-        .done(function (data) {
-          console.log(data);
+        .done(function () {
           self.statusGrantIpbeType = 'success';
           self.statusGrantIpbe = '成功授予';
           def.resolve();
@@ -960,7 +942,6 @@ export default {
       let def = $.Deferred();
       let self = this;
 
-      console.log('Run NoticeIpbe');
       if (!this.actionOptions.includes(this.ACTOP_NOTICEIPBE)) {
         return def.resolve();
       }
@@ -982,8 +963,7 @@ export default {
                 { summary: wgULS('授予IP封禁豁免权通知', '授予IP封鎖例外權通知') + self.SUMMARY_SUFFIX },
                 message
               )
-              .done(function (data) {
-                console.log(data);
+              .done(function () {
                 self.statusNoticeIpbeType = 'success';
                 self.statusNoticeIpbe = '成功通知';
                 def.resolve();
@@ -1008,8 +988,7 @@ export default {
                 ntcontent: message,
                 ntformat: 'wikitext',
               })
-              .done(function (data) {
-                console.log(data);
+              .done(function () {
                 self.statusNoticeIpbeType = 'success';
                 self.statusNoticeIpbe = '成功通知';
                 def.resolve();
@@ -1032,8 +1011,7 @@ export default {
                   summary: wgULS('授予IP封禁豁免权通知', '授予IP封鎖例外權通知') + self.SUMMARY_SUFFIX,
                 };
               })
-              .done(function (data) {
-                console.log(data);
+              .done(function () {
                 self.statusNoticeIpbeType = 'success';
                 self.statusNoticeIpbe = '成功通知';
                 def.resolve();
@@ -1056,7 +1034,6 @@ export default {
       let def = $.Deferred();
       let self = this;
 
-      console.log('Run RfIpbe');
       if (!this.actionOptions.includes(this.ACTOP_RFIPBE)) {
         return def.resolve();
       }
@@ -1084,8 +1061,7 @@ export default {
             summary: summary + self.SUMMARY_SUFFIX,
           };
         })
-        .done(function (data) {
-          console.log(data);
+        .done(function () {
           self.statusRfIpbeType = 'success';
           self.statusRfIpbe = wgULS('成功备案', '成功備案');
           def.resolve();
@@ -1106,7 +1082,6 @@ export default {
       let def = $.Deferred();
       let self = this;
 
-      console.log('Run resetPassword');
       if (!this.actionOptions.includes(this.ACTOP_RESETPASSWORD)) {
         return def.resolve();
       }
@@ -1116,7 +1091,6 @@ export default {
           user: self.normalizedUsername,
         })
         .done(function (data) {
-          console.log(data);
           if (data.resetpassword.status === 'success') {
             self.statusResetPasswordType = 'success';
             self.statusResetPassword = wgULS('成功重置密码', '成功重設密碼');
