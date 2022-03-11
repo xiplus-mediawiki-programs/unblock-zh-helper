@@ -799,7 +799,7 @@ export default {
         this.mailOptionsUsername = this.MAILOP_ACCOUNTLOCAL;
       } else if (this.inputCreateAccount) {
         if (this.normalizedUsername) {
-          if (this.accountStatus == this.ACCST_EXISTS) {
+          if (this.accountStatus == this.ACCST_EXISTS || this.accountStatus == this.ACCST_NEEDS_LOCAL) {
             this.mailOptionsUsername = this.MAILOP_USERNAMEUSED;
           } else if (this.accountStatus == this.ACCST_BANNED) {
             this.mailOptionsUsername = this.MAILOP_USERNAMEBANNED;
