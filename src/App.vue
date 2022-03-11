@@ -69,12 +69,25 @@
         <li v-if="normalizedUsername && username != normalizedUsername" class="uzh-status-info">
           {{ wgULS('用户名被正规化为“', '使用者名稱被正規化為「') }}{{ this.normalizedUsername }}{{ wgULS('”', '」') }}
         </li>
-        <li v-if="normalizedUsername && accountStatus == ACCST_NOT_EXISTS" class="uzh-status-success">
+        <li
+          v-if="normalizedUsername && inputCreateAccount && accountStatus == ACCST_NOT_EXISTS"
+          class="uzh-status-success"
+        >
           {{ wgULS('账户可以创建', '帳號可以建立') }}（<a
             :href="'https://www.google.com/search?q=' + encodeURIComponent(normalizedUsername)"
             target="_blank"
             >{{ wgULS('Google搜索', 'Google搜尋') }}</a
           >）
+        </li>
+        <li
+          v-if="
+            normalizedUsername &&
+            !inputCreateAccount &&
+            (accountStatus == ACCST_BANNED || accountStatus == ACCST_NOT_EXISTS)
+          "
+          class="uzh-status-error"
+        >
+          {{ wgULS('账户不存在', '帳號不存在') }}
         </li>
         <li v-if="normalizedUsername && accountStatus == ACCST_NEEDS_LOCAL" class="uzh-status-success">
           {{ wgULS('需要强制创建本地账户', '需要強制建立本地帳號') }}
@@ -89,7 +102,7 @@
             >{{ wgULS('检查全域账户', '檢查全域帳號') }}</a
           >）
         </li>
-        <li v-if="normalizedUsername && accountStatus == ACCST_BANNED" class="uzh-status-error">
+        <li v-if="normalizedUsername && inputCreateAccount && accountStatus == ACCST_BANNED" class="uzh-status-error">
           {{ wgULS('此用户名被系统禁止', '此使用者名稱被系統禁止')
           }}<span v-if="accountBannedDetail">：<span v-html="accountBannedDetail"></span></span>
         </li>
@@ -234,6 +247,10 @@
         <label class="uzh-inline-options">
           <input v-model="mailOptionsUsername" :value="MAILOP_ACCOUNTLOCAL" type="radio" />
           {{ wgULS('已强制创建本地账户', '已強制建立本地帳號') }}</label
+        >
+        <label class="uzh-inline-options">
+          <input v-model="mailOptionsUsername" :value="MAILOP_ACCTNOTEXISTS" type="radio" />
+          {{ wgULS('申请IPBE所给账户不存在', '申請IPBE所給帳號不存在') }}</label
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsUsername" value="" type="radio" />
@@ -417,6 +434,15 @@ export default {
           '已代为注册账户，账户的随机密码用另一封邮件寄出，随机密码的有效期限仅有7天，请尽速登录修改密码。\n',
           '已代為註冊帳戶，帳戶的隨機密碼用另一封郵件寄出，隨機密碼的有效期限僅有7天，請盡速登入修改密碼。\n'
         );
+      } else if (this.mailOptionsUsername === this.MAILOP_ACCTNOTEXISTS) {
+        links.push('https://w.wiki/4oNy');
+        text +=
+          this.resULS(
+            '您提供的用户名不存在，请确认正确后再回信（登录后从参数设置查看[',
+            '您提供的使用者名稱不存在，請確認正確後再回信（登入後從偏好設定檢視['
+          ) +
+          links.length +
+          this.resULS(']，这不是电子邮件地址）\n', ']，這不是電子郵件位址）\n');
       } else if (this.mailOptionsUsername === this.MAILOP_ACCOUNTLOCAL) {
         text += this.resULS(
           '由于您先前于中文维基百科以外的站点注册，已为您的账户强制创建在中文维基百科的本地账户，您可以使用相同的账户密码登录。\n',
@@ -565,6 +591,7 @@ export default {
     this.MAILOP_ACCOUNTLOCAL = 'AccountLocal';
     this.MAILOP_NOIP = 'NoIp';
     this.MAILOP_IPNOTBLOCKED = 'IpNotBlocked';
+    this.MAILOP_ACCTNOTEXISTS = 'AcctNotExists';
     this.MAILOP_IPBEGRANTED = 'IpbeGranted';
     this.MAILOP_MAYNEEDIPBE = 'MayNeedIpbe';
     this.MAILOP_OPENPROXY = 'OpenProxy';
@@ -774,6 +801,10 @@ export default {
           }
         } else {
           this.mailOptionsUsername = this.MAILOP_NOUSERNAME;
+        }
+      } else if (this.inputGrantIpbe) {
+        if (this.accountStatus == this.ACCST_BANNED || this.accountStatus == this.ACCST_NOT_EXISTS) {
+          this.mailOptionsUsername = this.MAILOP_ACCTNOTEXISTS;
         }
       } else if (this.inputBlockAppeal) {
         if (!this.normalizedUsername) {
