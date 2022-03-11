@@ -89,7 +89,10 @@
         >
           {{ wgULS('账户不存在', '帳號不存在') }}
         </li>
-        <li v-if="normalizedUsername && accountStatus == ACCST_NEEDS_LOCAL" class="uzh-status-success">
+        <li
+          v-if="normalizedUsername && accountStatus == ACCST_NEEDS_LOCAL"
+          :class="{ 'uzh-status-error': inputCreateAccount, 'uzh-status-success': !inputCreateAccount }"
+        >
           {{ wgULS('需要强制创建本地账户', '需要強制建立本地帳號') }}
         </li>
         <li
@@ -754,9 +757,6 @@ export default {
             this.actionOptions.push(this.ACTOP_CREATEACCOUNT);
             this.mailOptionsUsername = this.MAILOP_ACCOUNTCREATED;
             userToBeCreated = true;
-          } else if (this.accountStatus == this.ACCST_NEEDS_LOCAL) {
-            this.actionOptions.push(this.ACTOP_CREATELOCAL);
-            userToBeCreated = true;
           } else if (this.accountStatus == this.ACCST_BANNED) {
             this.mailOptionsUsername = this.MAILOP_USERNAMEBANNED;
           } else if (this.accountStatus == this.ACCST_EXISTS) {
@@ -768,12 +768,17 @@ export default {
       }
       if (
         this.inputGrantIpbe &&
-        (this.accountStatus === this.ACCST_EXISTS || userToBeCreated) &&
+        ((!this.inputCreateAccount &&
+          (this.accountStatus === this.ACCST_EXISTS || this.accountStatus == this.ACCST_NEEDS_LOCAL)) ||
+          userToBeCreated) &&
         this.ip &&
         this.blocked &&
         !this.accountBlocked &&
         !this.accountHasIpbe
       ) {
+        if (this.accountStatus == this.ACCST_NEEDS_LOCAL) {
+          this.actionOptions.push(this.ACTOP_CREATELOCAL);
+        }
         this.actionOptions.push(this.ACTOP_GRANTIPBE);
       }
       if (this.inputResetPassword && this.username) {
