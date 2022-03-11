@@ -90,7 +90,8 @@
           >）
         </li>
         <li v-if="normalizedUsername && accountStatus == ACCST_BANNED" class="uzh-status-error">
-          {{ wgULS('此用户名被系统禁止', '此使用者名稱被系統禁止') }}
+          {{ wgULS('此用户名被系统禁止', '此使用者名稱被系統禁止')
+          }}<span v-if="accountBannedDetail">：<span v-html="accountBannedDetail"></span></span>
         </li>
         <li v-if="accountBlocked" class="uzh-status-error">
           <b
@@ -320,6 +321,7 @@ export default {
       ip: '',
       archiveUrl: '',
       accountStatus: '',
+      accountBannedDetail: '',
       normalizedUsername: '',
       accountBlocked: false,
       accountBlockBy: '',
@@ -570,6 +572,7 @@ export default {
     this.MAILOP_ENWIKIBLOCK = 'EnwikiBlock';
     this.MAILOP_GIPBE = 'Gipbe';
     this.SUMMARY_SUFFIX = '（使用[[User:Xiplus/js/unblock-zh-helper|unblock-zh-helper]]）';
+    mw.messages.set('antispoof-name-123', '$1$2$3');
   },
   methods: {
     checkInput() {
@@ -605,6 +608,7 @@ export default {
       let self = this;
 
       self.accountStatus = '';
+      self.accountBannedDetail = '';
       self.normalizedUsername = '';
       self.accountBlocked = false;
       self.accountBlockBy = '';
@@ -627,10 +631,24 @@ export default {
             self.accountStatus = self.ACCST_EXISTS;
           } else if ('invalid' in user) {
             self.accountStatus = self.ACCST_BANNED;
+            self.accountBannedDetail = wgULS('包含不允许的字符。', '包含不允許的字元。');
           } else if ('cancreateerror' in user) {
             self.accountStatus = self.ACCST_NOT_EXISTS;
-            if (user['cancreateerror'][0]['code'] === 'userexists') {
+            let cancreateerror = user['cancreateerror'][0];
+            if (cancreateerror.code === 'userexists') {
               self.accountStatus = self.ACCST_NEEDS_LOCAL;
+            } else if (cancreateerror.code === 'invaliduser') {
+              self.accountStatus = self.ACCST_BANNED;
+              self.accountBannedDetail = wgULS(
+                '不可使用电子邮件地址作为用户名。',
+                '不可使用電子郵件地址作為使用者名稱。'
+              );
+            } else if (cancreateerror.code === 'antispoof-name-illegal') {
+              self.accountStatus = self.ACCST_BANNED;
+              self.accountBannedDetail = mw.msg('antispoof-name-illegal', ...cancreateerror.params);
+            } else if (cancreateerror.code === '_1_2_3') {
+              self.accountStatus = self.ACCST_BANNED;
+              self.accountBannedDetail = mw.msg('antispoof-name-123', ...cancreateerror.params);
             } else {
               self.accountStatus = self.ACCST_BANNED;
             }
@@ -1173,6 +1191,7 @@ export default {
       this.accountHasIpbe = false;
       this.ipChecked = false;
       this.accountStatus = '';
+      this.accountBannedDetail = '';
       this.actionOptions = [];
       this.mailOptionsUsername = '';
       this.mailOptionsIpbe = '';
