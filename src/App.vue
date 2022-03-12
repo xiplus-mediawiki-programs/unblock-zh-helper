@@ -31,16 +31,16 @@
       <br />
       <label>
         {{ wgULS('用户名：', '使用者名稱：') }}
-        <input v-model="username" type="text" name="uzh-username" style="width: 200px" />
+        <input v-model="username" type="text" style="width: 200px" />
       </label>
       <label style="margin-left: 10px">
         {{ wgULS('电子邮件地址：', '電子郵件地址：') }}
-        <input v-model="email" type="email" name="uzh-email" style="width: 300px" />
+        <input v-model="email" type="email" style="width: 300px" />
       </label>
       <br />
       <label>
         {{ wgULS('IP地址或封禁ID：', 'IP地址或封鎖ID：') }}
-        <input v-model="ip" type="text" name="uzh-ip" style="width: 300px" />
+        <input v-model="ip" type="text" style="width: 300px" />
       </label>
       <br />
       <label>
@@ -51,7 +51,6 @@
           <input
             v-model="archiveUrl"
             type="url"
-            name="uzh-archive-url"
             style="width: 100%"
             placeholder="https://lists.wikimedia.org/hyperkitty/list/unblock-zh@lists.wikimedia.org/message/..."
           />
