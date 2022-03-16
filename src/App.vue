@@ -69,7 +69,7 @@
           {{ wgULS('用户名被正规化为“', '使用者名稱被正規化為「') }}{{ this.normalizedUsername }}{{ wgULS('”', '」') }}
         </li>
         <li
-          v-if="normalizedUsername && inputCreateAccount && accountStatus == ACCST_NOT_EXISTS"
+          v-if="normalizedUsername && inputCreateAccount && usernameStatus == ACCST_NOT_EXISTS"
           class="uzh-status-success"
         >
           {{ wgULS('账户可以创建', '帳號可以建立') }}（<a
@@ -82,20 +82,20 @@
           v-if="
             normalizedUsername &&
             !inputCreateAccount &&
-            (accountStatus == ACCST_BANNED || accountStatus == ACCST_NOT_EXISTS)
+            (usernameStatus == ACCST_BANNED || usernameStatus == ACCST_NOT_EXISTS)
           "
           class="uzh-status-error"
         >
           {{ wgULS('账户不存在', '帳號不存在') }}
         </li>
         <li
-          v-if="normalizedUsername && accountStatus == ACCST_NEEDS_LOCAL"
+          v-if="normalizedUsername && usernameStatus == ACCST_NEEDS_LOCAL"
           :class="{ 'uzh-status-error': inputCreateAccount, 'uzh-status-success': !inputCreateAccount }"
         >
           {{ wgULS('需要强制创建本地账户', '需要強制建立本地帳號') }}
         </li>
         <li
-          v-if="normalizedUsername && accountStatus == ACCST_EXISTS"
+          v-if="normalizedUsername && usernameStatus == ACCST_EXISTS"
           :class="{ 'uzh-status-error': inputCreateAccount, 'uzh-status-success': !inputCreateAccount }"
         >
           {{ wgULS('账户已被注册', '帳號已被註冊') }}（<a
@@ -104,9 +104,9 @@
             >{{ wgULS('检查全域账户', '檢查全域帳號') }}</a
           >）
         </li>
-        <li v-if="normalizedUsername && inputCreateAccount && accountStatus == ACCST_BANNED" class="uzh-status-error">
+        <li v-if="normalizedUsername && inputCreateAccount && usernameStatus == ACCST_BANNED" class="uzh-status-error">
           {{ wgULS('此用户名被系统禁止', '此使用者名稱被系統禁止')
-          }}<span v-if="accountBannedDetail">：<span v-html="accountBannedDetail"></span></span>
+          }}<span v-if="usernameBannedDetail">：<span v-html="usernameBannedDetail"></span></span>
         </li>
         <li v-if="accountBlocked" class="uzh-status-error">
           <b
@@ -149,7 +149,7 @@
           </span>
         </label>
       </div>
-      <div v-if="inputCreateAccount && accountStatus == ACCST_NOT_EXISTS">
+      <div v-if="inputCreateAccount && usernameStatus == ACCST_NOT_EXISTS">
         <label>
           <input v-model="actionOptions" :value="ACTOP_CREATEACCOUNT" type="checkbox" />
           {{ wgULS('创建新账户“', '建立新帳號「') }}{{ normalizedUsername
@@ -160,7 +160,7 @@
           <span :class="'uzh-status-' + statusCreateAcccountType">{{ statusCreateAcccount }}</span></span
         >
       </div>
-      <div v-if="accountStatus == ACCST_NEEDS_LOCAL">
+      <div v-if="usernameStatus == ACCST_NEEDS_LOCAL">
         <label>
           <input v-model="actionOptions" :value="ACTOP_CREATELOCAL" type="checkbox" @change="autoMailOptionsAccount" />
           {{ wgULS('强制创建本地账户“', '強制建立本地帳號「') }}{{ normalizedUsername }}{{ wgULS('”', '」') }}（<a
@@ -327,6 +327,7 @@
 
 <script>
 var api = new mw.Api();
+var loginapi = new mw.ForeignApi('https://login.wikimedia.org/w/api.php');
 
 export default {
   data() {
@@ -339,8 +340,8 @@ export default {
       email: '',
       ip: '',
       archiveUrl: '',
-      accountStatus: '',
-      accountBannedDetail: '',
+      usernameStatus: '',
+      usernameBannedDetail: '',
       normalizedUsername: '',
       accountBlocked: false,
       accountBlockBy: '',
@@ -601,6 +602,7 @@ export default {
     this.MAILOP_ENWIKIBLOCK = 'EnwikiBlock';
     this.MAILOP_GIPBE = 'Gipbe';
     this.SUMMARY_SUFFIX = '（使用[[User:Xiplus/js/unblock-zh-helper|unblock-zh-helper]]）';
+    mw.messages.set('antispoof-name-1', '$1');
     mw.messages.set('antispoof-name-123', '$1$2$3');
   },
   methods: {
@@ -628,17 +630,71 @@ export default {
         }
       }
       let tm = new Morebits.taskManager();
+      tm.add(this.checkUsernameStatus, []);
       tm.add(this.checkAccountStatus, []);
       tm.add(this.checkIpBlocks, []);
       tm.execute().then(this.showCheckResult);
+    },
+    checkUsernameStatus() {
+      let def = $.Deferred();
+      let self = this;
+
+      self.usernameStatus = '';
+      self.usernameBannedDetail = '';
+      self.normalizedUsername = '';
+      if (!self.username) {
+        return def.resolve();
+      }
+      loginapi
+        .get({
+          action: 'query',
+          format: 'json',
+          list: 'users',
+          usprop: 'cancreate',
+          ususers: self.username,
+        })
+        .then(function (res) {
+          let user = res.query.users[0];
+          if ('userid' in user) {
+            self.usernameStatus = self.ACCST_EXISTS;
+          } else if ('invalid' in user) {
+            self.usernameStatus = self.ACCST_BANNED;
+            self.usernameBannedDetail = wgULS('包含不允许的字符。', '包含不允許的字元。');
+          } else if ('cancreateerror' in user) {
+            self.usernameStatus = self.ACCST_NOT_EXISTS;
+            let cancreateerror = user['cancreateerror'][0];
+            if (cancreateerror.code === 'userexists') {
+              self.usernameStatus = self.ACCST_NEEDS_LOCAL;
+            } else if (cancreateerror.code === 'invaliduser') {
+              self.usernameStatus = self.ACCST_BANNED;
+              self.usernameBannedDetail = wgULS(
+                '不可使用电子邮件地址作为用户名。',
+                '不可使用電子郵件地址作為使用者名稱。'
+              );
+            } else if (cancreateerror.code === 'antispoof-name-illegal') {
+              self.usernameStatus = self.ACCST_BANNED;
+              self.usernameBannedDetail = mw.msg('antispoof-name-illegal', ...cancreateerror.params);
+            } else if (cancreateerror.code === '_1') {
+              self.usernameStatus = self.ACCST_BANNED;
+              self.usernameBannedDetail = mw.msg('antispoof-name-1', ...cancreateerror.params);
+            } else if (cancreateerror.code === '_1_2_3') {
+              self.usernameStatus = self.ACCST_BANNED;
+              self.usernameBannedDetail = mw.msg('antispoof-name-123', ...cancreateerror.params);
+            } else {
+              self.usernameStatus = self.ACCST_BANNED;
+            }
+          } else {
+            self.usernameStatus = self.ACCST_NOT_EXISTS;
+          }
+          self.normalizedUsername = user.name;
+          def.resolve();
+        });
+      return def;
     },
     checkAccountStatus() {
       let def = $.Deferred();
       let self = this;
 
-      self.accountStatus = '';
-      self.accountBannedDetail = '';
-      self.normalizedUsername = '';
       self.accountBlocked = false;
       self.accountBlockBy = '';
       self.accountBlockReason = '';
@@ -651,40 +707,11 @@ export default {
           action: 'query',
           format: 'json',
           list: 'users',
-          usprop: 'cancreate|blockinfo|groupmemberships',
+          usprop: 'blockinfo|groupmemberships',
           ususers: self.username,
         })
         .then(function (res) {
           let user = res.query.users[0];
-          if ('userid' in user) {
-            self.accountStatus = self.ACCST_EXISTS;
-          } else if ('invalid' in user) {
-            self.accountStatus = self.ACCST_BANNED;
-            self.accountBannedDetail = wgULS('包含不允许的字符。', '包含不允許的字元。');
-          } else if ('cancreateerror' in user) {
-            self.accountStatus = self.ACCST_NOT_EXISTS;
-            let cancreateerror = user['cancreateerror'][0];
-            if (cancreateerror.code === 'userexists') {
-              self.accountStatus = self.ACCST_NEEDS_LOCAL;
-            } else if (cancreateerror.code === 'invaliduser') {
-              self.accountStatus = self.ACCST_BANNED;
-              self.accountBannedDetail = wgULS(
-                '不可使用电子邮件地址作为用户名。',
-                '不可使用電子郵件地址作為使用者名稱。'
-              );
-            } else if (cancreateerror.code === 'antispoof-name-illegal') {
-              self.accountStatus = self.ACCST_BANNED;
-              self.accountBannedDetail = mw.msg('antispoof-name-illegal', ...cancreateerror.params);
-            } else if (cancreateerror.code === '_1_2_3') {
-              self.accountStatus = self.ACCST_BANNED;
-              self.accountBannedDetail = mw.msg('antispoof-name-123', ...cancreateerror.params);
-            } else {
-              self.accountStatus = self.ACCST_BANNED;
-            }
-          } else {
-            self.accountStatus = self.ACCST_NOT_EXISTS;
-          }
-          self.normalizedUsername = user.name;
           if ('blockid' in user) {
             self.accountBlocked = true;
             self.accountBlockBy = user.blockedby;
@@ -752,13 +779,13 @@ export default {
       let userToBeCreated = false;
       if (this.inputCreateAccount) {
         if (this.normalizedUsername) {
-          if (this.accountStatus == this.ACCST_NOT_EXISTS) {
+          if (this.usernameStatus == this.ACCST_NOT_EXISTS) {
             this.actionOptions.push(this.ACTOP_CREATEACCOUNT);
             this.mailOptionsUsername = this.MAILOP_ACCOUNTCREATED;
             userToBeCreated = true;
-          } else if (this.accountStatus == this.ACCST_BANNED) {
+          } else if (this.usernameStatus == this.ACCST_BANNED) {
             this.mailOptionsUsername = this.MAILOP_USERNAMEBANNED;
-          } else if (this.accountStatus == this.ACCST_EXISTS) {
+          } else if (this.usernameStatus == this.ACCST_EXISTS) {
             this.mailOptionsUsername = this.MAILOP_USERNAMEUSED;
           }
         } else {
@@ -768,20 +795,20 @@ export default {
       if (
         this.inputGrantIpbe &&
         ((!this.inputCreateAccount &&
-          (this.accountStatus === this.ACCST_EXISTS || this.accountStatus == this.ACCST_NEEDS_LOCAL)) ||
+          (this.usernameStatus === this.ACCST_EXISTS || this.usernameStatus == this.ACCST_NEEDS_LOCAL)) ||
           userToBeCreated) &&
         this.ip &&
         this.blocked &&
         !this.accountBlocked &&
         !this.accountHasIpbe
       ) {
-        if (this.accountStatus == this.ACCST_NEEDS_LOCAL) {
+        if (this.usernameStatus == this.ACCST_NEEDS_LOCAL) {
           this.actionOptions.push(this.ACTOP_CREATELOCAL);
         }
         this.actionOptions.push(this.ACTOP_GRANTIPBE);
       }
       if (this.inputResetPassword && this.username) {
-        if (!this.inputCreateAccount && this.accountStatus == this.ACCST_NEEDS_LOCAL) {
+        if (!this.inputCreateAccount && this.usernameStatus == this.ACCST_NEEDS_LOCAL) {
           this.actionOptions.push(this.ACTOP_CREATELOCAL);
         }
         this.actionOptions.push(this.ACTOP_RESETPASSWORD);
@@ -798,16 +825,16 @@ export default {
         this.mailOptionsUsername = this.MAILOP_ACCOUNTLOCAL;
       } else if (this.inputCreateAccount) {
         if (this.normalizedUsername) {
-          if (this.accountStatus == this.ACCST_EXISTS || this.accountStatus == this.ACCST_NEEDS_LOCAL) {
+          if (this.usernameStatus == this.ACCST_EXISTS || this.usernameStatus == this.ACCST_NEEDS_LOCAL) {
             this.mailOptionsUsername = this.MAILOP_USERNAMEUSED;
-          } else if (this.accountStatus == this.ACCST_BANNED) {
+          } else if (this.usernameStatus == this.ACCST_BANNED) {
             this.mailOptionsUsername = this.MAILOP_USERNAMEBANNED;
           }
         } else {
           this.mailOptionsUsername = this.MAILOP_NOUSERNAME;
         }
       } else if (this.inputGrantIpbe) {
-        if (this.accountStatus == this.ACCST_BANNED || this.accountStatus == this.ACCST_NOT_EXISTS) {
+        if (this.usernameStatus == this.ACCST_BANNED || this.usernameStatus == this.ACCST_NOT_EXISTS) {
           this.mailOptionsUsername = this.MAILOP_ACCTNOTEXISTS;
         }
       } else if (this.inputBlockAppeal) {
@@ -1225,8 +1252,8 @@ export default {
       this.accountBlockReason = '';
       this.accountHasIpbe = false;
       this.ipChecked = false;
-      this.accountStatus = '';
-      this.accountBannedDetail = '';
+      this.usernameStatus = '';
+      this.usernameBannedDetail = '';
       this.actionOptions = [];
       this.mailOptionsUsername = '';
       this.mailOptionsIpbe = '';
