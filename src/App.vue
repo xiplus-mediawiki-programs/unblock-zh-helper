@@ -650,13 +650,18 @@ export default {
           action: 'query',
           format: 'json',
           list: 'users',
-          usprop: 'cancreate',
+          usprop: 'cancreate|centralids',
+          usattachedwiki: 'zhwiki',
           ususers: self.username,
         })
         .then(function (res) {
           let user = res.query.users[0];
           if ('userid' in user) {
-            self.usernameStatus = self.ACCST_EXISTS;
+            if ('CentralAuth' in user.attachedwiki) {
+              self.usernameStatus = self.ACCST_EXISTS;
+            } else {
+              self.usernameStatus = self.ACCST_NEEDS_LOCAL;
+            }
           } else if ('invalid' in user) {
             self.usernameStatus = self.ACCST_BANNED;
             self.usernameBannedDetail = wgULS('包含不允许的字符。', '包含不允許的字元。');
