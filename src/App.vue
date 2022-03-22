@@ -1224,7 +1224,6 @@ export default {
       } catch (e) {
         copied = false;
       }
-      document.getSelection().removeAllRanges();
       if (copied) {
         if (self.copyTimeoutId) {
           clearTimeout(self.copyTimeoutId);
