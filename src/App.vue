@@ -839,7 +839,9 @@ export default {
           this.mailOptionsUsername = this.MAILOP_NOUSERNAME;
         }
       } else if (this.inputGrantIpbe) {
-        if (this.usernameStatus == this.ACCST_BANNED || this.usernameStatus == this.ACCST_NOT_EXISTS) {
+        if (!this.normalizedUsername) {
+          this.mailOptionsUsername = this.MAILOP_NOUSERNAME;
+        } else if (this.usernameStatus == this.ACCST_BANNED || this.usernameStatus == this.ACCST_NOT_EXISTS) {
           this.mailOptionsUsername = this.MAILOP_ACCTNOTEXISTS;
         }
       } else if (this.inputBlockAppeal) {
