@@ -890,7 +890,7 @@ export default {
         alert(wgULS('没什么好做的', '沒什麼好做的'));
         return;
       }
-      if (!this.summary) {
+      if (!this.summary && !(this.actionOptions.length === 1 && this.actionOptions[0] === this.ACTOP_RESETPASSWORD)) {
         alert(wgULS('请输入日志摘要', '請輸入日誌摘要'));
         return;
       }
