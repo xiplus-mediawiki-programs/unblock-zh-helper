@@ -398,24 +398,26 @@ export default {
               useUsernameChecker +
               '\n'
           );
-        } else if (this.inputResetPassword) {
-          pleaseProvide.push(
-            this.resULS('您的用户名，我们能协助您重置密码。\n', '您的使用者名稱，我們能協助您重設密碼。\n')
-          );
-        } else {
+        } else if (this.inputGrantIpbe || this.inputBlockAppeal) {
           links.push('https://w.wiki/4oNy');
           pleaseProvide.push(
             this.resULS('您的用户名（如果有，登录后从参数设置查看[', '您的使用者名稱（如果有，登入後從偏好設定檢視[') +
               links.length +
               this.resULS(']，这不是电子邮件地址）\n', ']，這不是電子郵件位址）\n')
           );
-          pleaseProvideAppend =
-            this.resULS(
-              '如果您没有账户且无法自行注册，请告知您想要的用户名，“不要提供密码”。',
-              '如果您沒有帳號且無法自行註冊，請告知您想要的使用者名稱，「不要提供密碼」。'
-            ) +
-            useUsernameChecker +
-            '\n';
+          if (this.inputGrantIpbe) {
+            pleaseProvideAppend =
+              this.resULS(
+                '如果您没有账户且无法自行注册，请告知您想要的用户名，“不要提供密码”。',
+                '如果您沒有帳號且無法自行註冊，請告知您想要的使用者名稱，「不要提供密碼」。'
+              ) +
+              useUsernameChecker +
+              '\n';
+          }
+        } else if (this.inputResetPassword) {
+          pleaseProvide.push(
+            this.resULS('您的用户名，我们能协助您重置密码。\n', '您的使用者名稱，我們能協助您重設密碼。\n')
+          );
         }
       } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEUSED) {
         text +=
