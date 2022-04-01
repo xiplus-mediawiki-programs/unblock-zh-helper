@@ -36,12 +36,12 @@
       <br />
       <label>
         {{ wgULS('电子邮件地址：', '電子郵件地址：') }}
-        <input v-model="email" type="email" style="width: 300px" />
+        <input v-model="email" type="email" style="width: 300px" placeholder="xxx@example.com" />
       </label>
       <br />
       <label>
         {{ wgULS('IP地址或封禁ID：', 'IP地址或封鎖ID：') }}
-        <input v-model="ip" type="text" style="width: 300px" />
+        <input v-model="ip" type="text" style="width: 300px" placeholder="1.2.3.4 或 #123456" />
       </label>
       <br />
       <label>
