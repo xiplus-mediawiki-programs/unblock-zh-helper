@@ -34,7 +34,7 @@
         <input v-model="username" type="text" style="width: 200px" />
       </label>
       <br />
-      <label style="margin-left: 10px">
+      <label>
         {{ wgULS('电子邮件地址：', '電子郵件地址：') }}
         <input v-model="email" type="email" style="width: 300px" />
       </label>
