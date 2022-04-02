@@ -380,13 +380,12 @@ export default {
     },
     mailContent() {
       const useUsernameChecker =
-        this.resULS('请务必使用', '請務必使用') +
-        ' https://zhwiki-username-check.toolforge.org ' +
+        this.resULS('请务必使用签名检查工具', '請務必使用簽名檢查工具') +
+        '[LINK:https://zhwiki-username-check.toolforge.org]' +
         this.resULS('来确认您想要注册的用户名是否可用。', '來確認您想要註冊的使用者名稱是否可用。');
 
       let text = '您好：\n';
       let othertext = '';
-      let links = [];
       let pleaseProvide = [];
       let pleaseProvideHeader = '';
       let pleaseProvideAppend = '';
@@ -399,11 +398,10 @@ export default {
               '\n'
           );
         } else if (this.inputGrantIpbe || this.inputBlockAppeal) {
-          links.push('https://w.wiki/4oNy');
           pleaseProvide.push(
-            this.resULS('您的用户名（如果有，登录后从参数设置查看[', '您的使用者名稱（如果有，登入後從偏好設定檢視[') +
-              links.length +
-              this.resULS(']，这不是电子邮件地址）\n', ']，這不是電子郵件位址）\n')
+            this.resULS('您的用户名（如果有，登录后从参数设置查看', '您的使用者名稱（如果有，登入後從偏好設定檢視') +
+              '[LINK:https://zh.wikipedia.org/wiki/Special:Preferences]' +
+              this.resULS('，这不是电子邮件地址）\n', '，這不是電子郵件位址）\n')
           );
           if (this.inputGrantIpbe) {
             pleaseProvideAppend =
@@ -441,14 +439,13 @@ export default {
           '已代為註冊帳戶，帳戶的隨機密碼用另一封郵件寄出，隨機密碼的有效期限僅有7天，請盡速登入修改密碼。\n'
         );
       } else if (this.mailOptionsUsername === this.MAILOP_ACCTNOTEXISTS) {
-        links.push('https://w.wiki/4oNy');
         text +=
           this.resULS(
-            '您提供的用户名不存在，请确认正确后再回信（登录后从参数设置查看[',
-            '您提供的使用者名稱不存在，請確認正確後再回信（登入後從偏好設定檢視['
+            '您提供的用户名不存在，请确认正确后再回信（登录后从参数设置查看',
+            '您提供的使用者名稱不存在，請確認正確後再回信（登入後從偏好設定檢視'
           ) +
-          links.length +
-          this.resULS(']，这不是电子邮件地址）\n', ']，這不是電子郵件位址）\n');
+          '[LINK:https://zh.wikipedia.org/wiki/Special:Preferences]' +
+          this.resULS('，这不是电子邮件地址）\n', '，這不是電子郵件位址）\n');
       } else if (this.mailOptionsUsername === this.MAILOP_ACCOUNTLOCAL) {
         text += this.resULS(
           '由于您先前于中文维基百科以外的站点注册，已为您的账户强制创建在中文维基百科的本地账户，您可以使用相同的账户密码登录。\n',
@@ -496,16 +493,15 @@ export default {
       }
 
       if (this.mailOptionsOther.includes(this.MAILOP_OPENPROXY)) {
-        links.push('https://w.wiki/Jyg');
         text +=
           this.resULS(
-            '维基媒体基金会禁止使用某些开放代理来编辑维基百科 [',
-            '維基媒體基金會禁止使用某些開放代理來編輯維基百科 ['
+            '维基媒体基金会禁止使用某些开放代理来编辑维基百科',
+            '維基媒體基金會禁止使用某些開放代理來編輯維基百科'
           ) +
-          links.length +
+          '[LINK:https://meta.wikimedia.org/wiki/No_open_proxies/zh]' +
           this.resULS(
-            ']，所以我们不会解除封禁这个IP。我们可以为您注册一个账户以绕过这个限制。\n',
-            ']，所以我們不會解除封鎖這個IP。我們可以為您註冊一個帳戶以繞過這個限制。\n'
+            '，所以我们不会解除封禁这个IP。我们可以为您注册一个账户以绕过这个限制。\n',
+            '，所以我們不會解除封鎖這個IP。我們可以為您註冊一個帳戶以繞過這個限制。\n'
           );
 
         pleaseProvide.push(
@@ -526,18 +522,30 @@ export default {
       if (this.mailOptionsOther.includes(this.MAILOP_ENWIKIBLOCK)) {
         othertext +=
           this.resULS(
-            '由于各个语言的维基百科是各自独立管理的，这里仅能处理中文维基百科（zh.wikipedia.org）的问题，很抱歉帮不上忙。\n英文维基百科上的申诉请自行向英文维基百科申请，您可以参考',
-            '由於各個語言的維基百科是各自獨立管理的，這裡僅能處理中文維基百科（zh.wikipedia.org）的問題，很抱歉幫不上忙。\n英文維基百科上的申訴請自行向英文維基百科申請，您可以參考'
-          ) + ' https://w.wiki/4LnN 。\n';
+            '由于各个语言的维基百科是各自独立管理的，这里仅能处理中文维基百科',
+            '由於各個語言的維基百科是各自獨立管理的，這裡僅能處理中文維基百科'
+          ) +
+          '[LINK:https://zh.wikipedia.org]' +
+          this.resULS(
+            ']的问题，很抱歉帮不上忙。\n英文维基百科上的申诉请自行向英文维基百科申请，请参考英文维基百科的说明',
+            ']的問題，很抱歉幫不上忙。\n英文維基百科上的申訴請自行向英文維基百科申請，請參考英文維基百科的說明'
+          ) +
+          '[LINK:https://en.wikipedia.org/wiki/Wikipedia:Unblock_Ticket_Request_System]' +
+          '。\n';
       }
       if (this.mailOptionsOther.includes(this.MAILOP_GIPBE)) {
         othertext +=
           this.resULS(
-            '由于各个语言的维基百科是各自独立管理的，这里仅能处理中文维基百科（zh.wikipedia.org）的问题，很抱歉帮不上忙。\n若有需要全域IP封禁豁免权，请参考',
-            '由於各個語言的維基百科是各自獨立管理的，這裡僅能處理中文維基百科（zh.wikipedia.org）的問題，很抱歉幫不上忙。\n若有需要全域IP封鎖例外權，請參考'
+            '由于各个语言的维基百科是各自独立管理的，这里仅能处理中文维基百科',
+            '由於各個語言的維基百科是各自獨立管理的，這裡僅能處理中文維基百科'
           ) +
-          ' https://w.wiki/4oNv ' +
-          this.resULS('申请。\n', '申請。\n');
+          '[LINK:https://zh.wikipedia.org]' +
+          this.resULS(
+            ']的问题，很抱歉帮不上忙。\n若有需要全域IP封禁豁免权，请参考Meta-Wiki上的说明',
+            ']的問題，很抱歉幫不上忙。\n若有需要全域IP封鎖例外權，請參考Meta-Wiki上的說明'
+          ) +
+          '[LINK:https://meta.wikimedia.org/wiki/IP_block_exempt/zh]' +
+          this.resULS(']来申请。\n', ']來申請。\n');
       }
 
       if (pleaseProvide.length === 1) {
@@ -559,12 +567,18 @@ export default {
       text += pleaseProvideAppend;
       text += othertext;
 
-      if (links.length > 0) {
-        text += '\n';
-        for (let index = 0; index < links.length; index++) {
-          text += '[' + (index + 1) + '] ' + links[index] + '\n';
-        }
+      let links_text = '';
+      let links_count = 0;
+      text = text.replace(/\[LINK:([^\]]+?)\]/g, function (match, link) {
+        links_count++;
+        links_text += '[' + links_count + '] ' + link + '\n';
+        return '[' + links_count + ']';
+      });
+
+      if (links_count > 0) {
+        text += '\n' + links_text;
       }
+
       text += '\n';
       text += 'User:' + mw.config.get('wgUserName') + '\n';
       text += '--\n';
