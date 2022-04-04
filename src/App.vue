@@ -64,7 +64,7 @@
 
     <fieldset>
       <legend>{{ wgULS('选择您要进行的操作', '選擇您要進行的操作') }}</legend>
-      狀態：
+      {{ wgULS('状态：', '狀態：') }}
       <ul>
         <li v-if="normalizedUsername && username != normalizedUsername" class="uzh-status-info">
           {{ wgULS('用户名被正规化为“', '使用者名稱被正規化為「') }}{{ this.normalizedUsername }}{{ wgULS('”', '」') }}
@@ -561,7 +561,7 @@ export default {
         }
         text += this.resULS(
           '以让我们做下一步处理（复制您看到的文字对我们处理较为方便，请避免使用截图）。\n',
-          '以讓我們做下一步處理（複製您看到的文字對我們處理較為方便，請避免使用截圖）。\n'
+          '以便我們做下一步處理（複製您看到的文字對我們處理較為方便，請避免使用截圖）。\n'
         );
       }
       text += pleaseProvideAppend;
