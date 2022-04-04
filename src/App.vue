@@ -527,8 +527,8 @@ export default {
           ) +
           '[LINK:https://zh.wikipedia.org]' +
           this.resULS(
-            ']的问题，很抱歉帮不上忙。\n英文维基百科上的申诉请自行向英文维基百科申请，请参考英文维基百科的说明',
-            ']的問題，很抱歉幫不上忙。\n英文維基百科上的申訴請自行向英文維基百科申請，請參考英文維基百科的說明'
+            '的问题，很抱歉帮不上忙。\n英文维基百科上的申诉请自行向英文维基百科申请，请参考英文维基百科的说明',
+            '的問題，很抱歉幫不上忙。\n英文維基百科上的申訴請自行向英文維基百科申請，請參考英文維基百科的說明'
           ) +
           '[LINK:https://en.wikipedia.org/wiki/Wikipedia:Unblock_Ticket_Request_System]' +
           '。\n';
@@ -541,8 +541,8 @@ export default {
           ) +
           '[LINK:https://zh.wikipedia.org]' +
           this.resULS(
-            ']的问题，很抱歉帮不上忙。\n若有需要全域IP封禁豁免权，请参考Meta-Wiki上的说明',
-            ']的問題，很抱歉幫不上忙。\n若有需要全域IP封鎖例外權，請參考Meta-Wiki上的說明'
+            '的问题，很抱歉帮不上忙。\n若有需要全域IP封禁豁免权，请参考Meta-Wiki上的说明',
+            '的問題，很抱歉幫不上忙。\n若有需要全域IP封鎖例外權，請參考Meta-Wiki上的說明'
           ) +
           '[LINK:https://meta.wikimedia.org/wiki/IP_block_exempt/zh]' +
           this.resULS(']来申请。\n', ']來申請。\n');
