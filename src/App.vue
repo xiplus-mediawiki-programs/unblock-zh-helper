@@ -380,7 +380,7 @@ export default {
     },
     mailContent() {
       const useUsernameChecker =
-        this.resULS('请务必使用签名检查工具', '請務必使用簽名檢查工具') +
+        this.resULS('请务必使用用户名检查工具', '請務必使用使用者名稱檢查工具') +
         '[LINK:https://zhwiki-username-check.toolforge.org]' +
         this.resULS('来确认您想要注册的用户名是否可用。', '來確認您想要註冊的使用者名稱是否可用。');
 
@@ -560,7 +560,7 @@ export default {
           text += '　' + (i + 1) + '. ' + pleaseProvide[i];
         }
         text += this.resULS(
-          '以让我们做下一步处理（复制您看到的文字对我们处理较为方便，请避免使用截图）。\n',
+          '以便我们做下一步处理（复制您看到的文字对我们处理较为方便，请避免使用截图）。\n',
           '以便我們做下一步處理（複製您看到的文字對我們處理較為方便，請避免使用截圖）。\n'
         );
       }
