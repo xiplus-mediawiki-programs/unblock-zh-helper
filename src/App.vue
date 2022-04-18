@@ -1151,7 +1151,7 @@ export default {
             wgULS('经由', '經由') +
             self.summary +
             wgULS('的授权备案', '的授權備案') +
-            '。|status=+}}--~~~~';
+            '。|status=+}}';
           let summary =
             '[[Special:UserRights/' +
             self.normalizedUsername +
