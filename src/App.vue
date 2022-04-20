@@ -545,7 +545,7 @@ export default {
             '的問題，很抱歉幫不上忙。\n若有需要全域IP封鎖例外權，請參考Meta-Wiki上的說明'
           ) +
           '[LINK:https://meta.wikimedia.org/wiki/IP_block_exempt/zh]' +
-          this.resULS(']来申请。\n', ']來申請。\n');
+          this.resULS('来申请。\n', '來申請。\n');
       }
 
       if (pleaseProvide.length === 1) {
