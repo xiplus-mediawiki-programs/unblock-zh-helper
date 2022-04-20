@@ -580,15 +580,12 @@ export default {
       }
 
       text += '\n';
-      text += 'User:' + mw.config.get('wgUserName') + '\n';
-      text += '--\n';
       text +=
         this.resULS(
-          '注意：请在回复任何邮件时选择“回复所有人”（收件者包含 ',
-          '注意：請在回覆任何郵件時選擇「回覆所有人」（收件者包含 '
-        ) +
-        'unblock-zh@lists.wikimedia.org' +
-        this.resULS(' ），否则可能无法收到回复', ' ），否則可能無法收到回覆');
+          '请在回复邮件时确保收件者包含 unblock-zh@lists.wikimedia.org ，否则可能无法收到回复（可使用邮件软件的“回复所有人”功能）',
+          '請在回覆郵件時確保收件者包含 unblock-zh@lists.wikimedia.org ，否則可能無法收到回覆（可使用郵件軟體的「回覆所有人」功能）'
+        ) + '\n\n';
+      text += 'User:' + mw.config.get('wgUserName');
 
       return text;
     },
