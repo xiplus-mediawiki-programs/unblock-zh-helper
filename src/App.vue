@@ -209,15 +209,30 @@
         <label>
           <input
             v-model="actionOptions"
-            :value="ACTOP_RESETPASSWORD"
+            :value="ACTOP_RESETPASSWORDUSERNAME"
             type="checkbox"
             @change="autoMailOptionsResetPassword"
           />
           {{ wgULS('重置“', '重設「') }}{{ normalizedUsername }}{{ wgULS('”的密码', '」的密碼') }}</label
         >
-        <span v-if="statusResetPassword">
+        <span v-if="statusResetPasswordUsername">
           -
-          <span :class="'uzh-status-' + statusResetPasswordType">{{ statusResetPassword }}</span></span
+          <span :class="'uzh-status-' + statusResetPasswordUsernameType">{{ statusResetPasswordUsername }}</span></span
+        >
+      </div>
+      <div v-if="email">
+        <label>
+          <input
+            v-model="actionOptions"
+            :value="ACTOP_RESETPASSWORDEMAIL"
+            type="checkbox"
+            @change="autoMailOptionsResetPassword"
+          />
+          {{ wgULS('重置“', '重設「') }}{{ email }}{{ wgULS('”的密码', '」的密碼') }}</label
+        >
+        <span v-if="statusResetPasswordEmail">
+          -
+          <span :class="'uzh-status-' + statusResetPasswordEmailType">{{ statusResetPasswordEmail }}</span></span
         >
       </div>
       <button @click.prevent="runActions">
@@ -364,8 +379,10 @@ export default {
       statusNoticeIpbe: '',
       statusRfIpbeType: 'info',
       statusRfIpbe: '',
-      statusResetPasswordType: 'info',
-      statusResetPassword: '',
+      statusResetPasswordUsernameType: 'info',
+      statusResetPasswordUsername: '',
+      statusResetPasswordEmailType: 'info',
+      statusResetPasswordEmail: '',
       mailOptionsUsername: '',
       mailOptionsIpbe: '',
       mailOptionsResetPassword: false,
@@ -600,7 +617,8 @@ export default {
     this.ACTOP_GRANTIPBE = 'GrantIpbe';
     this.ACTOP_NOTICEIPBE = 'NoticeIpbe';
     this.ACTOP_RFIPBE = 'RfIpbe';
-    this.ACTOP_RESETPASSWORD = 'ResetPassword';
+    this.ACTOP_RESETPASSWORDUSERNAME = 'ResetPasswordUsername';
+    this.ACTOP_RESETPASSWORDEMAIL = 'ResetPasswordEmail';
     this.MAILOP_NOUSERNAME = 'NoUsername';
     this.MAILOP_USERNAMEUSED = 'UsernameUsed';
     this.MAILOP_USERNAMEBANNED = 'UsernameBanned';
@@ -827,11 +845,15 @@ export default {
         }
         this.actionOptions.push(this.ACTOP_GRANTIPBE);
       }
-      if (this.inputResetPassword && this.username) {
-        if (!this.inputCreateAccount && this.usernameStatus == this.ACCST_NEEDS_LOCAL) {
-          this.actionOptions.push(this.ACTOP_CREATELOCAL);
+      if (this.inputResetPassword) {
+        if (this.username) {
+          if (!this.inputCreateAccount && this.usernameStatus == this.ACCST_NEEDS_LOCAL) {
+            this.actionOptions.push(this.ACTOP_CREATELOCAL);
+          }
+          this.actionOptions.push(this.ACTOP_RESETPASSWORDUSERNAME);
+        } else if (this.email) {
+          this.actionOptions.push(this.ACTOP_RESETPASSWORDEMAIL);
         }
-        this.actionOptions.push(this.ACTOP_RESETPASSWORD);
       }
       this.autoMailOptionsAccount();
       this.autoMailOptionsIpbe();
@@ -864,7 +886,7 @@ export default {
           this.mailOptionsUsername = this.MAILOP_NOUSERNAME;
         }
       } else if (this.inputResetPassword) {
-        if (!this.normalizedUsername) {
+        if (!this.normalizedUsername && !this.email) {
           this.mailOptionsUsername = this.MAILOP_NOUSERNAME;
         }
       }
@@ -896,7 +918,9 @@ export default {
       }
     },
     autoMailOptionsResetPassword() {
-      this.mailOptionsResetPassword = this.actionOptions.includes(this.ACTOP_RESETPASSWORD);
+      this.mailOptionsResetPassword =
+        this.actionOptions.includes(this.ACTOP_RESETPASSWORDUSERNAME) ||
+        this.actionOptions.includes(this.ACTOP_RESETPASSWORDEMAIL);
     },
     runActions() {
       this.clearStatus();
@@ -905,7 +929,21 @@ export default {
         alert(wgULS('没什么好做的', '沒什麼好做的'));
         return;
       }
-      if (!this.summary && !(this.actionOptions.length === 1 && this.actionOptions[0] === this.ACTOP_RESETPASSWORD)) {
+      if (
+        this.actionOptions.includes(this.ACTOP_RESETPASSWORDUSERNAME) &&
+        this.actionOptions.includes(this.ACTOP_RESETPASSWORDEMAIL)
+      ) {
+        alert(wgULS('重置密码操作仅能选取一个', '重設密碼操作僅能選取一個'));
+        return;
+      }
+      if (
+        !this.summary &&
+        !(
+          this.actionOptions.length === 1 &&
+          (this.actionOptions.includes(this.ACTOP_RESETPASSWORDUSERNAME) ||
+            this.actionOptions.includes(this.ACTOP_RESETPASSWORDEMAIL))
+        )
+      ) {
         alert(wgULS('请输入日志摘要', '請輸入日誌摘要'));
         return;
       }
@@ -930,7 +968,8 @@ export default {
           this.statusRfIpbe = wgULS('由于授权失败，此操作已自动取消', '由於授權失敗，此操作已自動取消');
         }
       });
-      tm.add(this.resetPassword, [this.createAccount, this.createLocal]);
+      tm.add(this.resetPasswordUsername, [this.createAccount, this.createLocal]);
+      tm.add(this.resetPasswordEmail, [this.createAccount, this.createLocal]);
       tm.execute();
     },
     createAccount() {
@@ -1180,11 +1219,11 @@ export default {
         });
       return def;
     },
-    resetPassword() {
+    resetPasswordUsername() {
       let def = $.Deferred();
       let self = this;
 
-      if (!this.actionOptions.includes(this.ACTOP_RESETPASSWORD)) {
+      if (!this.actionOptions.includes(this.ACTOP_RESETPASSWORDUSERNAME)) {
         return def.resolve();
       }
       api
@@ -1194,21 +1233,55 @@ export default {
         })
         .done(function (data) {
           if (data.resetpassword.status === 'success') {
-            self.statusResetPasswordType = 'success';
-            self.statusResetPassword = wgULS('成功重置密码', '成功重設密碼');
+            self.statusResetPasswordUsernameType = 'success';
+            self.statusResetPasswordUsername = wgULS('成功重置密码', '成功重設密碼');
           } else {
-            self.statusResetPasswordType = 'error';
-            self.statusResetPassword = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+            self.statusResetPasswordUsernameType = 'error';
+            self.statusResetPasswordUsername = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
           }
           def.resolve();
         })
         .fail(function (code, error) {
           console.error(error);
-          self.statusResetPasswordType = 'error';
+          self.statusResetPasswordUsernameType = 'error';
           if (error.error && error.error.info) {
-            self.statusResetPassword = error.error.info;
+            self.statusResetPasswordUsername = error.error.info;
           } else {
-            self.statusResetPassword = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+            self.statusResetPasswordUsername = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+          }
+          def.resolve();
+        });
+      return def;
+    },
+    resetPasswordEmail() {
+      let def = $.Deferred();
+      let self = this;
+
+      if (!this.actionOptions.includes(this.ACTOP_RESETPASSWORDEMAIL)) {
+        return def.resolve();
+      }
+      api
+        .postWithEditToken({
+          action: 'resetpassword',
+          email: self.email,
+        })
+        .done(function (data) {
+          if (data.resetpassword.status === 'success') {
+            self.statusResetPasswordEmailType = 'success';
+            self.statusResetPasswordEmail = wgULS('成功重置密码', '成功重設密碼');
+          } else {
+            self.statusResetPasswordEmailType = 'error';
+            self.statusResetPasswordEmail = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+          }
+          def.resolve();
+        })
+        .fail(function (code, error) {
+          console.error(error);
+          self.statusResetPasswordEmailType = 'error';
+          if (error.error && error.error.info) {
+            self.statusResetPasswordEmail = error.error.info;
+          } else {
+            self.statusResetPasswordEmail = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
           }
           def.resolve();
         });
@@ -1226,14 +1299,16 @@ export default {
         this.statusGrantIpbeType =
         this.statusNoticeIpbeType =
         this.statusRfIpbeType =
-        this.statusResetPasswordType =
+        this.statusResetPasswordUsernameType =
+        this.statusResetPasswordEmailType =
           'info';
       this.statusCreateAcccount =
         this.statusCreateLocal =
         this.statusGrantIpbe =
         this.statusNoticeIpbe =
         this.statusRfIpbe =
-        this.statusResetPassword =
+        this.statusResetPasswordUsername =
+        this.statusResetPasswordEmail =
           '';
     },
     copyMailContent() {
