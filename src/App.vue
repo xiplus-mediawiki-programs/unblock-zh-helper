@@ -451,10 +451,13 @@ export default {
           useUsernameChecker +
           '\n';
       } else if (this.mailOptionsUsername === this.MAILOP_ACCOUNTCREATED) {
-        text += this.resULS(
-          '已代为注册账户，账户的随机密码用另一封邮件寄出，随机密码的有效期限仅有7天，请尽速登录修改密码。\n',
-          '已代為註冊帳戶，帳戶的隨機密碼用另一封郵件寄出，隨機密碼的有效期限僅有7天，請盡速登入修改密碼。\n'
-        );
+        text +=
+          this.resULS('已代为注册账户“', '已代為註冊帳號「') +
+          this.normalizedUsername +
+          this.resULS(
+            '”，账户的随机密码用另一封邮件寄出，随机密码的有效期限仅有7天，请尽速登录修改密码。\n',
+            '」，帳號的隨機密碼用另一封郵件寄出，隨機密碼的有效期限僅有7天，請盡速登入修改密碼。\n'
+          );
       } else if (this.mailOptionsUsername === this.MAILOP_ACCTNOTEXISTS) {
         text +=
           this.resULS(
@@ -518,7 +521,7 @@ export default {
           '[LINK:https://meta.wikimedia.org/wiki/No_open_proxies/zh]' +
           this.resULS(
             '，所以我们不会解除封禁这个IP。我们可以为您注册一个账户以绕过这个限制。\n',
-            '，所以我們不會解除封鎖這個IP。我們可以為您註冊一個帳戶以繞過這個限制。\n'
+            '，所以我們不會解除封鎖這個IP。我們可以為您註冊一個帳號以繞過這個限制。\n'
           );
 
         pleaseProvide.push(
@@ -531,7 +534,7 @@ export default {
         othertext +=
           this.resULS(
             '由于有其他人使用此段IP地址对维基百科进行破坏，所以您使用这一个范围的IP地址已经被暂时封禁。\n如果您与破坏行为无关，请注册一个账户并登录后即可编辑。若您无法自行注册账户，请回信告知您想要的用户名，“不要提供密码”。',
-            '由於有其他人使用此段IP位址對維基百科進行破壞，所以您使用這一個範圍的IP位址已經被暫時封鎖。\n如果您與破壞行為無關，請註冊一個帳戶並登入後即可編輯。若您無法自行註冊帳號，請回信告知您想要的使用者名稱，「不要提供密碼」。'
+            '由於有其他人使用此段IP位址對維基百科進行破壞，所以您使用這一個範圍的IP位址已經被暫時封鎖。\n如果您與破壞行為無關，請註冊一個帳號並登入後即可編輯。若您無法自行註冊帳號，請回信告知您想要的使用者名稱，「不要提供密碼」。'
           ) +
           useUsernameChecker +
           '\n';
