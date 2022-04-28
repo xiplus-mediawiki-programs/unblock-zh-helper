@@ -454,9 +454,11 @@ export default {
         text +=
           this.resULS('已代为注册账户“', '已代為註冊帳號「') +
           this.normalizedUsername +
+          this.resULS('”，账户的随机密码用另一封邮件寄出到“', '」，帳號的隨機密碼用另一封郵件寄出到「') +
+          this.email +
           this.resULS(
-            '”，账户的随机密码用另一封邮件寄出，随机密码的有效期限仅有7天，请尽速登录修改密码。\n',
-            '」，帳號的隨機密碼用另一封郵件寄出，隨機密碼的有效期限僅有7天，請盡速登入修改密碼。\n'
+            '”，随机密码的有效期限仅有7天，请尽速登录修改密码。\n',
+            '」，隨機密碼的有效期限僅有7天，請盡速登入修改密碼。\n'
           );
       } else if (this.mailOptionsUsername === this.MAILOP_ACCTNOTEXISTS) {
         text +=
