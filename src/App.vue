@@ -318,6 +318,10 @@
           <input v-model="mailOptionsOther" :value="MAILOP_GIPBE" type="checkbox" />
           {{ wgULS('全域封禁', '全域封鎖') }}</label
         >
+        <label class="uzh-inline-options">
+          <input v-model="mailOptionsOther" :value="MAILOP_COMPANY" type="checkbox" />
+          {{ wgULS('公司/组织', '公司/組織') }}</label
+        >
         <br />
 
         <label class="uzh-inline-options">
@@ -569,6 +573,44 @@ export default {
           '[LINK:https://meta.wikimedia.org/wiki/IP_block_exempt/zh]' +
           this.resULS('来申请。\n', '來申請。\n');
       }
+      if (this.mailOptionsOther.includes(this.MAILOP_COMPANY)) {
+        text +=
+          this.resULS('先为您简要说明几项维基百科的规定：\n', '先為您簡要說明幾項維基百科的規定：\n') +
+          this.resULS(
+            '　1. 禁止多人共享账户，禁止和其他人分享密码，如果您的公司/组织有多个人需要编辑，请每一位都各自申请账户。\n',
+            '　1. 禁止多人共用帳號，禁止和其他人分享密碼，如果您的公司/組織有多個人需要編輯，請每一位都各自申請帳號。\n'
+          ) +
+          this.resULS(
+            '　2. 禁止使用公司/组织的名称作为用户名，这个账户代表您一个人，请为自己取个名称。\n',
+            '　2. 禁止使用公司/組織的名稱作為使用者名稱，這個帳號代表您一個人，請為自己取個名稱。\n'
+          ) +
+          this.resULS(
+            '　3. 如果是因为您在公司/组织的工作而来编辑维基百科，维基百科禁止您“直接”对页面做出编辑，您必须：\n',
+            '　3. 如果是因為您在公司/組織的工作而來編輯維基百科，維基百科禁止您「直接」對頁面做出編輯，您必須：\n'
+          ) +
+          this.resULS(
+            '　　3-1. 公开声明您的雇用者、客户、组织，具体操作请之后参阅Wikipedia:有偿编辑方针#如何作出申报',
+            '　　3-1. 公開聲明您的僱用者、客戶、組織，具體操作請之後參閱Wikipedia:有償編輯方針#如何作出申報'
+          ) +
+          ' [LINK:https://zh.wikipedia.org/wiki/Wikipedia:有償編輯方針#如何作出申報]\n' +
+          this.resULS(
+            '　　3-2. 向其他人说明您想要编辑的内容并获得同意，具体操作请之后参阅Wikipedia:有偿编辑方针#本地替代方针',
+            '　　3-2. 向其他人說明您想要編輯的內容並獲得同意，具體操作請之後參閱Wikipedia:有償編輯方針#本地替代方針'
+          ) +
+          ' [LINK:https://zh.wikipedia.org/wiki/Wikipedia:有償編輯方針#本地替代方針]\n' +
+          this.resULS(
+            '　4. 更多相关的说明请见Wikipedia:如何介绍自己的公司',
+            '　4. 更多相關的說明請見Wikipedia:如何介绍自己的公司'
+          ) +
+          ' [LINK:https://zh.wikipedia.org/wiki/Wikipedia:如何介绍自己的公司] ' +
+          this.resULS(
+            '，请您在编辑前务必阅读并理解这篇说明，如果上述说明或给出链接的内容有任何不理解的地方，或您有任何其他问题，请在Wikipedia:互助客栈/求助',
+            '，請您在編輯前務必閱讀並理解這篇說明，如果上述說明或給出連結的內容有任何不理解的地方，或您有任何其他問題，請在Wikipedia:互助客栈/求助'
+          ) +
+          ' [LINK:https://zh.wikipedia.org/wiki/Wikipedia:互助客栈/求助] ' +
+          this.resULS('发问。\n', '發問。\n') +
+          this.resULS('若您同意上述要求，我们仍可完成您的请求。\n', '若您同意上述要求，我們仍可完成您的請求。\n');
+      }
 
       if (pleaseProvide.length === 1) {
         text += this.resULS('请告知', '請告知') + pleaseProvide[0];
@@ -638,6 +680,7 @@ export default {
     this.MAILOP_RANGEBLOCK = 'RangeBlock';
     this.MAILOP_ENWIKIBLOCK = 'EnwikiBlock';
     this.MAILOP_GIPBE = 'Gipbe';
+    this.MAILOP_COMPANY = 'Company';
     this.SUMMARY_SUFFIX = '（使用[[User:Xiplus/js/unblock-zh-helper|unblock-zh-helper]]）';
     mw.messages.set('antispoof-name-1', '$1');
     mw.messages.set('antispoof-name-123', '$1$2$3');
