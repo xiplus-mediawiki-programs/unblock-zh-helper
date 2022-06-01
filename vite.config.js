@@ -11,7 +11,11 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  esbuild: {
+    charset: 'utf8',
+  },
   build: {
+    // minify: false,
     lib: {
       entry: 'src/main.js',
       formats: ['iife'],
