@@ -20,7 +20,8 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
-        banner: '/*! <nowiki>\nItroduction: https://zh.wikipedia.org/wiki/User:Xiplus/js/unblock-zh-helper\nUnminify code: https://github.com/Xi-Plus/unblock-zh-helper\n*/',
+        banner:
+          '/*! <nowiki>\nItroduction: https://zh.wikipedia.org/wiki/User:Xiplus/js/unblock-zh-helper\nUnminify code: https://github.com/Xi-Plus/unblock-zh-helper\n*/',
         footer: '/*! </nowiki> */',
       },
     },

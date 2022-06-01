@@ -3,50 +3,48 @@
 <template>
   <div id="uzh-container">
     <fieldset>
-      <legend>
-        {{ wgULS('填写申请人给予的资料', '填寫申請人給予的資料') }}
-      </legend>
+      <legend>{{ $t('fill-legend') }}</legend>
       <div>
         <button @click.prevent="resetForm">
-          {{ wgULS('重置表单', '重設表單') }}
+          {{ $t('reset-form') }}
         </button>
       </div>
-      要求操作：
+      {{ $t('requested-actions') }}
       <label class="uzh-inline-options">
         <input v-model="inputCreateAccount" type="checkbox" />
-        {{ wgULS('创建账户', '建立帳號') }}
+        {{ $t('input-create-account') }}
       </label>
       <label class="uzh-inline-options">
         <input v-model="inputGrantIpbe" type="checkbox" />
-        {{ wgULS('授予IP封禁豁免权', '授予IP封鎖例外權') }}
+        {{ $t('input-grant-ipbe') }}
       </label>
       <label class="uzh-inline-options">
         <input v-model="inputBlockAppeal" type="checkbox" />
-        {{ wgULS('封禁申诉', '封鎖申訴') }}
+        {{ $t('input-unblock-request') }}
       </label>
       <label class="uzh-inline-options">
         <input v-model="inputResetPassword" type="checkbox" />
-        {{ wgULS('重置密码', '重設密碼') }}
+        {{ $t('input-reset-password') }}
       </label>
       <br />
       <label>
-        {{ wgULS('用户名：', '使用者名稱：') }}
+        {{ $t('username') }}
         <input v-model="username" type="text" style="width: 200px" />
       </label>
       <br />
       <label>
-        {{ wgULS('电子邮件地址：', '電子郵件地址：') }}
+        {{ $t('email') }}
         <input v-model="email" type="email" style="width: 300px" placeholder="xxx@example.com" />
       </label>
       <br />
       <label>
-        {{ wgULS('IP地址或封禁ID：', 'IP地址或封鎖ID：') }}
-        <input v-model="ip" type="text" style="width: 300px" placeholder="1.2.3.4 或 #123456" />
+        {{ $t('ip-or-block-id') }}
+        <input v-model="ip" type="text" style="width: 300px" :placeholder="$t('ip-or-block-id-placeholder')" />
       </label>
       <br />
       <label>
         <span class="uzh-fullwidth-label">
-          {{ wgULS('邮件存档URL：', '郵件存檔URL：') }}
+          {{ $t('mail-archive-url') }}
         </span>
         <span class="uzh-fullwidth-input">
           <input
@@ -58,26 +56,26 @@
         </span>
       </label>
       <button @click.prevent="checkInput">
-        {{ wgULS('检查信息', '檢查資訊') }}
+        {{ $t('check-infomation') }}
       </button>
     </fieldset>
 
     <fieldset>
-      <legend>{{ wgULS('选择您要进行的操作', '選擇您要進行的操作') }}</legend>
-      {{ wgULS('状态：', '狀態：') }}
+      <legend>{{ $t('choose-actions') }}</legend>
+      {{ $t('status') }}
       <ul>
         <li v-if="normalizedUsername && username != normalizedUsername" class="uzh-status-info">
-          {{ wgULS('用户名被正规化为“', '使用者名稱被正規化為「') }}{{ this.normalizedUsername }}{{ wgULS('”', '」') }}
+          {{ $t('normalized-username', [this.normalizedUsername]) }}
         </li>
         <li
           v-if="normalizedUsername && inputCreateAccount && usernameStatus == ACCST_NOT_EXISTS"
           class="uzh-status-success"
         >
-          {{ wgULS('账户可以创建', '帳號可以建立') }}（<a
-            :href="'https://www.google.com/search?q=' + encodeURIComponent(normalizedUsername)"
-            target="_blank"
-            >{{ wgULS('Google搜索', 'Google搜尋') }}</a
-          >）
+          <i18n-t keypath="can-create-account" tag="span">
+            <a :href="'https://www.google.com/search?q=' + encodeURIComponent(normalizedUsername)" target="_blank">
+              {{ $t('google-search') }}
+            </a>
+          </i18n-t>
         </li>
         <li
           v-if="
@@ -87,63 +85,65 @@
           "
           class="uzh-status-error"
         >
-          {{ wgULS('账户不存在', '帳號不存在') }}
+          {{ $t('account-not-exists') }}
         </li>
         <li
           v-if="normalizedUsername && usernameStatus == ACCST_NEEDS_LOCAL"
           :class="{ 'uzh-status-error': inputCreateAccount, 'uzh-status-success': !inputCreateAccount }"
         >
-          {{ wgULS('需要强制创建本地账户', '需要強制建立本地帳號') }}
+          {{ $t('needs-force-create-local') }}
         </li>
         <li
           v-if="normalizedUsername && usernameStatus == ACCST_EXISTS"
           :class="{ 'uzh-status-error': inputCreateAccount, 'uzh-status-success': !inputCreateAccount }"
         >
-          {{ wgULS('账户已被注册', '帳號已被註冊') }}（<a
-            :href="getUrl('Special:CentralAuth', { target: normalizedUsername })"
-            target="_blank"
-            >{{ wgULS('检查全域账户', '檢查全域帳號') }}</a
-          >）
+          <i18n-t keypath="account-exists" tag="span">
+            <a :href="getUrl('Special:CentralAuth', { target: normalizedUsername })" target="_blank">
+              {{ $t('check-central-account') }}
+            </a>
+          </i18n-t>
         </li>
         <li v-if="normalizedUsername && inputCreateAccount && usernameStatus == ACCST_BANNED" class="uzh-status-error">
-          {{ wgULS('此用户名被系统禁止', '此使用者名稱被系統禁止')
-          }}<span v-if="usernameBannedDetail">：<span v-html="usernameBannedDetail"></span></span>
+          <span v-if="usernameBannedDetail">
+            <i18n-t keypath="username-banned-detail" tag="span">
+              <span v-html="usernameBannedDetail"></span>
+            </i18n-t>
+          </span>
+          <span v-else>
+            {{ $t('username-banned') }}
+          </span>
         </li>
         <li v-if="accountBlocked" class="uzh-status-error">
-          <b
-            >{{ wgULS('警告：账户被', '警告：帳號被') }}{{ accountBlockBy
-            }}{{ wgULS('封禁，原因为：', '封鎖，原因為：') }}{{ accountBlockReason }}</b
-          >（<a :href="getUrl('Special:Log/block', { page: 'User:' + normalizedUsername })" target="_blank">{{
-            wgULS('封禁日志', '封鎖日誌')
-          }}</a
-          >）
+          <i18n-t keypath="account-blocked-row" tag="span">
+            <b>{{ $t('account-blocked-text', [accountBlockBy, accountBlockReason]) }}</b>
+            <a :href="getUrl('Special:Log/block', { page: 'User:' + normalizedUsername })" target="_blank">
+              {{ $t('block-log') }}
+            </a>
+          </i18n-t>
         </li>
         <li v-if="ipChecked && ip && blocked" class="uzh-status-success">
-          {{ 'IP已被' }}{{ blockBy }}{{ wgULS('封禁，原因为：', '封鎖，原因為：') }}{{ blockReason }}（<a
-            :href="getUrl('Special:BlockList', { wpTarget: ip })"
-            target="_blank"
-            >{{ wgULS('检查', '檢查') }}</a
-          >）
+          <i18n-t keypath="ip-blocked-row" tag="span">
+            <span>{{ $t('ip-blocked-text', [blockBy, blockReason]) }}</span>
+            <a :href="getUrl('Special:BlockList', { wpTarget: ip })" target="_blank">{{ $t('check-block-list') }}</a>
+          </i18n-t>
         </li>
         <li v-if="ipChecked && ip && !blocked" class="uzh-status-error">
-          {{ wgULS('申请人给定的IP未被封禁', '申請人給定的IP未被封鎖') }}（<a
-            :href="getUrl('Special:BlockList', { wpTarget: ip })"
-            target="_blank"
-            >{{ wgULS('检查', '檢查') }}</a
-          >）
+          <i18n-t keypath="ip-not-blocked" tag="span">
+            <a :href="getUrl('Special:BlockList', { wpTarget: ip })" target="_blank">{{ $t('check-block-list') }}</a>
+          </i18n-t>
         </li>
         <li v-if="accountHasIpbe" class="uzh-status-error">
-          {{ wgULS('用户已拥有IP封禁豁免权', '使用者已擁有IP封鎖例外權') }}（<a
-            :href="getUrl('Special:Log', { type: 'rights', page: 'User:' + normalizedUsername })"
-            target="_blank"
-            >{{ wgULS('检查权限日志', '檢查權限日誌') }}</a
-          >）
+          <i18n-t keypath="user-has-ipbe" tag="span">
+            <a :href="getUrl('Special:Log', { type: 'rights', page: 'User:' + normalizedUsername })" target="_blank">
+              {{ $t('check-right-log') }}
+            </a>
+          </i18n-t>
         </li>
       </ul>
       <div>
         <label>
           <span class="uzh-fullwidth-label">
-            {{ wgULS('日志摘要：', '日誌摘要：') }}
+            {{ $t('log-summary') }}
           </span>
           <span class="uzh-fullwidth-input">
             <input v-model="summary" type="text" style="width: 100%" />
@@ -153,8 +153,7 @@
       <div v-if="inputCreateAccount && usernameStatus == ACCST_NOT_EXISTS">
         <label>
           <input v-model="actionOptions" :value="ACTOP_CREATEACCOUNT" type="checkbox" />
-          {{ wgULS('创建新账户“', '建立新帳號「') }}{{ normalizedUsername
-          }}{{ wgULS('”，临时密码寄至“', '」，臨時密碼寄至「') }}{{ email }}{{ wgULS('”', '」') }}</label
+          {{ $t('create-new-account', [normalizedUsername, email]) }}</label
         >
         <span v-if="statusCreateAcccount">
           -
@@ -164,11 +163,13 @@
       <div v-if="usernameStatus == ACCST_NEEDS_LOCAL">
         <label>
           <input v-model="actionOptions" :value="ACTOP_CREATELOCAL" type="checkbox" @change="autoMailOptionsAccount" />
-          {{ wgULS('强制创建本地账户“', '強制建立本地帳號「') }}{{ normalizedUsername }}{{ wgULS('”', '」') }}（<a
-            :href="getUrl('Special:CentralAuth', { target: normalizedUsername })"
-            target="_blank"
-            >{{ wgULS('检查全域账户', '檢查全域帳號') }}</a
-          >）</label
+          <i18n-t keypath="force-create-local" tag="span">
+            <span>{{ normalizedUsername }}</span>
+            <a :href="getUrl('Special:CentralAuth', { target: normalizedUsername })" target="_blank">
+              {{ $t('check-central-account') }}
+            </a>
+          </i18n-t></label
+        >
         >
         <span v-if="statusCreateLocal">
           -
@@ -178,7 +179,7 @@
       <div v-if="normalizedUsername">
         <label>
           <input v-model="actionOptions" :value="ACTOP_GRANTIPBE" type="checkbox" @change="autoMailOptionsIpbe" />
-          {{ wgULS('授予“', '授予「') }}{{ normalizedUsername }}{{ wgULS('”IP封禁豁免权', '」IP封鎖例外權') }}</label
+          {{ $t('grant-user-ipbe', [normalizedUsername]) }}</label
         >
         <span v-if="statusGrantIpbe">
           -
@@ -188,7 +189,7 @@
       <div v-if="normalizedUsername" style="padding-left: 18px">
         <label>
           <input v-model="actionOptions" :value="ACTOP_NOTICEIPBE" type="checkbox" />
-          {{ wgULS('发送授权通知', '發送授權通知') }}</label
+          {{ $t('send-ipbe-notice') }}</label
         >
         <span v-if="statusNoticeIpbe">
           -
@@ -198,7 +199,7 @@
       <div v-if="normalizedUsername" style="padding-left: 18px">
         <label>
           <input v-model="actionOptions" :value="ACTOP_RFIPBE" type="checkbox" />
-          {{ wgULS('在WP:RFIPBE备案', '在WP:RFIPBE備案') }}</label
+          {{ $t('record-at-rfipbe') }}</label
         >
         <span v-if="statusRfIpbe">
           -
@@ -213,7 +214,7 @@
             type="checkbox"
             @change="autoMailOptionsResetPassword"
           />
-          {{ wgULS('重置“', '重設「') }}{{ normalizedUsername }}{{ wgULS('”的密码', '」的密碼') }}</label
+          {{ $t('reset-password-by-username', [normalizedUsername]) }}</label
         >
         <span v-if="statusResetPasswordUsername">
           -
@@ -228,7 +229,7 @@
             type="checkbox"
             @change="autoMailOptionsResetPassword"
           />
-          {{ wgULS('重置“', '重設「') }}{{ email }}{{ wgULS('”的密码', '」的密碼') }}</label
+          {{ $t('reset-password-by-email', [email]) }}</label
         >
         <span v-if="statusResetPasswordEmail">
           -
@@ -236,110 +237,110 @@
         >
       </div>
       <button @click.prevent="runActions">
-        {{ wgULS('执行选定的操作', '執行選定的操作') }}
+        {{ $t('run-actions') }}
       </button>
-      <a :href="getUrl('Special:RecentChanges', { hidebyothers: 1 })" target="_blank" style="margin-left: 10px">{{
-        wgULS('检查您的操作', '檢查您的操作')
-      }}</a>
+      <a :href="getUrl('Special:RecentChanges', { hidebyothers: 1 })" target="_blank" style="margin-left: 10px">
+        {{ $t('check-your-actions') }}
+      </a>
     </fieldset>
 
     <fieldset>
-      <legend>{{ wgULS('回复邮件', '回覆郵件') }}</legend>
+      <legend>{{ $t('reply-mail') }}</legend>
       <div>
         <label class="uzh-inline-options">
           <input v-model="mailOptionsUsername" :value="MAILOP_NOUSERNAME" type="radio" />
-          {{ wgULS('未给用户名', '未給使用者名稱') }}</label
+          {{ $t('username-not-provided') }}</label
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsUsername" :value="MAILOP_USERNAMEUSED" type="radio" />
-          {{ wgULS('用户名已被占用', '使用者名稱已被占用') }}</label
+          {{ $t('mailopt-username-exists') }}</label
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsUsername" :value="MAILOP_USERNAMEBANNED" type="radio" />
-          {{ wgULS('用户名被系统禁止', '使用者名稱被系統禁止') }}</label
+          {{ $t('mailopt-username-banned') }}</label
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsUsername" :value="MAILOP_ACCOUNTCREATED" type="radio" />
-          {{ wgULS('已创建账户', '已建立帳號') }}</label
+          {{ $t('mailopt-account-created') }}</label
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsUsername" :value="MAILOP_ACCOUNTLOCAL" type="radio" />
-          {{ wgULS('已强制创建本地账户', '已強制建立本地帳號') }}</label
+          {{ $t('mailopt-force-create-local') }}</label
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsUsername" :value="MAILOP_ACCTNOTEXISTS" type="radio" />
-          {{ wgULS('申请IPBE所给账户不存在', '申請IPBE所給帳號不存在') }}</label
+          {{ $t('mailopt-account-not-exists') }}</label
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsUsername" value="" type="radio" />
-          {{ wgULS('无', '無') }}</label
+          {{ $t('mailopt-none') }}</label
         >
         <br />
 
         <label class="uzh-inline-options">
           <input v-model="mailOptionsIpbe" :value="MAILOP_NOIP" type="radio" />
-          {{ wgULS('未给IP地址', '未給IP地址') }}</label
+          {{ $t('mailopt-ip-not-provided') }}</label
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsIpbe" :value="MAILOP_IPNOTBLOCKED" type="radio" />
-          {{ wgULS('所给IP未被封禁', '所給IP未被封鎖') }}</label
+          {{ $t('mailopt-ip-not-blocked') }}</label
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsIpbe" :value="MAILOP_IPBEGRANTED" type="radio" />
-          {{ wgULS('已授予IP封禁豁免权', '已授予IP封鎖例外權') }}</label
+          {{ $t('mailopt-ipbe-granted') }}</label
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsIpbe" :value="MAILOP_MAYNEEDIPBE" type="radio" />
-          {{ wgULS('申请人可能需要IP封禁豁免权', '申請人可能需要IP封鎖例外權') }}</label
+          {{ $t('mailopt-may-need-ipbe') }}</label
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsIpbe" value="" type="radio" />
-          {{ wgULS('无', '無') }}</label
+          {{ $t('mailopt-none') }}</label
         >
         <br />
 
         <label class="uzh-inline-options">
           <input v-model="mailOptionsResetPassword" type="checkbox" />
-          {{ wgULS('已重置密码', '已重設密碼') }}</label
+          {{ $t('mailopt-password-reset') }}</label
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsOther" :value="MAILOP_OPENPROXY" type="checkbox" />
-          {{ wgULS('开放代理', '開放代理') }}</label
+          {{ $t('mailopt-open-proxy') }}</label
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsOther" :value="MAILOP_RANGEBLOCK" type="checkbox" />
-          {{ wgULS('段封禁', '段封鎖') }}</label
+          {{ $t('mailopt-range-block') }}</label
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsOther" :value="MAILOP_ENWIKIBLOCK" type="checkbox" />
-          {{ wgULS('英文维基封禁', '英文維基封鎖') }}</label
+          {{ $t('mailopt-enwiki-block') }}</label
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsOther" :value="MAILOP_GIPBE" type="checkbox" />
-          {{ wgULS('全域封禁', '全域封鎖') }}</label
+          {{ $t('mailopt-global-block') }}</label
         >
         <label class="uzh-inline-options">
           <input v-model="mailOptionsOther" :value="MAILOP_COMPANY" type="checkbox" />
-          {{ wgULS('公司/组织', '公司/組織') }}</label
+          {{ $t('mailopt-company') }}</label
         >
         <br />
 
         <label class="uzh-inline-options">
-          <input v-model="mailOptionsVariant" value="hans" type="radio" />
-          {{ wgULS('简体', '簡體') }}</label
+          <input v-model="mailOptionsVariant" value="zh-hans" type="radio" />
+          {{ $t('lang-hans') }}</label
         >
         <label class="uzh-inline-options">
-          <input v-model="mailOptionsVariant" value="hant" type="radio" />
-          {{ wgULS('繁体', '繁體') }}</label
+          <input v-model="mailOptionsVariant" value="zh-hant" type="radio" />
+          {{ $t('lang-hant') }}</label
         >
-        <button @click.prevent="copyMailContent">{{ wgULS('复制以下内容', '複製以下內容') }}</button>
-        <span v-if="copyTimeoutId"> - {{ wgULS('已复制！', '已複製！') }}</span>
+        <button @click.prevent="copyMailContent">{{ $t('copy-contents') }}</button>
+        <span v-if="copyTimeoutId"> - {{ $t('copid') }}</span>
       </div>
       <textarea v-model="mailContent" id="uzh-mail-content" readonly rows="14"></textarea>
     </fieldset>
 
     <fieldset>
-      <legend>{{ wgULS('调试', '除錯') }}</legend>
+      <legend>{{ $t('debug') }}</legend>
       {{ allData }}
     </fieldset>
   </div>
@@ -391,7 +392,7 @@ export default {
       mailOptionsIpbe: '',
       mailOptionsResetPassword: false,
       mailOptionsOther: [],
-      mailOptionsVariant: 'hans',
+      mailOptionsVariant: 'zh-hans',
       copyTimeoutId: null,
     };
   },
@@ -400,12 +401,12 @@ export default {
       return this.$data;
     },
     mailContent() {
-      const useUsernameChecker =
-        this.resULS('请务必使用用户名检查工具', '請務必使用使用者名稱檢查工具') +
-        '[LINK:https://zhwiki-username-check.toolforge.org]' +
-        this.resULS('来确认您想要注册的用户名是否可用。', '來確認您想要註冊的使用者名稱是否可用。');
-
-      let text = '您好：\n';
+      let oldLocale = this.$i18n.locale;
+      this.$i18n.locale = this.mailOptionsVariant;
+      const useUsernameChecker = this.$t('use-username-checker', [
+        '[LINK:https://zhwiki-username-check.toolforge.org]',
+      ]);
+      let text = this.$t('mail-hello') + '\n';
       let othertext = '';
       let pleaseProvide = [];
       let pleaseProvideHeader = '';
@@ -413,228 +414,96 @@ export default {
 
       if (this.mailOptionsUsername === this.MAILOP_NOUSERNAME) {
         if (this.inputCreateAccount) {
-          pleaseProvide.push(
-            this.resULS('您想要的用户名，“不要提供密码”。', '您想要的使用者名稱，「不要提供密碼」。') +
-              useUsernameChecker +
-              '\n'
-          );
+          pleaseProvide.push(this.$t('mail-wanted-username') + useUsernameChecker);
           if (this.mailOptionsOther.includes(this.MAILOP_COMPANY)) {
-            pleaseProvide.push(
-              this.resULS(
-                '您私人的电子邮件地址，用来接收随机密码及绑定到您的账户。\n',
-                '您私人的電子郵件地址，用來接收隨機密碼及綁定到您的帳號。\n'
-              )
-            );
+            pleaseProvide.push(this.$t('mail-private-email'));
           }
         } else if (this.inputGrantIpbe || this.inputBlockAppeal) {
           pleaseProvide.push(
-            this.resULS('您的用户名（如果有，登录后从参数设置查看', '您的使用者名稱（如果有，登入後從偏好設定檢視') +
-              '[LINK:https://zh.wikipedia.org/wiki/Special:Preferences]' +
-              this.resULS('，这不是电子邮件地址）\n', '，這不是電子郵件位址）\n')
+            this.$t('mail-your-username', ['[LINK:https://zh.wikipedia.org/wiki/Special:Preferences]'])
           );
           if (this.inputGrantIpbe) {
-            pleaseProvideAppend =
-              this.resULS(
-                '如果您没有账户且无法自行注册，请告知您想要的用户名，“不要提供密码”。',
-                '如果您沒有帳號且無法自行註冊，請告知您想要的使用者名稱，「不要提供密碼」。'
-              ) +
-              useUsernameChecker +
-              '\n';
+            pleaseProvideAppend = this.$t('mail-no-account-give-username') + useUsernameChecker + '\n';
           }
         } else if (this.inputResetPassword) {
-          pleaseProvide.push(
-            this.resULS('您的用户名，我们能协助您重置密码。\n', '您的使用者名稱，我們能協助您重設密碼。\n')
-          );
+          pleaseProvide.push(this.$t('mail-your-username-help-reset'));
         }
       } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEUSED) {
-        text +=
-          this.resULS(
-            '您所指定的用户名已经被注册。请提供另一个用户名，',
-            '您所指定的使用者名稱已經被註冊。請提供另一個使用者名稱，'
-          ) +
-          useUsernameChecker +
-          '\n';
+        text += this.$t('mail-username-exists-provide-another') + useUsernameChecker + '\n';
       } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEBANNED) {
-        text +=
-          this.resULS(
-            '您所指定的用户名被系统禁止。请提供另一个用户名，',
-            '您所指定的使用者名稱被系統禁止。請提供另一個使用者名稱，'
-          ) +
-          useUsernameChecker +
-          '\n';
+        text += this.$t('mail-username-banned-provide-another') + useUsernameChecker + '\n';
       } else if (this.mailOptionsUsername === this.MAILOP_ACCOUNTCREATED) {
-        text +=
-          this.resULS('已代为注册账户“', '已代為註冊帳號「') +
-          this.normalizedUsername +
-          this.resULS('”，账户的随机密码用另一封邮件寄出到“', '」，帳號的隨機密碼用另一封郵件寄出到「') +
-          this.email +
-          this.resULS(
-            '”，随机密码的有效期限仅有7天，请尽速登录修改密码。\n',
-            '」，隨機密碼的有效期限僅有7天，請盡速登入修改密碼。\n'
-          );
+        text += this.$t('mail-account-created', [this.normalizedUsername, this.email]) + '\n';
       } else if (this.mailOptionsUsername === this.MAILOP_ACCTNOTEXISTS) {
         text +=
-          this.resULS(
-            '您提供的用户名不存在，请确认正确后再回信（登录后从参数设置查看',
-            '您提供的使用者名稱不存在，請確認正確後再回信（登入後從偏好設定檢視'
-          ) +
-          '[LINK:https://zh.wikipedia.org/wiki/Special:Preferences]' +
-          this.resULS('，这不是电子邮件地址）\n', '，這不是電子郵件位址）\n');
+          this.$t('mail-username-not-exists', ['[LINK:https://zh.wikipedia.org/wiki/Special:Preferences]']) + '\n';
       } else if (this.mailOptionsUsername === this.MAILOP_ACCOUNTLOCAL) {
-        text += this.resULS(
-          '由于您先前于中文维基百科以外的站点注册，已为您的账户强制创建在中文维基百科的本地账户，您可以使用相同的账户密码登录。\n',
-          '由於您先前於中文維基百科以外的站點註冊，已為您的帳號強制建立在中文維基百科的本地帳號，您可以使用相同的帳號密碼登入。\n'
-        );
+        text += this.$t('mail-create-local') + '\n';
       }
 
       if (this.mailOptionsIpbe === this.MAILOP_NOIP || this.mailOptionsIpbe === this.MAILOP_MAYNEEDIPBE) {
         if (this.mailOptionsIpbe === this.MAILOP_MAYNEEDIPBE) {
-          pleaseProvideHeader = this.resULS(
-            '若登录后仍然无法编辑，请回信告知以下信息：\n',
-            '若登入後仍然無法編輯，請回信告知以下資訊：\n'
-          );
+          pleaseProvideHeader = this.$t('mail-cannot-edit-after-login') + '\n';
         }
-        pleaseProvide.push(this.resULS('被封禁的IP地址\n', '被封鎖的IP位址\n'));
-        pleaseProvide.push(
-          this.resULS(
-            '封禁ID（如果有，可在告知被封禁页面看到“您当前的IP地址是xxxx，而该封禁ID是#xxxx。”，这不是用户名）\n',
-            '封鎖ID（如果有，可在告知被封鎖頁面看到「您目前的IP位址是xxxx，而該封鎖ID是#xxxx。」，這不是使用者名稱）\n'
-          )
-        );
+        pleaseProvide.push(this.$t('mail-blocked-ip'));
+        pleaseProvide.push(this.$t('mail-block-id'));
       } else if (this.mailOptionsIpbe === this.MAILOP_IPNOTBLOCKED) {
-        othertext += this.resULS(
-          '您所给的IP地址未被封禁，请确认正确的IP地址或封禁ID后再回信，您可在告知被封禁页面看到“您当前的IP地址是xxxx，而该封禁ID是#xxxx。”，若您已经可以编辑，则不用回信。\n',
-          '您所給的IP位址未被封鎖，請確認正確的IP位址或封鎖ID後再回信，您可在告知被封鎖頁面看到「您目前的IP位址是xxxx，而該封鎖ID是#xxxx。」，若您已經可以編輯，則不用回信。\n'
-        );
+        othertext += this.$t('mail-ip-not-blocked') + '\n';
       } else if (this.mailOptionsIpbe === this.MAILOP_IPBEGRANTED) {
-        text += this.resULS(
-          '已授予您IP封禁豁免权限，登录后即可编辑页面。祝您编辑愉快。\n',
-          '已授予您IP封鎖例外權限，登入後即可編輯頁面。祝您編輯愉快。\n'
-        );
+        text += this.$t('mail-ipbe-granted') + '\n';
       }
 
       if (this.mailOptionsResetPassword) {
-        text += this.resULS(
-          '已协助重置密码，将会寄出重置密码的信件给您，随机密码的有效期限仅有7天，请尽速登录修改密码。\n如果没有收到邮件，请检查垃圾邮件匣，并确定您之前有在维基百科上登记您的电子邮件地址。\n',
-          '已協助重設密碼，將會寄出重設密碼的信件給您，隨機密碼的有效期限僅有7天，請盡速登入修改密碼。\n如果沒有收到郵件，請檢查垃圾郵件匣，並確定您之前有在維基百科上登記您的電子郵件位址。\n'
-        );
+        text += this.$t('mail-password-reset') + '\n';
         if (this.inputGrantIpbe && this.mailOptionsIpbe === '') {
-          text += this.resULS(
-            '在确定您能够登录您的账户后才会授予您IP封禁豁免权，请成功登录后再回信告知。\n',
-            '在確定您能夠登入您的帳號後才會授予您IP封鎖例外權，請成功登入後再回信告知。\n'
-          );
+          text += this.$t('mail-make-sure-login') + '\n';
         }
       }
 
       if (this.mailOptionsOther.includes(this.MAILOP_OPENPROXY)) {
-        text +=
-          this.resULS(
-            '维基媒体基金会禁止使用某些开放代理来编辑维基百科',
-            '維基媒體基金會禁止使用某些開放代理來編輯維基百科'
-          ) +
-          '[LINK:https://meta.wikimedia.org/wiki/No_open_proxies/zh]' +
-          this.resULS(
-            '，所以我们不会解除封禁这个IP。我们可以为您注册一个账户以绕过这个限制。\n',
-            '，所以我們不會解除封鎖這個IP。我們可以為您註冊一個帳號以繞過這個限制。\n'
-          );
+        text += this.$t('mail-no-open-proxy', ['[LINK:https://meta.wikimedia.org/wiki/No_open_proxies/zh]']) + '\n';
 
-        pleaseProvide.push(
-          this.resULS('您想要的用户名，“不要提供密码”。', '您想要的使用者名稱，「不要提供密碼」。') +
-            useUsernameChecker +
-            '\n'
-        );
+        pleaseProvide.push(this.$t('mail-wanted-username') + useUsernameChecker);
       }
       if (this.mailOptionsOther.includes(this.MAILOP_RANGEBLOCK)) {
-        othertext +=
-          this.resULS(
-            '由于有其他人使用此段IP地址对维基百科进行破坏，所以您使用这一个范围的IP地址已经被暂时封禁。\n如果您与破坏行为无关，请注册一个账户并登录后即可编辑。若您无法自行注册账户，请回信告知您想要的用户名，“不要提供密码”。',
-            '由於有其他人使用此段IP位址對維基百科進行破壞，所以您使用這一個範圍的IP位址已經被暫時封鎖。\n如果您與破壞行為無關，請註冊一個帳號並登入後即可編輯。若您無法自行註冊帳號，請回信告知您想要的使用者名稱，「不要提供密碼」。'
-          ) +
-          useUsernameChecker +
-          '\n';
+        othertext += this.$t('mail-range-block') + useUsernameChecker + '\n';
       }
       if (this.mailOptionsOther.includes(this.MAILOP_ENWIKIBLOCK)) {
         othertext +=
-          this.resULS(
-            '由于各个语言的维基百科是各自独立管理的，这里仅能处理中文维基百科',
-            '由於各個語言的維基百科是各自獨立管理的，這裡僅能處理中文維基百科'
-          ) +
-          '[LINK:https://zh.wikipedia.org]' +
-          this.resULS(
-            '的问题，很抱歉帮不上忙。\n英文维基百科上的申诉请自行向英文维基百科申请，请参考英文维基百科的说明',
-            '的問題，很抱歉幫不上忙。\n英文維基百科上的申訴請自行向英文維基百科申請，請參考英文維基百科的說明'
-          ) +
-          '[LINK:https://en.wikipedia.org/wiki/Wikipedia:Unblock_Ticket_Request_System]' +
-          '。\n';
+          this.$t('mail-only-handle-zhwiki', ['[LINK:https://zh.wikipedia.org]']) +
+          '\n' +
+          this.$t('mail-go-enwiki', ['[LINK:https://en.wikipedia.org/wiki/Wikipedia:Unblock_Ticket_Request_System]']) +
+          '\n';
       }
       if (this.mailOptionsOther.includes(this.MAILOP_GIPBE)) {
         othertext +=
-          this.resULS(
-            '由于各个语言的维基百科是各自独立管理的，这里仅能处理中文维基百科',
-            '由於各個語言的維基百科是各自獨立管理的，這裡僅能處理中文維基百科'
-          ) +
-          '[LINK:https://zh.wikipedia.org]' +
-          this.resULS(
-            '的问题，很抱歉帮不上忙。\n若有需要全域IP封禁豁免权，请参考Meta-Wiki上的说明',
-            '的問題，很抱歉幫不上忙。\n若有需要全域IP封鎖例外權，請參考Meta-Wiki上的說明'
-          ) +
-          '[LINK:https://meta.wikimedia.org/wiki/IP_block_exempt/zh]' +
-          this.resULS('来申请。\n', '來申請。\n');
+          this.$t('mail-only-handle-zhwiki', ['[LINK:https://zh.wikipedia.org]']) +
+          '\n' +
+          this.$t('mail-gipbe-go-meta', ['[LINK:https://meta.wikimedia.org/wiki/IP_block_exempt/zh]']) +
+          '\n';
       }
       if (this.mailOptionsOther.includes(this.MAILOP_COMPANY)) {
         text +=
-          this.resULS('先为您简要说明几项维基百科的规定：\n', '先為您簡要說明幾項維基百科的規定：\n') +
-          this.resULS(
-            '　1. 禁止多人共享账户，禁止和其他人分享密码，如果您的公司/组织有多个人需要编辑，请每一位都各自申请账户。\n',
-            '　1. 禁止多人共用帳號，禁止和其他人分享密碼，如果您的公司/組織有多個人需要編輯，請每一位都各自申請帳號。\n'
-          ) +
-          this.resULS(
-            '　2. 禁止使用公司/组织的名称作为用户名，这个账户代表您一个人，请为自己取个名称。也请您提供您私人的电子邮件地址来接受随机密码邮件。\n',
-            '　2. 禁止使用公司/組織的名稱作為使用者名稱，這個帳號代表您一個人，請為自己取個名稱。也請您提供您私人的電子郵件地址來接受隨機密碼郵件。\n'
-          ) +
-          this.resULS(
-            '　3. 如果是因为您在公司/组织的工作而来编辑维基百科，维基百科禁止您“直接”对页面做出编辑，您必须：\n',
-            '　3. 如果是因為您在公司/組織的工作而來編輯維基百科，維基百科禁止您「直接」對頁面做出編輯，您必須：\n'
-          ) +
-          this.resULS(
-            '　　3-1. 公开声明您的雇用者、客户、组织，具体操作请之后参阅Wikipedia:有偿编辑方针#如何作出申报',
-            '　　3-1. 公開聲明您的僱用者、客戶、組織，具體操作請之後參閱Wikipedia:有償編輯方針#如何作出申報'
-          ) +
-          ' [LINK:https://zh.wikipedia.org/wiki/Wikipedia:有償編輯方針#如何作出申報]\n' +
-          this.resULS(
-            '　　3-2. 向其他人说明您想要编辑的内容并获得同意，具体操作请之后参阅Wikipedia:有偿编辑方针#本地替代方针',
-            '　　3-2. 向其他人說明您想要編輯的內容並獲得同意，具體操作請之後參閱Wikipedia:有償編輯方針#本地替代方針'
-          ) +
-          ' [LINK:https://zh.wikipedia.org/wiki/Wikipedia:有償編輯方針#本地替代方針]\n' +
-          this.resULS(
-            '　4. 更多相关的说明请见Wikipedia:如何介绍自己的公司',
-            '　4. 更多相關的說明請見Wikipedia:如何介绍自己的公司'
-          ) +
-          ' [LINK:https://zh.wikipedia.org/wiki/Wikipedia:如何介绍自己的公司] ' +
-          this.resULS(
-            '，请您在编辑前务必阅读并理解这篇说明，如果上述说明或给出链接的内容有任何不理解的地方，或您有任何其他问题，请在Wikipedia:互助客栈/求助',
-            '，請您在編輯前務必閱讀並理解這篇說明，如果上述說明或給出連結的內容有任何不理解的地方，或您有任何其他問題，請在Wikipedia:互助客栈/求助'
-          ) +
-          ' [LINK:https://zh.wikipedia.org/wiki/Wikipedia:互助客栈/求助] ' +
-          this.resULS('发问。\n', '發問。\n') +
-          this.resULS('若您同意上述要求，我们仍可完成您的请求。\n', '若您同意上述要求，我們仍可完成您的請求。\n');
+          this.$t('mail-company', [
+            '[LINK:https://zh.wikipedia.org/wiki/Wikipedia:有償編輯方針#如何作出申報]',
+            '[LINK:https://zh.wikipedia.org/wiki/Wikipedia:有償編輯方針#本地替代方針]',
+            '[LINK:https://zh.wikipedia.org/wiki/Wikipedia:如何介绍自己的公司] ',
+            '[LINK:https://zh.wikipedia.org/wiki/Wikipedia:互助客栈/求助] ',
+          ]) + '\n';
       }
 
       if (pleaseProvide.length === 1) {
-        text += this.resULS('请告知', '請告知') + pleaseProvide[0];
+        text += this.$t('mail-please-provide') + pleaseProvide[0] + '\n';
       } else if (pleaseProvide.length > 1) {
         if (pleaseProvideHeader) {
           text += pleaseProvideHeader;
         } else {
-          text += this.resULS('请告知以下信息：\n', '請告知以下資訊：\n');
+          text += this.$t('mail-please-provide-following') + '\n';
         }
         for (let i = 0; i < pleaseProvide.length; i++) {
-          text += '　' + (i + 1) + '. ' + pleaseProvide[i];
+          text += this.$t('mail-please-provide-row', [i + 1, pleaseProvide[i]]) + '\n';
         }
-        text += this.resULS(
-          '以便我们做下一步处理（复制您看到的文字对我们处理较为方便，请避免使用截图）。\n',
-          '以便我們做下一步處理（複製您看到的文字對我們處理較為方便，請避免使用截圖）。\n'
-        );
+        text += this.$t('mail-please-provide-footer') + '\n';
       }
       text += pleaseProvideAppend;
       text += othertext;
@@ -652,13 +521,10 @@ export default {
       }
 
       text += '\n';
-      text +=
-        this.resULS(
-          '请在回复邮件时确保收件者包含 unblock-zh@lists.wikimedia.org ，否则可能无法收到回复（可使用邮件软件的“回复所有人”功能）',
-          '請在回覆郵件時確保收件者包含 unblock-zh@lists.wikimedia.org ，否則可能無法收到回覆（可使用郵件軟體的「回覆所有人」功能）'
-        ) + '\n\n';
+      text += this.$t('mail-reply-to-all') + '\n\n';
       text += 'User:' + mw.config.get('wgUserName');
 
+      this.$i18n.locale = oldLocale;
       return text;
     },
   },
@@ -689,7 +555,7 @@ export default {
     this.MAILOP_ENWIKIBLOCK = 'EnwikiBlock';
     this.MAILOP_GIPBE = 'Gipbe';
     this.MAILOP_COMPANY = 'Company';
-    this.SUMMARY_SUFFIX = '（使用[[User:Xiplus/js/unblock-zh-helper|unblock-zh-helper]]）';
+    this.SUMMARY_SUFFIX = this.$t('summary-suffix', ['[[User:Xiplus/js/unblock-zh-helper|unblock-zh-helper]]']);
     mw.messages.set('antispoof-name-1', '$1');
     mw.messages.set('antispoof-name-123', '$1$2$3');
     mw.loader.load('ext.gadget.CollapsibleSidebar');
@@ -703,7 +569,7 @@ export default {
       this.archiveUrl = this.archiveUrl.trim();
 
       if (this.ip && !mw.util.isIPAddress(this.ip, true) && !/^#\d+$/.test(this.ip)) {
-        alert(wgULS('IP地址或封禁ID格式错误', 'IP地址或封鎖ID格式錯誤'));
+        alert(this.$t('ip-or-block-id-wrong-format'));
         return;
       }
 
@@ -712,9 +578,9 @@ export default {
           /https?:\/\/lists\.wikimedia\.org\/hyperkitty\/(list\/unblock-zh@lists\.wikimedia\.org\/(?:message|thread)\/[^/]+\/?)/
         );
         if (m) {
-          this.summary = '[[listarchive:' + m[1] + '|unblock-zh' + this.wgULS('申请', '申請') + ']]';
+          this.summary = '[[listarchive:' + m[1] + '|' + this.$t('unblock-zh-apply') + ']]';
         } else {
-          alert(wgULS('邮件存档URL格式错误', '郵件存檔URL格式錯誤'));
+          alert(this.$t('mailopt-archive-wrong-format'));
           return;
         }
       }
@@ -753,7 +619,7 @@ export default {
             }
           } else if ('invalid' in user) {
             self.usernameStatus = self.ACCST_BANNED;
-            self.usernameBannedDetail = wgULS('包含不允许的字符。', '包含不允許的字元。');
+            self.usernameBannedDetail = self.$t('bad-username-banned-characters');
           } else if ('cancreateerror' in user) {
             self.usernameStatus = self.ACCST_NOT_EXISTS;
             let cancreateerror = user['cancreateerror'][0];
@@ -761,10 +627,7 @@ export default {
               self.usernameStatus = self.ACCST_NEEDS_LOCAL;
             } else if (cancreateerror.code === 'invaliduser') {
               self.usernameStatus = self.ACCST_BANNED;
-              self.usernameBannedDetail = wgULS(
-                '不可使用电子邮件地址作为用户名。',
-                '不可使用電子郵件地址作為使用者名稱。'
-              );
+              self.usernameBannedDetail = self.$t('bad-username-email');
             } else if (cancreateerror.code === 'antispoof-name-illegal') {
               self.usernameStatus = self.ACCST_BANNED;
               self.usernameBannedDetail = mw.msg('antispoof-name-illegal', ...cancreateerror.params);
@@ -982,14 +845,14 @@ export default {
       this.clearStatus();
 
       if (this.actionOptions.length === 0) {
-        alert(wgULS('没什么好做的', '沒什麼好做的'));
+        alert(this.$t('nothing-to-do'));
         return;
       }
       if (
         this.actionOptions.includes(this.ACTOP_RESETPASSWORDUSERNAME) &&
         this.actionOptions.includes(this.ACTOP_RESETPASSWORDEMAIL)
       ) {
-        alert(wgULS('重置密码操作仅能选取一个', '重設密碼操作僅能選取一個'));
+        alert(this.$t('reset-password-actions-only-one'));
         return;
       }
       if (
@@ -1000,11 +863,11 @@ export default {
             this.actionOptions.includes(this.ACTOP_RESETPASSWORDEMAIL))
         )
       ) {
-        alert(wgULS('请输入日志摘要', '請輸入日誌摘要'));
+        alert(this.$t('please-input-summary'));
         return;
       }
       if (this.actionOptions.includes(this.ACTOP_CREATEACCOUNT) && !this.email) {
-        alert(wgULS('没有提供电子邮件地址', '沒有提供電子郵件地址'));
+        alert(this.$t('action-no-email'));
         return;
       }
 
@@ -1015,13 +878,13 @@ export default {
       tm.add(this.NoticeIpbe, [this.grantIpbe], () => {
         if (this.actionOptions.includes(this.ACTOP_NOTICEIPBE)) {
           this.statusNoticeIpbeType = 'error';
-          this.statusNoticeIpbe = wgULS('由于授权失败，此操作已自动取消', '由於授權失敗，此操作已自動取消');
+          this.statusNoticeIpbe = this.$t('grant-failed-auto-cancel');
         }
       });
       tm.add(this.RfIpbe, [this.grantIpbe], () => {
         if (this.actionOptions.includes(this.ACTOP_RFIPBE)) {
           this.statusRfIpbeType = 'error';
-          this.statusRfIpbe = wgULS('由于授权失败，此操作已自动取消', '由於授權失敗，此操作已自動取消');
+          this.statusRfIpbe = this.$t('grant-failed-auto-cancel');
         }
       });
       tm.add(this.resetPasswordUsername, [this.createAccount, this.createLocal]);
@@ -1053,10 +916,10 @@ export default {
               self.statusCreateAcccount = data.createaccount.message;
             } else if (data.createaccount.status === 'PASS') {
               self.statusCreateAcccountType = 'success';
-              self.statusCreateAcccount = wgULS('成功创建', '成功建立');
+              self.statusCreateAcccount = self.$t('account-success-created');
             } else {
               self.statusCreateAcccountType = 'error';
-              self.statusCreateAcccount = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+              self.statusCreateAcccount = self.$t('unknown-error-check-console');
             }
             def.resolve();
           })
@@ -1066,7 +929,7 @@ export default {
             if (error.error && error.error.info) {
               self.statusCreateAcccount = error.error.info;
             } else {
-              self.statusCreateAcccount = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+              self.statusCreateAcccount = self.$t('unknown-error-check-console');
             }
             def.reject();
           });
@@ -1088,7 +951,7 @@ export default {
         })
         .done(function () {
           self.statusCreateLocalType = 'success';
-          self.statusCreateLocal = wgULS('成功创建本地账户', '成功建立本地帳號');
+          self.statusCreateLocal = self.$t('action-create-local-success');
           def.resolve();
         })
         .fail(function (code, error) {
@@ -1097,7 +960,7 @@ export default {
           if (error.error && error.error.info) {
             self.statusCreateLocal = error.error.info;
           } else {
-            self.statusCreateLocal = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+            self.statusCreateLocal = self.$t('unknown-error-check-console');
           }
           def.reject();
         });
@@ -1116,11 +979,11 @@ export default {
           user: self.normalizedUsername,
           add: 'ipblock-exempt',
           expiry: 'infinite',
-          reason: '+' + wgULS('IP封禁豁免', 'IP封鎖例外') + '，' + self.summary + self.SUMMARY_SUFFIX,
+          reason: self.$t('grant-ipbe-summary', [self.summary]) + self.SUMMARY_SUFFIX,
         })
         .done(function () {
           self.statusGrantIpbeType = 'success';
-          self.statusGrantIpbe = '成功授予';
+          self.statusGrantIpbe = self.$t('action-grant-ipbe-success');
           def.resolve();
         })
         .fail(function (code, error) {
@@ -1129,7 +992,7 @@ export default {
           if (error.error && error.error.info) {
             self.statusGrantIpbe = error.error.info;
           } else {
-            self.statusGrantIpbe = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+            self.statusGrantIpbe = self.$t('unknown-error-check-console');
           }
           def.reject();
         });
@@ -1155,14 +1018,10 @@ export default {
           var page = data.query.pages[0];
           if (page.missing !== undefined) {
             api
-              .create(
-                usertalk,
-                { summary: wgULS('授予IP封禁豁免权通知', '授予IP封鎖例外權通知') + self.SUMMARY_SUFFIX },
-                message
-              )
+              .create(usertalk, { summary: self.$t('notice-ipbe-summary') + self.SUMMARY_SUFFIX }, message)
               .done(function () {
                 self.statusNoticeIpbeType = 'success';
-                self.statusNoticeIpbe = '成功通知';
+                self.statusNoticeIpbe = self.$t('action-notice-success');
                 def.resolve();
               })
               .fail(function (code, error) {
@@ -1171,7 +1030,7 @@ export default {
                 if (error.error && error.error.info) {
                   self.statusNoticeIpbe = error.error.info;
                 } else {
-                  self.statusNoticeIpbe = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+                  self.statusNoticeIpbe = self.$t('unknown-error-check-console');
                 }
                 def.reject();
               });
@@ -1181,13 +1040,13 @@ export default {
                 action: 'flow',
                 page: usertalk,
                 submodule: 'new-topic',
-                nttopic: wgULS('授予IP封禁豁免权通知', '授予IP封鎖例外權通知'),
+                nttopic: self.$t('notice-ipbe-summary'),
                 ntcontent: message,
                 ntformat: 'wikitext',
               })
               .done(function () {
                 self.statusNoticeIpbeType = 'success';
-                self.statusNoticeIpbe = '成功通知';
+                self.statusNoticeIpbe = self.$t('action-notice-success');
                 def.resolve();
               })
               .fail(function (code, error) {
@@ -1196,7 +1055,7 @@ export default {
                 if (error.error && error.error.info) {
                   self.statusNoticeIpbe = error.error.info;
                 } else {
-                  self.statusNoticeIpbe = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+                  self.statusNoticeIpbe = self.$t('unknown-error-check-console');
                 }
                 def.reject();
               });
@@ -1205,12 +1064,12 @@ export default {
               .edit(usertalk, function (revision) {
                 return {
                   text: (revision.content + '\n\n' + message).trim(),
-                  summary: wgULS('授予IP封禁豁免权通知', '授予IP封鎖例外權通知') + self.SUMMARY_SUFFIX,
+                  summary: self.$t('notice-ipbe-summary') + self.SUMMARY_SUFFIX,
                 };
               })
               .done(function () {
                 self.statusNoticeIpbeType = 'success';
-                self.statusNoticeIpbe = '成功通知';
+                self.statusNoticeIpbe = self.$t('action-notice-success');
                 def.resolve();
               })
               .fail(function (code, error) {
@@ -1219,7 +1078,7 @@ export default {
                 if (error.error && error.error.info) {
                   self.statusNoticeIpbe = error.error.info;
                 } else {
-                  self.statusNoticeIpbe = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+                  self.statusNoticeIpbe = self.$t('unknown-error-check-console');
                 }
                 def.reject();
               });
@@ -1237,22 +1096,8 @@ export default {
       api
         .edit('Wikipedia:權限申請/申請IP封禁例外權', function (revision) {
           let content =
-            '{{subst:rfp|' +
-            self.normalizedUsername +
-            '|2=' +
-            wgULS('经由', '經由') +
-            self.summary +
-            wgULS('的授权备案', '的授權備案') +
-            '。|status=+}}';
-          let summary =
-            '[[Special:UserRights/' +
-            self.normalizedUsername +
-            '|' +
-            '授予' +
-            self.normalizedUsername +
-            wgULS('IP封禁豁免权', 'IP封鎖例外權') +
-            ']]' +
-            wgULS('备案', '備案');
+            '{{subst:rfp|' + self.normalizedUsername + '|2=' + self.$t('rfipbe-text', [self.summary]) + '|status=+}}';
+          let summary = self.$t('rfipbe-summary', [self.normalizedUsername]);
           return {
             text: revision.content + '\n\n' + content,
             summary: summary + self.SUMMARY_SUFFIX,
@@ -1260,7 +1105,7 @@ export default {
         })
         .done(function () {
           self.statusRfIpbeType = 'success';
-          self.statusRfIpbe = wgULS('成功备案', '成功備案');
+          self.statusRfIpbe = self.$t('fill-success');
           def.resolve();
         })
         .fail(function (code, error) {
@@ -1269,7 +1114,7 @@ export default {
           if (error.error && error.error.info) {
             self.statusRfIpbe = error.error.info;
           } else {
-            self.statusRfIpbe = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+            self.statusRfIpbe = self.$t('unknown-error-check-console');
           }
           def.reject();
         });
@@ -1290,10 +1135,10 @@ export default {
         .done(function (data) {
           if (data.resetpassword.status === 'success') {
             self.statusResetPasswordUsernameType = 'success';
-            self.statusResetPasswordUsername = wgULS('成功重置密码', '成功重設密碼');
+            self.statusResetPasswordUsername = self.$t('success-reset-password');
           } else {
             self.statusResetPasswordUsernameType = 'error';
-            self.statusResetPasswordUsername = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+            self.statusResetPasswordUsername = self.$t('unknown-error-check-console');
           }
           def.resolve();
         })
@@ -1303,7 +1148,7 @@ export default {
           if (error.error && error.error.info) {
             self.statusResetPasswordUsername = error.error.info;
           } else {
-            self.statusResetPasswordUsername = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+            self.statusResetPasswordUsername = self.$t('unknown-error-check-console');
           }
           def.resolve();
         });
@@ -1324,10 +1169,10 @@ export default {
         .done(function (data) {
           if (data.resetpassword.status === 'success') {
             self.statusResetPasswordEmailType = 'success';
-            self.statusResetPasswordEmail = wgULS('成功重置密码', '成功重設密碼');
+            self.statusResetPasswordEmail = self.$t('success-reset-password');
           } else {
             self.statusResetPasswordEmailType = 'error';
-            self.statusResetPasswordEmail = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+            self.statusResetPasswordEmail = self.$t('unknown-error-check-console');
           }
           def.resolve();
         })
@@ -1337,17 +1182,11 @@ export default {
           if (error.error && error.error.info) {
             self.statusResetPasswordEmail = error.error.info;
           } else {
-            self.statusResetPasswordEmail = wgULS('未知错误，请查看浏览器console', '未知錯誤，請查看瀏覽器console');
+            self.statusResetPasswordEmail = self.$t('unknown-error-check-console');
           }
           def.resolve();
         });
       return def;
-    },
-    resULS(hans, hant) {
-      if (this.mailOptionsVariant === 'hans') {
-        return hans;
-      }
-      return hant;
     },
     clearStatus() {
       this.statusCreateAcccountType =
@@ -1385,7 +1224,7 @@ export default {
           self.copyTimeoutId = null;
         }, 3000);
       } else {
-        mw.notify(wgULS('复制失败', '複製失敗'), { type: 'error' });
+        mw.notify(this.$t('copy-failed'), { type: 'error' });
       }
     },
     resetForm() {
