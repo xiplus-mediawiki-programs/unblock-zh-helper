@@ -170,7 +170,6 @@
             </a>
           </i18n-t></label
         >
-        >
         <span v-if="statusCreateLocal">
           -
           <span :class="'uzh-status-' + statusCreateLocalType">{{ statusCreateLocal }}</span></span
