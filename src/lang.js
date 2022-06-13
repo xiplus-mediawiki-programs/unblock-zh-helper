@@ -7,17 +7,21 @@ const messages = {
   'zh-hant': hantLocale,
 };
 
-export default createI18n({
-  locale: mw.config.get('wgUserLanguage'),
-  fallbackLocale: {
-    'zh-cn': ['zh-hans'],
-    'zh-hk': ['zh-hant'],
-    'zh-mo': ['zh-hk'],
-    'zh-my': ['zh-sg'],
-    'zh-sg': ['zh-hans'],
-    'zh-tw': ['zh-hant'],
-    'zh-hant': ['zh-hans'],
-    default: ['zh-hans'],
-  },
-  messages,
-});
+function createMyI18n(locale) {
+  return createI18n({
+    locale: locale,
+    fallbackLocale: {
+      'zh-cn': ['zh-hans'],
+      'zh-hk': ['zh-hant'],
+      'zh-mo': ['zh-hk'],
+      'zh-my': ['zh-sg'],
+      'zh-sg': ['zh-hans'],
+      'zh-tw': ['zh-hant'],
+      'zh-hant': ['zh-hans'],
+      default: ['zh-hans'],
+    },
+    messages,
+  });
+}
+
+export default createMyI18n;

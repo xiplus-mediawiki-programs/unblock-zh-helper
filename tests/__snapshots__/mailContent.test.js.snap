@@ -1,0 +1,49 @@
+// Vitest Snapshot v1
+
+exports[`mail content > init 1`] = `
+"您好：
+
+
+請在回覆郵件時確保收件者包含 unblock-zh@lists.wikimedia.org ，否則可能無法收到回覆（可使用郵件軟體的「回覆所有人」功能）
+
+User:Wikiuser"
+`;
+
+exports[`mail content > req account & ipbe, acct created, ip not blocked 1`] = `
+"您好：
+已代為註冊帳號「ExampleUser」，帳號的隨機密碼用另一封郵件寄出到「email@example.org」，隨機密碼的有效期限僅有7天，請盡速登入修改密碼。
+
+您所給的IP位址未被封鎖，請確認正確的IP位址或封鎖ID後再回信，您可在告知被封鎖頁面看到「您目前的IP位址是xxxx，而該封鎖ID是#xxxx。」，若您已經可以編輯，則不用回信。"
+`;
+
+exports[`mail content > req account & ipbe, acct created, no ip 1`] = `
+"您好：
+已代為註冊帳號「ExampleUser」，帳號的隨機密碼用另一封郵件寄出到「email@example.org」，隨機密碼的有效期限僅有7天，請盡速登入修改密碼。"
+`;
+
+exports[`mail content > req account & ipbe, no username & ip 1`] = `
+"您好：
+請告知以下資訊：
+　1. 您想要的使用者名稱，「不要提供密碼」。請務必使用使用者名稱檢查工具[1]來確認您想要註冊的使用者名稱是否可用。
+　2. 被封鎖的IP位址
+　3. 封鎖ID（如果有，可在告知被封鎖頁面看到「您目前的IP位址是xxxx，而該封鎖ID是#xxxx。」，這不是使用者名稱）
+以便我們做下一步處理（複製您看到的文字對我們處理較為方便，請避免使用截圖）。
+
+[1] https://zhwiki-username-check.toolforge.org"
+`;
+
+exports[`mail content > req account & ipbe, no username 1`] = `
+"您好：
+請告知您想要的使用者名稱，「不要提供密碼」。請務必使用使用者名稱檢查工具[1]來確認您想要註冊的使用者名稱是否可用。
+
+[1] https://zhwiki-username-check.toolforge.org"
+`;
+
+exports[`test variant > hans 1`] = `
+"您好：
+
+
+请在回复邮件时确保收件者包含 unblock-zh@lists.wikimedia.org ，否则可能无法收到回复（可使用邮件软件的“回复所有人”功能）
+
+User:Wikiuser"
+`;
