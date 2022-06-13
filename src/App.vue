@@ -259,6 +259,10 @@
           {{ $t('mailopt-username-banned') }}</label
         >
         <label class="uzh-inline-options">
+          <input v-model="mailOptionsUsername" :value="MAILOP_USERNAMEILLEAGAL" type="radio" />
+          {{ $t('mailopt-username-illeagal') }}</label
+        >
+        <label class="uzh-inline-options">
           <input v-model="mailOptionsUsername" :value="MAILOP_ACCOUNTCREATED" type="radio" />
           {{ $t('mailopt-account-created') }}</label
         >
@@ -405,39 +409,82 @@ export default {
       const useUsernameChecker = this.$t('use-username-checker', [
         '[LINK:https://zhwiki-username-check.toolforge.org]',
       ]);
-      let text = this.$t('mail-hello') + '\n';
-      let othertext = '';
+      let textParts = [];
+      let mainText = [];
+      let otherText = [];
       let pleaseProvide = [];
       let pleaseProvideHeader = '';
       let pleaseProvideAppend = '';
 
+      if (this.mailOptionsOther.includes(this.MAILOP_COMPANY)) {
+        textParts.push(
+          this.$t('mail-company', [
+            '[LINK:https://zh.wikipedia.org/wiki/Wikipedia:用户名]',
+            '[LINK:https://zh.wikipedia.org/wiki/Wikipedia:有償編輯方針#如何作出申報]',
+            '[LINK:https://zh.wikipedia.org/wiki/Wikipedia:有償編輯方針#本地替代方針]',
+            '[LINK:https://zh.wikipedia.org/wiki/Wikipedia:如何介绍自己的公司] ',
+            '[LINK:https://zh.wikipedia.org/wiki/Wikipedia:互助客栈/求助] ',
+          ])
+        );
+      }
+
+      if (this.mailOptionsOther.includes(this.MAILOP_OPENPROXY)) {
+        textParts.push(this.$t('mail-no-open-proxy', ['[LINK:https://meta.wikimedia.org/wiki/No_open_proxies/zh]']));
+
+        pleaseProvide.push(this.$t('mail-wanted-username') + useUsernameChecker);
+      }
+      if (this.mailOptionsOther.includes(this.MAILOP_RANGEBLOCK)) {
+        textParts.push(this.$t('mail-range-block') + useUsernameChecker);
+      }
+      if (this.mailOptionsOther.includes(this.MAILOP_ENWIKIBLOCK)) {
+        textParts.push(
+          this.$t('mail-only-handle-zhwiki', ['[LINK:https://zh.wikipedia.org]']) +
+            '\n' +
+            this.$t('mail-go-enwiki', ['[LINK:https://en.wikipedia.org/wiki/Wikipedia:Unblock_Ticket_Request_System]'])
+        );
+      }
+      if (this.mailOptionsOther.includes(this.MAILOP_GIPBE)) {
+        textParts.push(
+          this.$t('mail-only-handle-zhwiki', ['[LINK:https://zh.wikipedia.org]']) +
+            '\n' +
+            this.$t('mail-gipbe-go-meta', ['[LINK:https://meta.wikimedia.org/wiki/IP_block_exempt/zh]'])
+        );
+      }
+
       if (this.mailOptionsUsername === this.MAILOP_NOUSERNAME) {
         if (this.inputCreateAccount) {
           pleaseProvide.push(this.$t('mail-wanted-username') + useUsernameChecker);
-          if (this.mailOptionsOther.includes(this.MAILOP_COMPANY)) {
-            pleaseProvide.push(this.$t('mail-private-email'));
-          }
         } else if (this.inputGrantIpbe || this.inputBlockAppeal) {
           pleaseProvide.push(
             this.$t('mail-your-username', ['[LINK:https://zh.wikipedia.org/wiki/Special:Preferences]'])
           );
           if (this.inputGrantIpbe) {
-            pleaseProvideAppend = this.$t('mail-no-account-give-username') + useUsernameChecker + '\n';
+            pleaseProvideAppend = this.$t('mail-no-account-give-username') + useUsernameChecker;
           }
         } else if (this.inputResetPassword) {
           pleaseProvide.push(this.$t('mail-your-username-help-reset'));
         }
       } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEUSED) {
-        text += this.$t('mail-username-exists-provide-another') + useUsernameChecker + '\n';
+        mainText.push(this.$t('mail-username-exists-provide-another') + useUsernameChecker);
       } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEBANNED) {
-        text += this.$t('mail-username-banned-provide-another') + useUsernameChecker + '\n';
+        mainText.push(this.$t('mail-username-banned-provide-another') + useUsernameChecker);
+      } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEILLEAGAL) {
+        mainText.push(
+          this.$t('mail-username-illeagal-provide-another', ['[LINK:https://zh.wikipedia.org/wiki/Wikipedia:用户名]']) +
+            useUsernameChecker
+        );
       } else if (this.mailOptionsUsername === this.MAILOP_ACCOUNTCREATED) {
-        text += this.$t('mail-account-created', [this.normalizedUsername, this.email]) + '\n';
+        mainText.push(this.$t('mail-account-created', [this.normalizedUsername, this.email]));
       } else if (this.mailOptionsUsername === this.MAILOP_ACCTNOTEXISTS) {
-        text +=
-          this.$t('mail-username-not-exists', ['[LINK:https://zh.wikipedia.org/wiki/Special:Preferences]']) + '\n';
+        mainText.push(
+          this.$t('mail-username-not-exists', ['[LINK:https://zh.wikipedia.org/wiki/Special:Preferences]'])
+        );
       } else if (this.mailOptionsUsername === this.MAILOP_ACCOUNTLOCAL) {
-        text += this.$t('mail-create-local') + '\n';
+        mainText.push(this.$t('mail-create-local'));
+      }
+
+      if (this.mailOptionsOther.includes(this.MAILOP_COMPANY)) {
+        pleaseProvide.push(this.$t('mail-private-email'));
       }
 
       if (this.mailOptionsIpbe === this.MAILOP_NOIP || this.mailOptionsIpbe === this.MAILOP_MAYNEEDIPBE) {
@@ -447,84 +494,66 @@ export default {
         pleaseProvide.push(this.$t('mail-blocked-ip'));
         pleaseProvide.push(this.$t('mail-block-id'));
       } else if (this.mailOptionsIpbe === this.MAILOP_IPNOTBLOCKED) {
-        othertext += this.$t('mail-ip-not-blocked') + '\n';
+        otherText.push(this.$t('mail-ip-not-blocked'));
       } else if (this.mailOptionsIpbe === this.MAILOP_IPBEGRANTED) {
-        text += this.$t('mail-ipbe-granted') + '\n';
+        mainText.push(this.$t('mail-ipbe-granted'));
       }
 
       if (this.mailOptionsResetPassword) {
-        text += this.$t('mail-password-reset') + '\n';
+        mainText.push(this.$t('mail-password-reset'));
         if (this.inputGrantIpbe && this.mailOptionsIpbe === '') {
-          text += this.$t('mail-make-sure-login') + '\n';
+          mainText.push(this.$t('mail-make-sure-login'));
         }
       }
 
-      if (this.mailOptionsOther.includes(this.MAILOP_OPENPROXY)) {
-        text += this.$t('mail-no-open-proxy', ['[LINK:https://meta.wikimedia.org/wiki/No_open_proxies/zh]']) + '\n';
-
-        pleaseProvide.push(this.$t('mail-wanted-username') + useUsernameChecker);
-      }
-      if (this.mailOptionsOther.includes(this.MAILOP_RANGEBLOCK)) {
-        othertext += this.$t('mail-range-block') + useUsernameChecker + '\n';
-      }
-      if (this.mailOptionsOther.includes(this.MAILOP_ENWIKIBLOCK)) {
-        othertext +=
-          this.$t('mail-only-handle-zhwiki', ['[LINK:https://zh.wikipedia.org]']) +
-          '\n' +
-          this.$t('mail-go-enwiki', ['[LINK:https://en.wikipedia.org/wiki/Wikipedia:Unblock_Ticket_Request_System]']) +
-          '\n';
-      }
-      if (this.mailOptionsOther.includes(this.MAILOP_GIPBE)) {
-        othertext +=
-          this.$t('mail-only-handle-zhwiki', ['[LINK:https://zh.wikipedia.org]']) +
-          '\n' +
-          this.$t('mail-gipbe-go-meta', ['[LINK:https://meta.wikimedia.org/wiki/IP_block_exempt/zh]']) +
-          '\n';
-      }
-      if (this.mailOptionsOther.includes(this.MAILOP_COMPANY)) {
-        text +=
-          this.$t('mail-company', [
-            '[LINK:https://zh.wikipedia.org/wiki/Wikipedia:有償編輯方針#如何作出申報]',
-            '[LINK:https://zh.wikipedia.org/wiki/Wikipedia:有償編輯方針#本地替代方針]',
-            '[LINK:https://zh.wikipedia.org/wiki/Wikipedia:如何介绍自己的公司] ',
-            '[LINK:https://zh.wikipedia.org/wiki/Wikipedia:互助客栈/求助] ',
-          ]) + '\n';
+      if (mainText.length > 0) {
+        textParts.push(mainText.join('\n'));
       }
 
+      let provideText = '';
       if (pleaseProvide.length === 1) {
-        text += this.$t('mail-please-provide') + pleaseProvide[0] + '\n';
+        provideText += this.$t('mail-please-provide') + pleaseProvide[0];
       } else if (pleaseProvide.length > 1) {
         if (pleaseProvideHeader) {
-          text += pleaseProvideHeader;
+          provideText += pleaseProvideHeader;
         } else {
-          text += this.$t('mail-please-provide-following') + '\n';
+          provideText += this.$t('mail-please-provide-following') + '\n';
         }
         for (let i = 0; i < pleaseProvide.length; i++) {
-          text += this.$t('mail-please-provide-row', [i + 1, pleaseProvide[i]]) + '\n';
+          provideText += this.$t('mail-please-provide-row', [i + 1, pleaseProvide[i]]) + '\n';
         }
-        text += this.$t('mail-please-provide-footer') + '\n';
+        provideText += this.$t('mail-please-provide-footer');
       }
-      text += pleaseProvideAppend;
-      text += othertext;
+      if (pleaseProvideAppend) {
+        provideText += '\n' + pleaseProvideAppend;
+      }
+      if (provideText) {
+        textParts.push(provideText);
+      }
 
-      let links_text = '';
-      let links_count = 0;
-      text = text.replace(/\[LINK:([^\]]+?)\]/g, function (match, link) {
-        links_count++;
-        links_text += '[' + links_count + '] ' + link + '\n';
-        return '[' + links_count + ']';
+      if (otherText.length > 0) {
+        textParts.push(otherText.join('\n'));
+      }
+
+      let allText = this.$t('mail-hello') + '\n' + textParts.join('\n\n');
+
+      let linksText = [];
+      let linksCount = 0;
+      allText = allText.replace(/\[LINK:([^\]]+?)\]/g, function (match, link) {
+        linksCount++;
+        linksText.push('[' + linksCount + '] ' + link);
+        return '[' + linksCount + ']';
       });
 
-      if (links_count > 0) {
-        text += '\n' + links_text;
+      if (linksCount > 0) {
+        allText += '\n\n' + linksText.join('\n');
       }
 
-      text += '\n';
-      text += this.$t('mail-reply-to-all') + '\n\n';
-      text += 'User:' + mw.config.get('wgUserName');
+      allText += '\n\n' + this.$t('mail-reply-to-all');
+      allText += '\n\n' + 'User:' + mw.config.get('wgUserName');
 
       this.$i18n.locale = oldLocale;
-      return text;
+      return allText;
     },
   },
   created() {
@@ -542,6 +571,7 @@ export default {
     this.MAILOP_NOUSERNAME = 'NoUsername';
     this.MAILOP_USERNAMEUSED = 'UsernameUsed';
     this.MAILOP_USERNAMEBANNED = 'UsernameBanned';
+    this.MAILOP_USERNAMEILLEAGAL = 'UsernameIlleagal';
     this.MAILOP_ACCOUNTCREATED = 'AccountCreated';
     this.MAILOP_ACCOUNTLOCAL = 'AccountLocal';
     this.MAILOP_NOIP = 'NoIp';
