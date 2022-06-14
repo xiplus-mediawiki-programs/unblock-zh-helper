@@ -487,7 +487,7 @@ export default {
         mainText.push(this.mt('mail-create-local'));
       }
 
-      if (this.mailOptionsOther.includes(this.MAILOP_COMPANY)) {
+      if (this.mailOptionsUsername !== '' && this.mailOptionsOther.includes(this.MAILOP_COMPANY)) {
         pleaseProvide.push(this.mt('mail-private-email'));
       }
 
