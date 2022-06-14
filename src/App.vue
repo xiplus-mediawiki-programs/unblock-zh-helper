@@ -338,6 +338,10 @@
           <input v-model="mailOptionsOther" :value="MAILOP_AUTOLOGOUT" type="checkbox" />
           {{ $t('mailopt-autologout') }}</label
         >
+        <label class="uzh-inline-options">
+          <input v-model="mailOptionsOther" :value="MAILOP_USERRENAME" type="checkbox" />
+          {{ $t('mailopt-user-rename') }}</label
+        >
         <br />
 
         <label class="uzh-inline-options">
@@ -461,6 +465,9 @@ export default {
             '\n' +
             this.mt('mail-gipbe-go-meta', ['[LINK:https://meta.wikimedia.org/wiki/IP_block_exempt/zh]'])
         );
+      }
+      if (this.mailOptionsOther.includes(this.MAILOP_USERRENAME)) {
+        mainText.push(this.mt('mail-user-rename', ['[LINK:https://zh.wikipedia.org/wiki/Special:全域重命名申请]']));
       }
 
       // account
@@ -611,6 +618,7 @@ export default {
     this.MAILOP_GIPBE = 'Gipbe';
     this.MAILOP_COMPANY = 'Company';
     this.MAILOP_AUTOLOGOUT = 'AutoLogout';
+    this.MAILOP_USERRENAME = 'UserRename';
     this.SUMMARY_SUFFIX = this.$t('summary-suffix', ['[[User:Xiplus/js/unblock-zh-helper|unblock-zh-helper]]']);
     mw.messages.set('antispoof-name-1', '$1');
     mw.messages.set('antispoof-name-123', '$1$2$3');

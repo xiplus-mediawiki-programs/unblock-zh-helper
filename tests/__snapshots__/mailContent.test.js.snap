@@ -137,6 +137,13 @@ exports[`mail content > req ipbe, granted 1`] = `
 已授予您IP封鎖例外權限，登入後即可編輯頁面。祝您編輯愉快。"
 `;
 
+exports[`mail content > user rename 1`] = `
+"您好：
+請您先至 Special:全域重命名申请 [1] 申請變更您的使用者名稱，待更名完成後再回信，我們將在您完成更名後再處理您的其他請求。
+
+[1] https://zh.wikipedia.org/wiki/Special:全域重命名申请"
+`;
+
 exports[`test variant > hans 1`] = `
 "您好：
 

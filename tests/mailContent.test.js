@@ -146,4 +146,12 @@ describe('mail content', async () => {
     });
     expect(wrapper.vm.mailContentCore).toMatchSnapshot();
   });
+
+  test('user rename', async () => {
+    await wrapper.vm.resetForm();
+    await wrapper.setData({
+      mailOptionsOther: wrapper.vm.MAILOP_USERRENAME,
+    });
+    expect(wrapper.vm.mailContentCore).toMatchSnapshot();
+  });
 });
