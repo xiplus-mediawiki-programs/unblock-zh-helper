@@ -326,6 +326,10 @@
           <input v-model="mailOptionsOther" :value="MAILOP_COMPANY" type="checkbox" />
           {{ $t('mailopt-company') }}</label
         >
+        <label class="uzh-inline-options">
+          <input v-model="mailOptionsOther" :value="MAILOP_AUTOLOGOUT" type="checkbox" />
+          {{ $t('mailopt-autologout') }}</label
+        >
         <br />
 
         <label class="uzh-inline-options">
@@ -414,6 +418,7 @@ export default {
       let pleaseProvideHeader = '';
       let pleaseProvideAppend = '';
 
+      // Other
       if (this.mailOptionsOther.includes(this.MAILOP_COMPANY)) {
         textParts.push(
           this.mt('mail-company', [
@@ -449,6 +454,7 @@ export default {
         );
       }
 
+      // account
       if (this.mailOptionsUsername === this.MAILOP_NOUSERNAME) {
         if (this.inputCreateAccount) {
           pleaseProvide.push(this.mt('mail-wanted-username') + useUsernameChecker);
@@ -485,6 +491,7 @@ export default {
         pleaseProvide.push(this.mt('mail-private-email'));
       }
 
+      // IPBE
       if (this.mailOptionsIpbe === this.MAILOP_NOIP || this.mailOptionsIpbe === this.MAILOP_MAYNEEDIPBE) {
         if (this.mailOptionsIpbe === this.MAILOP_MAYNEEDIPBE) {
           pleaseProvideHeader = this.mt('mail-cannot-edit-after-login') + '\n';
@@ -497,12 +504,20 @@ export default {
         mainText.push(this.mt('mail-ipbe-granted'));
       }
 
+      // Password
       if (this.mailOptionsResetPassword) {
         mainText.push(this.mt('mail-password-reset'));
         if (this.inputGrantIpbe && this.mailOptionsIpbe === '') {
           mainText.push(this.mt('mail-make-sure-login'));
         }
       }
+
+      // Other
+      if (this.mailOptionsOther.includes(this.MAILOP_AUTOLOGOUT)) {
+        mainText.push(this.mt('mail-resolve-autologout', ['[LINK:https://zh.wikipedia.org/wiki/Help:自動登出]']));
+      }
+
+      // Main end
 
       if (mainText.length > 0) {
         textParts.push(mainText.join('\n'));
@@ -586,6 +601,7 @@ export default {
     this.MAILOP_ENWIKIBLOCK = 'EnwikiBlock';
     this.MAILOP_GIPBE = 'Gipbe';
     this.MAILOP_COMPANY = 'Company';
+    this.MAILOP_AUTOLOGOUT = 'AutoLogout';
     this.SUMMARY_SUFFIX = this.$t('summary-suffix', ['[[User:Xiplus/js/unblock-zh-helper|unblock-zh-helper]]']);
     mw.messages.set('antispoof-name-1', '$1');
     mw.messages.set('antispoof-name-123', '$1$2$3');

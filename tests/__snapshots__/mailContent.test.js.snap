@@ -1,5 +1,12 @@
 // Vitest Snapshot v1
 
+exports[`mail content > auto logout 1`] = `
+"您好：
+關於自動登出的問題，若您使用手機應用程式（App）會遇到這個問題，暫時無法解決，請改為使用網頁版。其他情況的解決方法可參見維基百科上的說明 [1]
+
+[1] https://zh.wikipedia.org/wiki/Help:自動登出"
+`;
+
 exports[`mail content > init 1`] = `
 "您好：
 
