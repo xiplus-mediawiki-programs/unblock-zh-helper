@@ -143,10 +143,18 @@
       <div>
         <label>
           <span class="uzh-fullwidth-label">
-            {{ $t('log-summary') }}
+            {{ $t('action-summary') }}
           </span>
           <span class="uzh-fullwidth-input">
             <input v-model="summary" type="text" style="width: 100%" />
+          </span>
+        </label>
+        <label>
+          <span class="uzh-fullwidth-label">
+            {{ $t('log-summary') }}
+          </span>
+          <span class="uzh-fullwidth-input">
+            <input v-model="logSummary" type="text" style="width: 100%" :placeholder="$t('log-summary-placeholder')" />
           </span>
         </label>
       </div>
@@ -381,6 +389,7 @@ export default {
       accountHasIpbe: false,
       actionOptions: [],
       summary: '',
+      logSummary: '',
       statusCreateAcccountType: 'info',
       statusCreateAcccount: '',
       statusCreateLocalType: 'info',
@@ -956,7 +965,10 @@ export default {
             email: self.email,
             realname: '',
             mailpassword: '1',
-            reason: self.summary + self.SUMMARY_SUFFIX,
+            reason:
+              self.summary +
+              (self.logSummary ? self.$t('semicolon-separator') + self.logSummary : '') +
+              self.SUMMARY_SUFFIX,
             createreturnurl: 'https:' + mw.config.get('wgServer'),
             createtoken: token,
           })
@@ -997,7 +1009,10 @@ export default {
         .postWithEditToken({
           action: 'createlocalaccount',
           username: self.normalizedUsername,
-          reason: self.summary,
+          reason:
+            self.summary +
+            (self.logSummary ? self.$t('semicolon-separator') + self.logSummary : '') +
+            self.SUMMARY_SUFFIX,
         })
         .done(function () {
           self.statusCreateLocalType = 'success';
@@ -1029,7 +1044,10 @@ export default {
           user: self.normalizedUsername,
           add: 'ipblock-exempt',
           expiry: 'infinite',
-          reason: self.$t('grant-ipbe-summary', [self.summary]) + self.SUMMARY_SUFFIX,
+          reason:
+            self.$t('grant-ipbe-summary', [self.summary]) +
+            (self.logSummary ? self.$t('semicolon-separator') + self.logSummary : '') +
+            self.SUMMARY_SUFFIX,
         })
         .done(function () {
           self.statusGrantIpbeType = 'success';

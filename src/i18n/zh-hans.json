@@ -33,7 +33,9 @@
   "ip-not-blocked": "申请人给定的IP未被封禁（{0}）",
   "user-has-ipbe": "用户已拥有IP封禁豁免权（{0}）",
   "check-right-log": "检查权限日志",
+  "action-summary": "操作摘要：",
   "log-summary": "日志摘要：",
+  "log-summary-placeholder": "仅附加在日志",
   "create-new-account": "创建新账户“{0}”，临时密码寄至“{1}”",
   "grant-user-ipbe": "授予“{0}”IP封禁豁免权",
   "send-ipbe-notice": "发送授权通知",
@@ -121,5 +123,6 @@
   "rfipbe-summary": "[[Special:UserRights/{0}{'|'}授予{0}IP封禁豁免权]]备案",
   "fill-success": "成功备案",
   "success-reset-password": "成功重置密码",
-  "copy-failed": "复制失败"
+  "copy-failed": "复制失败",
+  "semicolon-separator": "；"
 }
