@@ -6,7 +6,9 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
     "dev": "vite",
     "preview": "vite preview --port 5050",
-    "test": "vitest"
+    "test": "vitest",
+    "i18n": "py ./node_modules/mediawiki-gadget-i18n-helper/i18n.py --mode=i18n --indent=2 src/i18n/zh-hant.json src/i18n/zh-hans.json",
+    "geni18n": "py ./node_modules/mediawiki-gadget-i18n-helper/migrate-to-json.py src/App.vue src/i18n/zh-hans.json src/i18n/zh-hant.json --other_function mt"
   },
   "dependencies": {
     "vue": "^3.2.31",
@@ -20,6 +22,7 @@
     "eslint": "^8.5.0",
     "eslint-plugin-vue": "^8.2.0",
     "jsdom": "^19.0.0",
+    "mediawiki-gadget-i18n-helper": "github:Xi-Plus/mediawiki-gadget-i18n-helper",
     "mock-mediawiki": "^1.3.0",
     "prettier": "^2.5.1",
     "vite": "^2.8.4",
