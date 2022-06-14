@@ -7,6 +7,68 @@ exports[`mail content > auto logout 1`] = `
 [1] https://zh.wikipedia.org/wiki/Help:自動登出"
 `;
 
+exports[`mail content > company & no username & ip 1`] = `
+"您好：
+先為您簡要說明幾項維基百科的規定：
+　1. 禁止多人共用帳號，禁止和其他人分享密碼，如果您的公司/組織有多個人需要編輯，請每一位都各自申請帳號。
+　2. 禁止使用公司/組織的名稱作為使用者名稱，這個帳號代表您一個人，請為自己取個名稱 [1]。也請您提供您私人的電子郵件地址來接受隨機密碼郵件。
+　3. 如果是因為您在公司/組織的工作而來編輯維基百科，維基百科禁止您「直接」對頁面做出編輯，您必須：
+　　3-1. 公開聲明您的僱用者、客戶、組織，具體操作請之後參閱Wikipedia:有償編輯方針#如何作出申報 [2]
+　　3-2. 向其他人說明您想要編輯的內容並獲得同意，具體操作請之後參閱Wikipedia:有償編輯方針#本地替代方針 [3]
+　4. 更多相關的說明請見Wikipedia:如何介绍自己的公司 [4] ，請您在編輯前務必閱讀並理解這篇說明，如果上述說明或給出連結的內容有任何不理解的地方，或您有任何其他問題，請在Wikipedia:互助客栈/求助 [5] 發問。
+若您同意上述要求，我們仍可完成您的請求。
+
+請告知以下資訊：
+　1. 您想要的使用者名稱，「不要提供密碼」。請務必使用使用者名稱檢查工具[6]來確認您想要註冊的使用者名稱是否可用。
+　2. 您私人的電子郵件地址，用來接收隨機密碼及綁定到您的帳號。
+　3. 被封鎖的IP位址
+　4. 封鎖ID（如果有，可在告知被封鎖頁面看到「您目前的IP位址是xxxx，而該封鎖ID是#xxxx。」，這不是使用者名稱）
+以便我們做下一步處理（複製您看到的文字對我們處理較為方便，請避免使用截圖）。
+
+[1] https://zh.wikipedia.org/wiki/Wikipedia:用户名
+[2] https://zh.wikipedia.org/wiki/Wikipedia:有償編輯方針#如何作出申報
+[3] https://zh.wikipedia.org/wiki/Wikipedia:有償編輯方針#本地替代方針
+[4] https://zh.wikipedia.org/wiki/Wikipedia:如何介绍自己的公司
+[5] https://zh.wikipedia.org/wiki/Wikipedia:互助客栈/求助
+[6] https://zhwiki-username-check.toolforge.org"
+`;
+
+exports[`mail content > company basic 1`] = `
+"您好：
+先為您簡要說明幾項維基百科的規定：
+　1. 禁止多人共用帳號，禁止和其他人分享密碼，如果您的公司/組織有多個人需要編輯，請每一位都各自申請帳號。
+　2. 禁止使用公司/組織的名稱作為使用者名稱，這個帳號代表您一個人，請為自己取個名稱 [1]。也請您提供您私人的電子郵件地址來接受隨機密碼郵件。
+　3. 如果是因為您在公司/組織的工作而來編輯維基百科，維基百科禁止您「直接」對頁面做出編輯，您必須：
+　　3-1. 公開聲明您的僱用者、客戶、組織，具體操作請之後參閱Wikipedia:有償編輯方針#如何作出申報 [2]
+　　3-2. 向其他人說明您想要編輯的內容並獲得同意，具體操作請之後參閱Wikipedia:有償編輯方針#本地替代方針 [3]
+　4. 更多相關的說明請見Wikipedia:如何介绍自己的公司 [4] ，請您在編輯前務必閱讀並理解這篇說明，如果上述說明或給出連結的內容有任何不理解的地方，或您有任何其他問題，請在Wikipedia:互助客栈/求助 [5] 發問。
+若您同意上述要求，我們仍可完成您的請求。
+
+[1] https://zh.wikipedia.org/wiki/Wikipedia:用户名
+[2] https://zh.wikipedia.org/wiki/Wikipedia:有償編輯方針#如何作出申報
+[3] https://zh.wikipedia.org/wiki/Wikipedia:有償編輯方針#本地替代方針
+[4] https://zh.wikipedia.org/wiki/Wikipedia:如何介绍自己的公司
+[5] https://zh.wikipedia.org/wiki/Wikipedia:互助客栈/求助"
+`;
+
+exports[`mail content > enwiki block 1`] = `
+"您好：
+由於各個語言的維基百科是各自獨立管理的，這裡僅能處理中文維基百科[1]的問題，很抱歉幫不上忙。
+英文維基百科上的申訴請自行向英文維基百科申請，請參考英文維基百科的說明[2]。
+
+[1] https://zh.wikipedia.org
+[2] https://en.wikipedia.org/wiki/Wikipedia:Unblock_Ticket_Request_System"
+`;
+
+exports[`mail content > gipbe 1`] = `
+"您好：
+由於各個語言的維基百科是各自獨立管理的，這裡僅能處理中文維基百科[1]的問題，很抱歉幫不上忙。
+若有需要全域IP封鎖例外權，請參考Meta-Wiki上的說明[2]來申請。
+
+[1] https://zh.wikipedia.org
+[2] https://meta.wikimedia.org/wiki/IP_block_exempt/zh"
+`;
+
 exports[`mail content > init 1`] = `
 "您好：
 
@@ -14,6 +76,24 @@ exports[`mail content > init 1`] = `
 請在回覆郵件時確保收件者包含 unblock-zh@lists.wikimedia.org ，否則可能無法收到回覆（可使用郵件軟體的「回覆所有人」功能）
 
 User:Wikiuser"
+`;
+
+exports[`mail content > open proxy 1`] = `
+"您好：
+維基媒體基金會禁止使用某些開放代理來編輯維基百科[1]，所以我們不會解除封鎖這個IP。我們可以為您註冊一個帳號以繞過這個限制。
+
+請告知您想要的使用者名稱，「不要提供密碼」。請務必使用使用者名稱檢查工具[2]來確認您想要註冊的使用者名稱是否可用。
+
+[1] https://meta.wikimedia.org/wiki/No_open_proxies/zh
+[2] https://zhwiki-username-check.toolforge.org"
+`;
+
+exports[`mail content > range block 1`] = `
+"您好：
+由於有其他人使用此段IP位址對維基百科進行破壞，所以您使用這一個範圍的IP位址已經被暫時封鎖。
+如果您與破壞行為無關，請註冊一個帳號並登入後即可編輯。若您無法自行註冊帳號，請回信告知您想要的使用者名稱，「不要提供密碼」。請務必使用使用者名稱檢查工具[1]來確認您想要註冊的使用者名稱是否可用。
+
+[1] https://zhwiki-username-check.toolforge.org"
 `;
 
 exports[`mail content > req account & ipbe, acct created, ip not blocked 1`] = `
@@ -26,6 +106,12 @@ exports[`mail content > req account & ipbe, acct created, ip not blocked 1`] = `
 exports[`mail content > req account & ipbe, acct created, no ip 1`] = `
 "您好：
 已代為註冊帳號「ExampleUser」，帳號的隨機密碼用另一封郵件寄出到「email@example.org」，隨機密碼的有效期限僅有7天，請盡速登入修改密碼。"
+`;
+
+exports[`mail content > req account & ipbe, done 1`] = `
+"您好：
+已代為註冊帳號「ExampleUser」，帳號的隨機密碼用另一封郵件寄出到「email@example.org」，隨機密碼的有效期限僅有7天，請盡速登入修改密碼。
+已授予您IP封鎖例外權限，登入後即可編輯頁面。祝您編輯愉快。"
 `;
 
 exports[`mail content > req account & ipbe, no username & ip 1`] = `
@@ -44,6 +130,11 @@ exports[`mail content > req account & ipbe, no username 1`] = `
 請告知您想要的使用者名稱，「不要提供密碼」。請務必使用使用者名稱檢查工具[1]來確認您想要註冊的使用者名稱是否可用。
 
 [1] https://zhwiki-username-check.toolforge.org"
+`;
+
+exports[`mail content > req ipbe, granted 1`] = `
+"您好：
+已授予您IP封鎖例外權限，登入後即可編輯頁面。祝您編輯愉快。"
 `;
 
 exports[`test variant > hans 1`] = `

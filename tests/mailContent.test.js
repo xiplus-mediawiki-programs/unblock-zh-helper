@@ -34,6 +34,17 @@ describe('mail content', async () => {
     expect(wrapper.vm.mailContent).toMatchSnapshot();
   });
 
+  test('req account & ipbe, done', async () => {
+    await wrapper.vm.resetForm();
+    await wrapper.setData({
+      mailOptionsUsername: wrapper.vm.MAILOP_ACCOUNTCREATED,
+      mailOptionsIpbe: wrapper.vm.MAILOP_IPBEGRANTED,
+      normalizedUsername: 'ExampleUser',
+      email: 'email@example.org',
+    });
+    expect(wrapper.vm.mailContentCore).toMatchSnapshot();
+  });
+
   test('req account & ipbe, no username', async () => {
     await wrapper.vm.resetForm();
     await wrapper.setData({ mailOptionsUsername: wrapper.vm.MAILOP_NOUSERNAME });
@@ -66,6 +77,64 @@ describe('mail content', async () => {
       mailOptionsIpbe: wrapper.vm.MAILOP_IPNOTBLOCKED,
       normalizedUsername: 'ExampleUser',
       email: 'email@example.org',
+    });
+    expect(wrapper.vm.mailContentCore).toMatchSnapshot();
+  });
+
+  test('req ipbe, granted', async () => {
+    await wrapper.vm.resetForm();
+    await wrapper.setData({
+      mailOptionsIpbe: wrapper.vm.MAILOP_IPBEGRANTED,
+    });
+    expect(wrapper.vm.mailContentCore).toMatchSnapshot();
+  });
+
+  test('open proxy', async () => {
+    await wrapper.vm.resetForm();
+    await wrapper.setData({
+      mailOptionsOther: wrapper.vm.MAILOP_OPENPROXY,
+    });
+    expect(wrapper.vm.mailContentCore).toMatchSnapshot();
+  });
+
+  test('range block', async () => {
+    await wrapper.vm.resetForm();
+    await wrapper.setData({
+      mailOptionsOther: wrapper.vm.MAILOP_RANGEBLOCK,
+    });
+    expect(wrapper.vm.mailContentCore).toMatchSnapshot();
+  });
+
+  test('enwiki block', async () => {
+    await wrapper.vm.resetForm();
+    await wrapper.setData({
+      mailOptionsOther: wrapper.vm.MAILOP_ENWIKIBLOCK,
+    });
+    expect(wrapper.vm.mailContentCore).toMatchSnapshot();
+  });
+
+  test('gipbe', async () => {
+    await wrapper.vm.resetForm();
+    await wrapper.setData({
+      mailOptionsOther: wrapper.vm.MAILOP_GIPBE,
+    });
+    expect(wrapper.vm.mailContentCore).toMatchSnapshot();
+  });
+
+  test('company basic', async () => {
+    await wrapper.vm.resetForm();
+    await wrapper.setData({
+      mailOptionsOther: wrapper.vm.MAILOP_COMPANY,
+    });
+    expect(wrapper.vm.mailContentCore).toMatchSnapshot();
+  });
+
+  test('company & no username & ip', async () => {
+    await wrapper.vm.resetForm();
+    await wrapper.setData({
+      mailOptionsUsername: wrapper.vm.MAILOP_NOUSERNAME,
+      mailOptionsIpbe: wrapper.vm.MAILOP_NOIP,
+      mailOptionsOther: wrapper.vm.MAILOP_COMPANY,
     });
     expect(wrapper.vm.mailContentCore).toMatchSnapshot();
   });
