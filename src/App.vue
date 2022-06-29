@@ -342,6 +342,18 @@
           <input v-model="mailOptionsOther" :value="MAILOP_USERRENAME" type="checkbox" />
           {{ $t('mailopt-user-rename') }}</label
         >
+        <label class="uzh-inline-options" :title="$t('mailopt-go-talkpage-tooltip')">
+          <input v-model="mailOptionsOther" :value="MAILOP_GOTALKPAGE" type="checkbox" />
+          {{ $t('mailopt-go-talkpage') }}</label
+        >
+        <label class="uzh-inline-options" :title="$t('mailopt-talkpage-requested-tooltip')">
+          <input v-model="mailOptionsOther" :value="MAILOP_TALKPAGEREQED" type="checkbox" />
+          {{ $t('mailopt-talkpage-requested') }}</label
+        >
+        <label class="uzh-inline-options">
+          <input v-model="mailOptionsOther" :value="MAILOP_CANTUNDERSTAND" type="checkbox" />
+          {{ $t('mailopt-can-not-understand') }}</label
+        >
         <br />
 
         <label class="uzh-inline-options">
@@ -468,6 +480,23 @@ export default {
       }
       if (this.mailOptionsOther.includes(this.MAILOP_USERRENAME)) {
         mainText.push(this.mt('mail-user-rename', ['[LINK:https://zh.wikipedia.org/wiki/Special:全域重命名申请]']));
+      }
+      if (this.mailOptionsOther.includes(this.MAILOP_GOTALKPAGE)) {
+        mainText.push(
+          this.mt('mail-go-talkpage', [
+            '[LINK:https://zh.wikipedia.org/w/index.php?title=Special:MyTalk&action=edit&preload=Template%3AUnblock%2Fpreload2&section=new]',
+          ])
+        );
+      }
+      if (this.mailOptionsOther.includes(this.MAILOP_TALKPAGEREQED)) {
+        mainText.push(this.mt('mail-talkpage-requested'));
+      }
+      if (this.mailOptionsOther.includes(this.MAILOP_CANTUNDERSTAND)) {
+        mainText.push(
+          this.mt('mail-can-not-understand', [
+            '[LINK:https://zh.wikipedia.org/wiki/Wikipedia:通过Unblock-zh申请IP封禁例外指南]',
+          ])
+        );
       }
 
       // account
@@ -619,6 +648,9 @@ export default {
     this.MAILOP_COMPANY = 'Company';
     this.MAILOP_AUTOLOGOUT = 'AutoLogout';
     this.MAILOP_USERRENAME = 'UserRename';
+    this.MAILOP_GOTALKPAGE = 'GoTalkpage';
+    this.MAILOP_TALKPAGEREQED = 'TalkpageReqed';
+    this.MAILOP_CANTUNDERSTAND = 'CantUnderstand';
     this.SUMMARY_SUFFIX = this.$t('summary-suffix', ['[[User:Xiplus/js/unblock-zh-helper|unblock-zh-helper]]']);
     mw.messages.set('antispoof-name-1', '$1');
     mw.messages.set('antispoof-name-123', '$1$2$3');

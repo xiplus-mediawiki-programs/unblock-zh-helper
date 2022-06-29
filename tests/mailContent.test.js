@@ -154,4 +154,28 @@ describe('mail content', async () => {
     });
     expect(wrapper.vm.mailContentCore).toMatchSnapshot();
   });
+
+  test('go talkpage', async () => {
+    await wrapper.vm.resetForm();
+    await wrapper.setData({
+      mailOptionsOther: wrapper.vm.MAILOP_GOTALKPAGE,
+    });
+    expect(wrapper.vm.mailContentCore).toMatchSnapshot();
+  });
+
+  test('talkpage requested', async () => {
+    await wrapper.vm.resetForm();
+    await wrapper.setData({
+      mailOptionsOther: wrapper.vm.MAILOP_TALKPAGEREQED,
+    });
+    expect(wrapper.vm.mailContentCore).toMatchSnapshot();
+  });
+
+  test('can not understand', async () => {
+    await wrapper.vm.resetForm();
+    await wrapper.setData({
+      mailOptionsOther: wrapper.vm.MAILOP_CANTUNDERSTAND,
+    });
+    expect(wrapper.vm.mailContentCore).toMatchSnapshot();
+  });
 });

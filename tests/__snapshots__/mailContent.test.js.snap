@@ -7,6 +7,13 @@ exports[`mail content > auto logout 1`] = `
 [1] https://zh.wikipedia.org/wiki/Help:自動登出"
 `;
 
+exports[`mail content > can not understand 1`] = `
+"您好：
+請說明我們需要為您做什麼。您可以閱讀申訴指南 [1] 以了解我們通常需要您提供哪些資訊來處理您的問題。
+
+[1] https://zh.wikipedia.org/wiki/Wikipedia:通过Unblock-zh申请IP封禁例外指南"
+`;
+
 exports[`mail content > company & no username & ip 1`] = `
 "您好：
 先為您簡要說明幾項維基百科的規定：
@@ -67,6 +74,14 @@ exports[`mail content > gipbe 1`] = `
 
 [1] https://zh.wikipedia.org
 [2] https://meta.wikimedia.org/wiki/IP_block_exempt/zh"
+`;
+
+exports[`mail content > go talkpage 1`] = `
+"您好：
+因為您未被禁止編輯您的討論頁，請在站內進行申訴，處理能較為快速。
+請登入後點擊此連結進行申訴：[1]
+
+[1] https://zh.wikipedia.org/w/index.php?title=Special:MyTalk&action=edit&preload=Template%3AUnblock%2Fpreload2&section=new"
 `;
 
 exports[`mail content > init 1`] = `
@@ -135,6 +150,11 @@ exports[`mail content > req account & ipbe, no username 1`] = `
 exports[`mail content > req ipbe, granted 1`] = `
 "您好：
 已授予您IP封鎖例外權限，登入後即可編輯頁面。祝您編輯愉快。"
+`;
+
+exports[`mail content > talkpage requested 1`] = `
+"您好：
+因為您已成功在站內發起申訴，這邊就不再重複處理，請您跟進站內的討論，謝謝。"
 `;
 
 exports[`mail content > user rename 1`] = `
