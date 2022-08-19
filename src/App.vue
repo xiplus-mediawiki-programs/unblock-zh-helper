@@ -121,7 +121,7 @@
             </a>
           </i18n-t>
         </li>
-        <li v-if="ipChecked && ip && blocked" class="uzh-status-success">
+        <li v-if="ipChecked && ip && blocked" :class="ipBlockClass">
           <i18n-t keypath="ip-blocked-row" tag="span">
             <span>{{ $t('ip-blocked-text', [blockBy, blockReason]) }}</span>
             <a :href="getUrl('Special:BlockList', { wpTarget: ip })" target="_blank">{{ $t('check-block-list') }}</a>
@@ -431,6 +431,12 @@ export default {
   computed: {
     allData() {
       return this.$data;
+    },
+    ipBlockClass() {
+      if (/(blocked proxy|open proxy)/i.test(this.blockReason)) {
+        return 'uzh-status-success';
+      }
+      return 'uzh-status-error';
     },
     mailContentCore() {
       const useUsernameChecker = this.mt('use-username-checker', [
