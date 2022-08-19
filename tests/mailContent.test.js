@@ -89,6 +89,30 @@ describe('mail content', async () => {
     expect(wrapper.vm.mailContentCore).toMatchSnapshot();
   });
 
+  test('username used', async () => {
+    await wrapper.vm.resetForm();
+    await wrapper.setData({
+      mailOptionsUsername: wrapper.vm.MAILOP_USERNAMEUSED,
+    });
+    expect(wrapper.vm.mailContentCore).toMatchSnapshot();
+  });
+
+  test('username banned', async () => {
+    await wrapper.vm.resetForm();
+    await wrapper.setData({
+      mailOptionsUsername: wrapper.vm.MAILOP_USERNAMEBANNED,
+    });
+    expect(wrapper.vm.mailContentCore).toMatchSnapshot();
+  });
+
+  test('username illeagal', async () => {
+    await wrapper.vm.resetForm();
+    await wrapper.setData({
+      mailOptionsUsername: wrapper.vm.MAILOP_USERNAMEILLEAGAL,
+    });
+    expect(wrapper.vm.mailContentCore).toMatchSnapshot();
+  });
+
   test('open proxy', async () => {
     await wrapper.vm.resetForm();
     await wrapper.setData({
