@@ -95,12 +95,14 @@ User:Wikiuser"
 
 exports[`mail content > open proxy 1`] = `
 "您好：
-維基媒體基金會禁止使用某些開放代理來編輯維基百科[1]，所以我們不會解除封鎖這個IP。我們可以為您註冊一個帳號以繞過這個限制。
+維基媒體基金會禁止使用某些開放代理來編輯維基百科[1]，所以我們不會解除封鎖這個IP，但我們可以為您的帳號授予豁免權限以繞過這個限制。
 
-請告知您想要的使用者名稱，「不要提供密碼」。請務必使用使用者名稱檢查工具[2]來確認您想要註冊的使用者名稱是否可用。
+請告知您的使用者名稱（如果有，登入後從偏好設定查看[2]，這不是電子郵件位址）。
+如果您沒有帳號且無法自行註冊，請告知您想要的使用者名稱，「不要提供密碼」。請務必使用使用者名稱檢查工具[3]來確認您想要註冊的使用者名稱是否可用。
 
 [1] https://meta.wikimedia.org/wiki/No_open_proxies/zh
-[2] https://zhwiki-username-check.toolforge.org"
+[2] https://zh.wikipedia.org/wiki/Special:Preferences
+[3] https://zhwiki-username-check.toolforge.org"
 `;
 
 exports[`mail content > range block 1`] = `
@@ -150,6 +152,15 @@ exports[`mail content > req account & ipbe, no username 1`] = `
 exports[`mail content > req ipbe, granted 1`] = `
 "您好：
 已授予您IP封鎖例外權限，登入後即可編輯頁面。祝您編輯愉快。"
+`;
+
+exports[`mail content > req ipbe, no username 1`] = `
+"您好：
+請告知您的使用者名稱（如果有，登入後從偏好設定查看[1]，這不是電子郵件位址）。
+如果您沒有帳號且無法自行註冊，請告知您想要的使用者名稱，「不要提供密碼」。請務必使用使用者名稱檢查工具[2]來確認您想要註冊的使用者名稱是否可用。
+
+[1] https://zh.wikipedia.org/wiki/Special:Preferences
+[2] https://zhwiki-username-check.toolforge.org"
 `;
 
 exports[`mail content > talkpage requested 1`] = `

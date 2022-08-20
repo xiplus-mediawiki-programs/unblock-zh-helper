@@ -89,6 +89,15 @@ describe('mail content', async () => {
     expect(wrapper.vm.mailContentCore).toMatchSnapshot();
   });
 
+  test('req ipbe, no username', async () => {
+    await wrapper.vm.resetForm();
+    await wrapper.setData({
+      inputCreateAccount: false,
+      mailOptionsUsername: wrapper.vm.MAILOP_NOUSERNAME,
+    });
+    expect(wrapper.vm.mailContentCore).toMatchSnapshot();
+  });
+
   test('username used', async () => {
     await wrapper.vm.resetForm();
     await wrapper.setData({

@@ -465,7 +465,8 @@ export default {
       if (this.mailOptionsOther.includes(this.MAILOP_OPENPROXY)) {
         textParts.push(this.mt('mail-no-open-proxy', ['[LINK:https://meta.wikimedia.org/wiki/No_open_proxies/zh]']));
 
-        pleaseProvide.push(this.mt('mail-wanted-username') + useUsernameChecker);
+        pleaseProvide.push(this.mt('mail-your-username', ['[LINK:https://zh.wikipedia.org/wiki/Special:Preferences]']));
+        pleaseProvideAppend = this.mt('mail-no-account-give-username') + useUsernameChecker;
       }
       if (this.mailOptionsOther.includes(this.MAILOP_RANGEBLOCK)) {
         textParts.push(this.mt('mail-range-block') + useUsernameChecker);
@@ -507,7 +508,9 @@ export default {
 
       // account
       if (this.mailOptionsUsername === this.MAILOP_NOUSERNAME) {
-        if (this.inputCreateAccount) {
+        if (this.mailOptionsOther.includes(this.MAILOP_OPENPROXY)) {
+          // pass for proxy
+        } else if (this.inputCreateAccount) {
           pleaseProvide.push(this.mt('mail-wanted-username') + useUsernameChecker);
         } else if (this.inputGrantIpbe || this.inputBlockAppeal) {
           pleaseProvide.push(
