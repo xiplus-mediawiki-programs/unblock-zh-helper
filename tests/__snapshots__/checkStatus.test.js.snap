@@ -1,0 +1,187 @@
+// Vitest Snapshot v1
+
+exports[`form > status 1 normalized 1`] = `
+<li
+  class="uzh-status-info"
+>
+  使用者名稱被正規化為「Xiplus」
+</li>
+`;
+
+exports[`form > status 2 account can be create 1`] = `
+<li
+  class="uzh-status-success"
+>
+  <span>
+    帳號可以建立（
+    <a
+      href="https://www.google.com/search?q=Xiplus"
+      target="_blank"
+    >
+      Google搜尋
+    </a>
+    ）
+  </span>
+</li>
+`;
+
+exports[`form > status 2 account not exists 1`] = `
+<li
+  class="uzh-status-error"
+>
+  帳號不存在
+</li>
+`;
+
+exports[`form > status 3 account needs local 1`] = `
+<li
+  class="uzh-status-error"
+>
+  <span>
+    需要強制建立本地帳號（
+    <a
+      href="/w/index.php?title=Special:CentralAuth&target=Xiplus"
+      target="_blank"
+    >
+      檢查全域帳號
+    </a>
+    ）
+  </span>
+</li>
+`;
+
+exports[`form > status 4 account exists req acct 1`] = `
+<li
+  class="uzh-status-error"
+>
+  <span>
+    帳號已被註冊（
+    <a
+      href="/w/index.php?title=Special:CentralAuth&target=Xiplus"
+      target="_blank"
+    >
+      檢查全域帳號
+    </a>
+    ）
+  </span>
+</li>
+`;
+
+exports[`form > status 5 account exists not req acct 1`] = `
+<li
+  class="uzh-status-success"
+>
+  <span>
+    帳號已被註冊（
+    <a
+      href="/w/index.php?title=Special:CentralAuth&target=Xiplus"
+      target="_blank"
+    >
+      檢查全域帳號
+    </a>
+    ）
+  </span>
+</li>
+`;
+
+exports[`form > status 6 account banned 1`] = `
+<li
+  class="uzh-status-error"
+>
+  帳號不存在
+</li>
+`;
+
+exports[`form > status 7 account blocked 1`] = `
+<li
+  class="uzh-status-error"
+>
+  <span>
+    <b>
+      警告：帳號被BlockAdmin封鎖，原因為：Vandalism
+    </b>
+    （
+    <a
+      href="/w/index.php?title=Special:Log/block&page=User%3AXiplus"
+      target="_blank"
+    >
+      封鎖日誌
+    </a>
+    ）
+  </span>
+</li>
+`;
+
+exports[`form > status 8 ip blocked other 1`] = `
+<li
+  class="uzh-status-error"
+>
+  <span>
+    <span>
+      IP已被封鎖，原因為：Vandalism
+    </span>
+    （
+    <a
+      href="/w/index.php?title=Special:BlockList&wpTarget=1.2.3.4"
+      target="_blank"
+    >
+      檢查
+    </a>
+    ）
+  </span>
+</li>
+`;
+
+exports[`form > status 8 ip blocked proxy 1`] = `
+<li
+  class="uzh-status-success"
+>
+  <span>
+    <span>
+      IP已被封鎖，原因為：{{Blocked proxy}}
+    </span>
+    （
+    <a
+      href="/w/index.php?title=Special:BlockList&wpTarget=1.2.3.4"
+      target="_blank"
+    >
+      檢查
+    </a>
+    ）
+  </span>
+</li>
+`;
+
+exports[`form > status 9 ip not blocked 1`] = `
+<li
+  class="uzh-status-error"
+>
+  <span>
+    申請人給定的IP未被封鎖（
+    <a
+      href="/w/index.php?title=Special:BlockList&wpTarget=1.2.3.4"
+      target="_blank"
+    >
+      檢查
+    </a>
+    ）
+  </span>
+</li>
+`;
+
+exports[`form > status 10 acct has ipbe 1`] = `
+<li
+  class="uzh-status-error"
+>
+  <span>
+    使用者已擁有IP封鎖例外權（
+    <a
+      href="/w/index.php?title=Special:Log&type=rights&page=User%3AXiplus"
+      target="_blank"
+    >
+      檢查權限日誌
+    </a>
+    ）
+  </span>
+</li>
+`;

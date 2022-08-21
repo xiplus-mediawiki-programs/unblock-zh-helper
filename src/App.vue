@@ -55,7 +55,7 @@
           />
         </span>
       </label>
-      <button @click.prevent="checkInput">
+      <button id="uzh-check-input" @click.prevent="checkInput">
         {{ $t('check-infomation') }}
       </button>
     </fieldset>
@@ -63,7 +63,7 @@
     <fieldset>
       <legend>{{ $t('choose-actions') }}</legend>
       {{ $t('status') }}
-      <ul>
+      <ul id="uzh-req-status">
         <li v-if="normalizedUsername && username != normalizedUsername" class="uzh-status-info">
           {{ $t('normalized-username', [this.normalizedUsername]) }}
         </li>
