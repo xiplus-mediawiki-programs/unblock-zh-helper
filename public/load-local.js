@@ -7,13 +7,14 @@ if (
 	$('title').text('unblock-zh-helper');
 	$('#mw-content-text').html('<div id="app"></div>');
 
-	mw.loader.using(['ext.gadget.morebits', 'mediawiki.api', 'mediawiki.jqueryMsg'], function () {
+	mw.loader.using(['ext.gadget.morebits', 'mediawiki.api', 'mediawiki.jqueryMsg'], function() {
 		var api = new mw.Api();
-		api.loadMessagesIfMissing(['antispoof-name-illegal']).then(function () {
+		api.loadMessagesIfMissing(['antispoof-name-illegal']).then(function() {
 			mw.loader.load('http://localhost:3000/dist/style.css', 'text/css');
 			mw.loader.load('http://localhost:3000/dist/unblock-zh-helper.iife.js');
 		});
 	});
+	mw.loader.load('ext.gadget.CollapsibleSidebar');
 }
 
 /*

@@ -662,7 +662,6 @@ export default {
     this.SUMMARY_SUFFIX = this.$t('summary-suffix', ['[[User:Xiplus/js/unblock-zh-helper|unblock-zh-helper]]']);
     mw.messages.set('antispoof-name-1', '$1');
     mw.messages.set('antispoof-name-123', '$1$2$3');
-    mw.loader.load('ext.gadget.CollapsibleSidebar');
   },
   methods: {
     mt(key, list) {
