@@ -91,7 +91,11 @@
           v-if="normalizedUsername && usernameStatus == ACCST_NEEDS_LOCAL"
           :class="{ 'uzh-status-error': inputCreateAccount, 'uzh-status-success': !inputCreateAccount }"
         >
-          {{ $t('needs-force-create-local') }}
+          <i18n-t keypath="needs-force-create-local" tag="span">
+            <a :href="getUrl('Special:CentralAuth', { target: normalizedUsername })" target="_blank">
+              {{ $t('check-central-account') }}
+            </a>
+          </i18n-t>
         </li>
         <li
           v-if="normalizedUsername && usernameStatus == ACCST_EXISTS"
@@ -171,12 +175,7 @@
       <div v-if="usernameStatus == ACCST_NEEDS_LOCAL">
         <label>
           <input v-model="actionOptions" :value="ACTOP_CREATELOCAL" type="checkbox" @change="autoMailOptionsAccount" />
-          <i18n-t keypath="force-create-local" tag="span">
-            <span>{{ normalizedUsername }}</span>
-            <a :href="getUrl('Special:CentralAuth', { target: normalizedUsername })" target="_blank">
-              {{ $t('check-central-account') }}
-            </a>
-          </i18n-t></label
+          {{ $t('force-create-local') }}</label
         >
         <span v-if="statusCreateLocal">
           -
