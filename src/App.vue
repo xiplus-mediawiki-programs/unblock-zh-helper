@@ -71,7 +71,7 @@
           v-if="normalizedUsername && inputCreateAccount && usernameStatus == ACCST_NOT_EXISTS"
           class="uzh-status-success"
         >
-          <i18n-t keypath="can-create-account" tag="span">
+          <i18n-t keypath="can-create-account" tag="span" scope="global">
             <a :href="'https://www.google.com/search?q=' + encodeURIComponent(normalizedUsername)" target="_blank">
               {{ $t('google-search') }}
             </a>
@@ -91,7 +91,7 @@
           v-if="normalizedUsername && usernameStatus == ACCST_NEEDS_LOCAL"
           :class="{ 'uzh-status-error': inputCreateAccount, 'uzh-status-success': !inputCreateAccount }"
         >
-          <i18n-t keypath="needs-force-create-local" tag="span">
+          <i18n-t keypath="needs-force-create-local" tag="span" scope="global">
             <a :href="getUrl('Special:CentralAuth', { target: normalizedUsername })" target="_blank">
               {{ $t('check-central-account') }}
             </a>
@@ -101,7 +101,7 @@
           v-if="normalizedUsername && usernameStatus == ACCST_EXISTS"
           :class="{ 'uzh-status-error': inputCreateAccount, 'uzh-status-success': !inputCreateAccount }"
         >
-          <i18n-t keypath="account-exists" tag="span">
+          <i18n-t keypath="account-exists" tag="span" scope="global">
             <a :href="getUrl('Special:CentralAuth', { target: normalizedUsername })" target="_blank">
               {{ $t('check-central-account') }}
             </a>
@@ -109,7 +109,7 @@
         </li>
         <li v-if="normalizedUsername && inputCreateAccount && usernameStatus == ACCST_BANNED" class="uzh-status-error">
           <span v-if="usernameBannedDetail">
-            <i18n-t keypath="username-banned-detail" tag="span">
+            <i18n-t keypath="username-banned-detail" tag="span" scope="global">
               <span v-html="usernameBannedDetail"></span>
             </i18n-t>
           </span>
@@ -118,7 +118,7 @@
           </span>
         </li>
         <li v-if="accountBlocked" class="uzh-status-error">
-          <i18n-t keypath="account-blocked-row" tag="span">
+          <i18n-t keypath="account-blocked-row" tag="span" scope="global">
             <b>{{ $t('account-blocked-text', [accountBlockBy, accountBlockReason]) }}</b>
             <a :href="getUrl('Special:Log/block', { page: 'User:' + normalizedUsername })" target="_blank">
               {{ $t('block-log') }}
@@ -126,18 +126,18 @@
           </i18n-t>
         </li>
         <li v-if="ipChecked && ip && blocked" :class="ipBlockClass">
-          <i18n-t keypath="ip-blocked-row" tag="span">
+          <i18n-t keypath="ip-blocked-row" tag="span" scope="global">
             <span>{{ $t('ip-blocked-text', [blockBy, blockReason]) }}</span>
             <a :href="getUrl('Special:BlockList', { wpTarget: ip })" target="_blank">{{ $t('check-block-list') }}</a>
           </i18n-t>
         </li>
         <li v-if="ipChecked && ip && !blocked" class="uzh-status-error">
-          <i18n-t keypath="ip-not-blocked" tag="span">
+          <i18n-t keypath="ip-not-blocked" tag="span" scope="global">
             <a :href="getUrl('Special:BlockList', { wpTarget: ip })" target="_blank">{{ $t('check-block-list') }}</a>
           </i18n-t>
         </li>
         <li v-if="accountHasIpbe" class="uzh-status-error">
-          <i18n-t keypath="user-has-ipbe" tag="span">
+          <i18n-t keypath="user-has-ipbe" tag="span" scope="global">
             <a :href="getUrl('Special:Log', { type: 'rights', page: 'User:' + normalizedUsername })" target="_blank">
               {{ $t('check-right-log') }}
             </a>

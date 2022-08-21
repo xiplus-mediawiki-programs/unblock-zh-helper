@@ -1,9 +1,9 @@
-import { flushPromises, mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import App from '../src/App.vue';
 import createMyI18n from '../src/lang';
 import { expect, test, describe } from 'vitest';
 
-describe('form', async () => {
+describe('check status', async () => {
   const wrapper = mount(App, {
     global: {
       plugins: [createMyI18n('zh-hant')],
