@@ -432,7 +432,7 @@ export default {
       return this.$data;
     },
     ipBlockClass() {
-      if (/(blocked proxy|open proxy)/i.test(this.blockReason)) {
+      if (/(blocked proxy|open (proxy|proxies))/i.test(this.blockReason)) {
         return 'uzh-status-success';
       }
       return 'uzh-status-error';
