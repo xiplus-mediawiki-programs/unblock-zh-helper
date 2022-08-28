@@ -105,6 +105,9 @@
             <a :href="getUrl('Special:CentralAuth', { target: normalizedUsername })" target="_blank">
               {{ $t('check-central-account') }}
             </a>
+            <a :href="getUrl('Special:Log', { type: 'rights', page: 'User:' + normalizedUsername })" target="_blank">
+              {{ $t('check-right-log') }}
+            </a>
           </i18n-t>
         </li>
         <li v-if="normalizedUsername && inputCreateAccount && usernameStatus == ACCST_BANNED" class="uzh-status-error">

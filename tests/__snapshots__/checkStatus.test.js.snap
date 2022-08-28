@@ -43,7 +43,7 @@ exports[`check status > status 3 account needs local 1`] = `
       href="/w/index.php?title=Special:CentralAuth&target=Xiplus"
       target="_blank"
     >
-      檢查全域帳號
+      全域帳號
     </a>
     ）
   </span>
@@ -60,7 +60,14 @@ exports[`check status > status 4 account exists req acct 1`] = `
       href="/w/index.php?title=Special:CentralAuth&target=Xiplus"
       target="_blank"
     >
-      檢查全域帳號
+      全域帳號
+    </a>
+    、
+    <a
+      href="/w/index.php?title=Special:Log&type=rights&page=User%3AXiplus"
+      target="_blank"
+    >
+      權限日誌
     </a>
     ）
   </span>
@@ -77,7 +84,14 @@ exports[`check status > status 5 account exists not req acct 1`] = `
       href="/w/index.php?title=Special:CentralAuth&target=Xiplus"
       target="_blank"
     >
-      檢查全域帳號
+      全域帳號
+    </a>
+    、
+    <a
+      href="/w/index.php?title=Special:Log&type=rights&page=User%3AXiplus"
+      target="_blank"
+    >
+      權限日誌
     </a>
     ）
   </span>
@@ -179,7 +193,7 @@ exports[`check status > status 10 acct has ipbe 1`] = `
       href="/w/index.php?title=Special:Log&type=rights&page=User%3AXiplus"
       target="_blank"
     >
-      檢查權限日誌
+      權限日誌
     </a>
     ）
   </span>
