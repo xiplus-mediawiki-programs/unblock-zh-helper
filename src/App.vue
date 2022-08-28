@@ -1352,6 +1352,7 @@ export default {
       this.ip = '';
       this.archiveUrl = '';
       this.summary = '';
+      this.logSummary = '';
       this.normalizedUsername = '';
       this.accountBlocked = false;
       this.accountBlocked = '';
