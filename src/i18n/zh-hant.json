@@ -116,7 +116,7 @@
   "unblock-zh-apply": "unblock-zh申請",
   "mailopt-archive-wrong-format": "郵件存檔URL格式錯誤",
   "bad-username-banned-characters": "包含不允許的字元。",
-  "bad-username-email": "不可使用電子郵件地址作為使用者名稱。",
+  "bad-username-invaliduser": "使用者名稱無效（電子郵件地址等）。",
   "nothing-to-do": "沒什麼好做的",
   "reset-password-actions-only-one": "重設密碼操作僅能選取一個",
   "please-input-summary": "請輸入日誌摘要",

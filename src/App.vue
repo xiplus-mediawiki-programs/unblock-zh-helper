@@ -736,7 +736,7 @@ export default {
               self.usernameStatus = self.ACCST_NEEDS_LOCAL;
             } else if (cancreateerror.code === 'invaliduser') {
               self.usernameStatus = self.ACCST_BANNED;
-              self.usernameBannedDetail = self.$t('bad-username-email');
+              self.usernameBannedDetail = self.$t('bad-username-invaliduser');
             } else if (cancreateerror.code === 'antispoof-name-illegal') {
               self.usernameStatus = self.ACCST_BANNED;
               self.usernameBannedDetail = mw.msg('antispoof-name-illegal', ...cancreateerror.params);
