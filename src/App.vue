@@ -178,7 +178,7 @@
       <div v-if="usernameStatus == ACCST_NEEDS_LOCAL">
         <label>
           <input v-model="actionOptions" :value="ACTOP_CREATELOCAL" type="checkbox" @change="autoMailOptionsAccount" />
-          {{ $t('force-create-local') }}</label
+          {{ $t('force-create-local', [normalizedUsername]) }}</label
         >
         <span v-if="statusCreateLocal">
           -
