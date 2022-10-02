@@ -134,6 +134,5 @@
   "rfipbe-summary": "[[Special:UserRights/{0}{'|'}授予{0}IP封禁豁免权]]备案",
   "fill-success": "成功备案",
   "success-reset-password": "成功重置密码",
-  "copy-failed": "复制失败",
-  "check-rights-log": "权限日志"
+  "copy-failed": "复制失败"
 }
