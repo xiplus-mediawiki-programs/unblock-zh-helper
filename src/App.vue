@@ -356,6 +356,10 @@
           <input v-model="mailOptionsOther" :value="MAILOP_CANTUNDERSTAND" type="checkbox" />
           {{ $t('mailopt-can-not-understand') }}</label
         >
+        <label class="uzh-inline-options">
+          <input v-model="mailOptionsOther" :value="MAILOP_NOTUNBLOCK" type="checkbox" />
+          {{ $t('mailopt-not-unblock') }}</label
+        >
         <br />
 
         <label class="uzh-inline-options">
@@ -504,6 +508,14 @@ export default {
         mainText.push(
           this.mt('mail-can-not-understand', [
             '[LINK:https://zh.wikipedia.org/wiki/Wikipedia:通过Unblock-zh申请IP封禁例外指南]',
+          ])
+        );
+      }
+      if (this.mailOptionsOther.includes(this.MAILOP_NOTUNBLOCK)) {
+        mainText.push(
+          this.mt('mail-not-unblock', [
+            '[LINK:https://zh.wikipedia.org/wiki/Wikipedia:互助客栈/求助]',
+            '[LINK:https://zh.wikipedia.org/wiki/Wikipedia:中文維基百科志願者互聯交流群]',
           ])
         );
       }
@@ -662,6 +674,7 @@ export default {
     this.MAILOP_GOTALKPAGE = 'GoTalkpage';
     this.MAILOP_TALKPAGEREQED = 'TalkpageReqed';
     this.MAILOP_CANTUNDERSTAND = 'CantUnderstand';
+    this.MAILOP_NOTUNBLOCK = 'NotUnblock';
     this.SUMMARY_SUFFIX = this.$t('summary-suffix', ['[[User:Xiplus/js/unblock-zh-helper|unblock-zh-helper]]']);
     mw.messages.set('antispoof-name-1', '$1');
     mw.messages.set('antispoof-name-123', '$1$2$3');
