@@ -843,7 +843,7 @@ export default {
           self.blockReason = res.query.blocks[0].reason;
           return def.resolve();
         }
-        if (res.query.globalblocks.length > 0) {
+        if (res.query.globalblocks && res.query.globalblocks.length > 0) {
           self.blocked = true;
           self.blockBy = res.query.globalblocks[0].by;
           self.blockReason = res.query.globalblocks[0].reason;
