@@ -438,8 +438,11 @@ export default {
     allData() {
       return this.$data;
     },
+    isProxyBlocked() {
+      return /(blocked proxy|open (proxy|proxies))/i.test(this.blockReason);
+    },
     ipBlockClass() {
-      if (/(blocked proxy|open (proxy|proxies))/i.test(this.blockReason)) {
+      if (this.isProxyBlocked) {
         return 'uzh-status-success';
       }
       return 'uzh-status-error';
@@ -884,7 +887,9 @@ export default {
         if (this.usernameStatus == this.ACCST_NEEDS_LOCAL) {
           this.actionOptions.push(this.ACTOP_CREATELOCAL);
         }
-        this.actionOptions.push(this.ACTOP_GRANTIPBE);
+        if (this.isProxyBlocked) {
+          this.actionOptions.push(this.ACTOP_GRANTIPBE);
+        }
       }
       if (this.inputResetPassword) {
         if (this.username) {
