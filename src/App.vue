@@ -542,7 +542,14 @@ export default {
         }
       } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEUSED) {
         let dateStr = new Date(this.usernameRegistration).toLocaleDateString('zh');
-        mainText.push(this.mt('mail-username-exists-provide-another', [dateStr]) + useUsernameChecker);
+        mainText.push(
+          this.mt('mail-username-exists-provide-another', [
+            dateStr,
+            '[LINK:https://zh.wikipedia.org' +
+              this.getUrl('Special:CentralAuth', { target: this.normalizedUsername }) +
+              ']',
+          ]) + useUsernameChecker
+        );
       } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEBANNED) {
         mainText.push(this.mt('mail-username-banned-provide-another') + useUsernameChecker);
       } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEILLEAGAL) {

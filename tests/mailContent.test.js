@@ -102,6 +102,7 @@ describe('mail content', async () => {
     await wrapper.vm.resetForm();
     await wrapper.setData({
       mailOptionsUsername: wrapper.vm.MAILOP_USERNAMEUSED,
+      normalizedUsername: 'ExampleUser',
       usernameRegistration: '2019-01-12T12:34:56Z',
     });
     expect(wrapper.vm.mailContentCore).toMatchSnapshot();

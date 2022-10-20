@@ -192,9 +192,10 @@ exports[`mail content > username illeagal 1`] = `
 
 exports[`mail content > username used 1`] = `
 "您好：
-您所指定的使用者名稱已經在 2019/1/12 被註冊，這是您嗎？若不是，請提供另一個使用者名稱，請務必使用使用者名稱檢查工具[1]來確認您想要註冊的使用者名稱是否可用。
+您所指定的使用者名稱已經在 2019/1/12 被註冊 [1]，這是您嗎？若不是，請提供另一個使用者名稱，請務必使用使用者名稱檢查工具[2]來確認您想要註冊的使用者名稱是否可用。
 
-[1] https://zhwiki-username-check.toolforge.org"
+[1] https://zh.wikipedia.org/w/index.php?title=Special:CentralAuth&target=ExampleUser
+[2] https://zhwiki-username-check.toolforge.org"
 `;
 
 exports[`test variant > hans 1`] = `
