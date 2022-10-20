@@ -399,6 +399,7 @@ export default {
       ip: '',
       archiveUrl: '',
       usernameStatus: '',
+      usernameRegistration: '',
       usernameBannedDetail: '',
       normalizedUsername: '',
       accountBlocked: false,
@@ -540,7 +541,8 @@ export default {
           pleaseProvide.push(this.mt('mail-your-username-help-reset'));
         }
       } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEUSED) {
-        mainText.push(this.mt('mail-username-exists-provide-another') + useUsernameChecker);
+        let dateStr = new Date(this.usernameRegistration).toLocaleDateString('zh');
+        mainText.push(this.mt('mail-username-exists-provide-another', [dateStr]) + useUsernameChecker);
       } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEBANNED) {
         mainText.push(this.mt('mail-username-banned-provide-another') + useUsernameChecker);
       } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEILLEAGAL) {
@@ -720,6 +722,7 @@ export default {
       let self = this;
 
       self.usernameStatus = '';
+      self.usernameRegistration = '';
       self.usernameBannedDetail = '';
       self.normalizedUsername = '';
       if (!self.username) {
@@ -730,7 +733,7 @@ export default {
           action: 'query',
           format: 'json',
           list: 'users',
-          usprop: 'cancreate|centralids',
+          usprop: 'cancreate|centralids|registration',
           usattachedwiki: 'zhwiki',
           ususers: self.username,
         })
@@ -742,6 +745,7 @@ export default {
             } else {
               self.usernameStatus = self.ACCST_NEEDS_LOCAL;
             }
+            self.usernameRegistration = user.registration;
           } else if ('invalid' in user) {
             self.usernameStatus = self.ACCST_BANNED;
             self.usernameBannedDetail = self.$t('bad-username-banned-characters');
@@ -1381,6 +1385,7 @@ export default {
       this.accountHasIpbe = false;
       this.ipChecked = false;
       this.usernameStatus = '';
+      this.usernameRegistration = '';
       this.usernameBannedDetail = '';
       this.actionOptions = [];
       this.mailOptionsUsername = '';
