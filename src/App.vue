@@ -541,15 +541,25 @@ export default {
           pleaseProvide.push(this.mt('mail-your-username-help-reset'));
         }
       } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEUSED) {
-        let dateStr = new Date(this.usernameRegistration).toLocaleDateString('zh');
-        mainText.push(
-          this.mt('mail-username-exists-provide-another', [
-            dateStr,
-            '[LINK:https://zh.wikipedia.org' +
-              this.getUrl('Special:CentralAuth', { target: this.normalizedUsername }) +
-              ']',
-          ]) + useUsernameChecker
-        );
+        if (this.usernameRegistration) {
+          let dateStr = new Date(this.usernameRegistration).toLocaleDateString('zh');
+          mainText.push(
+            this.mt('mail-username-exists-with-registration', [
+              dateStr,
+              '[LINK:https://zh.wikipedia.org' +
+                this.getUrl('Special:CentralAuth', { target: this.normalizedUsername }) +
+                ']',
+            ]) + useUsernameChecker
+          );
+        } else {
+          mainText.push(
+            this.mt('mail-username-exists-without-registration', [
+              '[LINK:https://zh.wikipedia.org' +
+                this.getUrl('Special:CentralAuth', { target: this.normalizedUsername }) +
+                ']',
+            ]) + useUsernameChecker
+          );
+        }
       } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEBANNED) {
         mainText.push(this.mt('mail-username-banned-provide-another') + useUsernameChecker);
       } else if (this.mailOptionsUsername === this.MAILOP_USERNAMEILLEAGAL) {
@@ -739,9 +749,11 @@ export default {
         .get({
           action: 'query',
           format: 'json',
+          meta: 'globaluserinfo',
           list: 'users',
-          usprop: 'cancreate|centralids|registration',
+          usprop: 'cancreate|centralids',
           usattachedwiki: 'zhwiki',
+          guiuser: self.username,
           ususers: self.username,
         })
         .then(function (res) {
@@ -752,7 +764,6 @@ export default {
             } else {
               self.usernameStatus = self.ACCST_NEEDS_LOCAL;
             }
-            self.usernameRegistration = user.registration;
           } else if ('invalid' in user) {
             self.usernameStatus = self.ACCST_BANNED;
             self.usernameBannedDetail = self.$t('bad-username-banned-characters');
@@ -778,6 +789,9 @@ export default {
             }
           } else {
             self.usernameStatus = self.ACCST_NOT_EXISTS;
+          }
+          if (res.query.globaluserinfo && res.query.globaluserinfo.registration) {
+            self.usernameRegistration = res.query.globaluserinfo.registration;
           }
           self.normalizedUsername = user.name;
           def.resolve();

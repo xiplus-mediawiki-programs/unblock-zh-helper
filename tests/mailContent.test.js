@@ -98,12 +98,21 @@ describe('mail content', async () => {
     expect(wrapper.vm.mailContentCore).toMatchSnapshot();
   });
 
-  test('username used', async () => {
+  test('username used with registration', async () => {
     await wrapper.vm.resetForm();
     await wrapper.setData({
       mailOptionsUsername: wrapper.vm.MAILOP_USERNAMEUSED,
       normalizedUsername: 'ExampleUser',
       usernameRegistration: '2019-01-12T12:34:56Z',
+    });
+    expect(wrapper.vm.mailContentCore).toMatchSnapshot();
+  });
+
+  test('username used without', async () => {
+    await wrapper.vm.resetForm();
+    await wrapper.setData({
+      mailOptionsUsername: wrapper.vm.MAILOP_USERNAMEUSED,
+      normalizedUsername: 'ExampleUser',
     });
     expect(wrapper.vm.mailContentCore).toMatchSnapshot();
   });
