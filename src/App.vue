@@ -700,6 +700,22 @@ export default {
     this.SUMMARY_SUFFIX = this.$t('summary-suffix', ['[[User:Xiplus/js/unblock-zh-helper|unblock-zh-helper]]']);
     mw.messages.set('antispoof-name-1', '$1');
     mw.messages.set('antispoof-name-123', '$1$2$3');
+
+    if (mw.util.getParamValue('inputCreateAccount') === '0') {
+      this.inputCreateAccount = false;
+    }
+    if (mw.util.getParamValue('username') !== null) {
+      this.username = mw.util.getParamValue('username');
+    }
+    if (mw.util.getParamValue('ip') !== null) {
+      this.ip = mw.util.getParamValue('ip');
+    }
+    if (mw.util.getParamValue('archiveId') !== null) {
+      this.archiveUrl = 'https://lists.wikimedia.org/hyperkitty/' + mw.util.getParamValue('archiveId');
+    }
+    if (mw.util.getParamValue('autoCheckInput')) {
+      this.checkInput();
+    }
   },
   methods: {
     mt(key, list) {
