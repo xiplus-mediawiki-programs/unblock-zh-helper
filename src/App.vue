@@ -704,8 +704,17 @@ export default {
     if (mw.util.getParamValue('inputCreateAccount') === '0') {
       this.inputCreateAccount = false;
     }
+    if (mw.util.getParamValue('inputGrantIpbe') === '0') {
+      this.inputGrantIpbe = false;
+    }
+    if (mw.util.getParamValue('inputResetPassword') === '1') {
+      this.inputResetPassword = true;
+    }
     if (mw.util.getParamValue('username') !== null) {
       this.username = mw.util.getParamValue('username');
+    }
+    if (mw.util.getParamValue('email') !== null) {
+      this.email = mw.util.getParamValue('email');
     }
     if (mw.util.getParamValue('ip') !== null) {
       this.ip = mw.util.getParamValue('ip');
