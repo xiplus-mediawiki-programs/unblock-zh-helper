@@ -70,7 +70,7 @@ exports[`mail content > enwiki block 1`] = `
 exports[`mail content > gipbe 1`] = `
 "您好：
 由於各個語言的維基百科是各自獨立管理的，這裡僅能處理中文維基百科[1]的問題，很抱歉幫不上忙。
-若有需要全域IP封鎖例外權，請參考Meta-Wiki上的說明[2]來申請。
+若有需要全域IP封鎖豁免權，請參考Meta-Wiki上的說明[2]來申請。
 
 [1] https://zh.wikipedia.org
 [2] https://meta.wikimedia.org/wiki/IP_block_exempt/zh"
@@ -128,7 +128,7 @@ exports[`mail content > req account & ipbe, acct created, no ip 1`] = `
 exports[`mail content > req account & ipbe, done 1`] = `
 "您好：
 已代為註冊帳號「ExampleUser」，帳號的隨機密碼用另一封郵件寄出到「email@example.org」，隨機密碼的有效期限僅有7天，請盡速登入修改密碼。
-已授予您IP封鎖例外權限，登入後即可編輯頁面。祝您編輯愉快。"
+已授予您IP封鎖豁免權限，登入後即可編輯頁面。祝您編輯愉快。"
 `;
 
 exports[`mail content > req account & ipbe, no username & ip 1`] = `
@@ -151,7 +151,7 @@ exports[`mail content > req account & ipbe, no username 1`] = `
 
 exports[`mail content > req ipbe, granted 1`] = `
 "您好：
-已授予您IP封鎖例外權限，登入後即可編輯頁面。祝您編輯愉快。"
+已授予您IP封鎖豁免權限，登入後即可編輯頁面。祝您編輯愉快。"
 `;
 
 exports[`mail content > req ipbe, no username 1`] = `

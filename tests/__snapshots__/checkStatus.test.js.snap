@@ -188,7 +188,7 @@ exports[`check status > status 10 acct has ipbe 1`] = `
   class="uzh-status-error"
 >
   <span>
-    使用者已擁有IP封鎖例外權（
+    使用者已擁有IP封鎖豁免權（
     <a
       href="/w/index.php?title=Special:Log&type=rights&page=User%3AXiplus"
       target="_blank"
