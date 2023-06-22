@@ -1,42 +1,49 @@
-name: Deploy to Wikipedia (main branch)
+name: Deploy to Wikipedia
 
 on:
   push:
-    branches: [ main ]
-
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
-  build:
+  run:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v2
+      - uses: xiplus-mediawiki-programs/deploy-mediawiki/.github/actions/setup@main
         with:
-          python-version: 3.7
+          username: Xiplus
+          botname: ${{ secrets.DEPLOY_XIPLUS_BOT_NAME }}
+          password: ${{ secrets.DEPLOY_XIPLUS_BOT_PASS }}
+          family: wikipedia
+          mylang: zh
 
-      - name: Install deploy dependencies
-        run: |
-          pip install mwparserfromhell>=0.5.0 pywikibot
-          npm ci
+      - name: Install dependencies
+        run: npm ci
 
       - name: Build
         run: npm run build
 
       - name: Get short sha
         id: vars
-        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - name: Run deploy script
-        env:
-          BOT_NAME: ${{ secrets.BOT_NAME }}
-          BOT_PASS: ${{ secrets.BOT_PASS }}
-        run: |
-          echo "('Xiplus', BotPassword('${BOT_NAME}', '${BOT_PASS}'))" > user-password.py
-          chmod 600 user-password.py
-          python3 deploy.py --file dist/unblock-zh-helper.iife.js --target User:Xiplus/js/unblock-zh-helper/unblock-zh-helper.iife.js --summary "${{ steps.vars.outputs.sha_short }} ${{ github.event.head_commit.message }}"
-          python3 deploy.py --file dist/style.css --target User:Xiplus/js/unblock-zh-helper/style.css --summary "${{ steps.vars.outputs.sha_short }} ${{ github.event.head_commit.message }}"
-          python3 deploy.py --file dist/load.js --target User:Xiplus/js/unblock-zh-helper/load.js --summary "${{ steps.vars.outputs.sha_short }} ${{ github.event.head_commit.message }}"
+      - uses: xiplus-mediawiki-programs/deploy-mediawiki/.github/actions/deploy@main
+        with:
+          src: dist/unblock-zh-helper.iife.js
+          dst: User:Xiplus/js/unblock-zh-helper/unblock-zh-helper.iife.js
+          summary: ${{ steps.vars.outputs.sha_short }} ${{ github.event.head_commit.message }}
+
+      - uses: xiplus-mediawiki-programs/deploy-mediawiki/.github/actions/deploy@main
+        with:
+          src: dist/style.css
+          dst: User:Xiplus/js/unblock-zh-helper/style.css
+          summary: ${{ steps.vars.outputs.sha_short }} ${{ github.event.head_commit.message }}
+
+      - uses: xiplus-mediawiki-programs/deploy-mediawiki/.github/actions/deploy@main
+        with:
+          src: dist/load.js
+          dst: User:Xiplus/js/unblock-zh-helper/load.js
+          summary: ${{ steps.vars.outputs.sha_short }} ${{ github.event.head_commit.message }}
